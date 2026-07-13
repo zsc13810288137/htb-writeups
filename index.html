@@ -362,6 +362,27 @@ const machines = [
         tags: [".git exposure", "Backdrop CMS", "malicious module upload", "password reuse", "sudo bee eval"],
         path: "dog/"
     },
+    {
+        name: "PC",
+        difficulty: "easy",
+        os: "linux",
+        tags: ["gRPC enumeration", "SQLite injection", "pyLoad CVE-2023-0297"],
+        path: "pc/"
+    },
+    {
+        name: "Helix",
+        difficulty: "hard",
+        os: "linux",
+        tags: ["NiFi H2 RCE", "CVE-2023-34468", "OPC-UA manipulation", "ICS/OT"],
+        path: "helix/"
+    },
+    {
+        name: "Horizontall",
+        difficulty: "easy",
+        os: "linux",
+        tags: ["Strapi RCE", "password reuse", "chisel tunneling", "Laravel CVE-2021-3129"],
+        path: "horizontall/"
+    },
     // ──────────────────────────────────────────
     // Add new machines below. Copy the block above,
     // change the fields, and the page updates itself.
