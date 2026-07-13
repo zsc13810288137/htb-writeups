@@ -25,5 +25,5 @@ Writeups are password-protected to comply with HTB guidelines. Passwords are hin
 
 ## 📬 Contact
 
-- HTB: [Senchuan](https://app.hackthebox.com/)
+- HTB: [Nauhcnes](https://app.hackthebox.com/)
 - GitHub: [@zsc13810288137](https://github.com/zsc13810288137)
