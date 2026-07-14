@@ -404,6 +404,27 @@ const machines = [
         tags: ["Go SSTI", "S3 webshell upload", "nginx backdoor module"],
         path: "gobox/"
     },
+    {
+        name: "Retired",
+        difficulty: "medium",
+        os: "linux",
+        tags: ["LFI /proc binary leak", "buffer overflow ROP", "symlink backup race", "binfmt_misc abuse"],
+        path: "retired/"
+    },
+    {
+        name: "Bucket",
+        difficulty: "medium",
+        os: "linux",
+        tags: ["S3 webshell", "DynamoDB cred dump", "pd4ml file read", "LocalStack"],
+        path: "bucket/"
+    },
+    {
+        name: "Soulmate",
+        difficulty: "medium",
+        os: "linux",
+        tags: ["SSRF JWT bypass", "heap overflow", "sudo snap install"],
+        path: "soulmate/"
+    },
     // ──────────────────────────────────────────
     // Add new machines below. Copy the block above,
     // change the fields, and the page updates itself.

