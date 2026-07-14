@@ -383,6 +383,27 @@ const machines = [
         tags: ["Strapi RCE", "password reuse", "chisel tunneling", "Laravel CVE-2021-3129"],
         path: "horizontall/"
     },
+    {
+        name: "ScriptKiddie",
+        difficulty: "easy",
+        os: "linux",
+        tags: ["msfvenom APK CVE-2020-7384", "shell script injection", "sudo msfconsole"],
+        path: "scriptkiddie/"
+    },
+    {
+        name: "Epsilon",
+        difficulty: "medium",
+        os: "linux",
+        tags: [".git secrets", "AWS Lambda", "JWT forgery", "Jinja2 SSTI", "tar symlink race"],
+        path: "epsilon/"
+    },
+    {
+        name: "GoBox",
+        difficulty: "medium",
+        os: "linux",
+        tags: ["Go SSTI", "S3 webshell upload", "nginx backdoor module"],
+        path: "gobox/"
+    },
     // ──────────────────────────────────────────
     // Add new machines below. Copy the block above,
     // change the fields, and the page updates itself.
