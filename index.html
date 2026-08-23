@@ -638,6 +638,13 @@ const machines = [
         tags: ["Jinja2 second-order SSTI", "adm group log leak", "Splunk Forwarder RCE", "vhost discovery"],
         path: "doctor/"
     },
+    {
+        name: "Bedside",
+        difficulty: "medium",
+        os: "linux",
+        tags: ["pdfminer.six pickle RCE", "Docker container escape", "path traversal", "torch.load checkpoint poisoning"],
+        path: "bedside/"
+    },
     // ──────────────────────────────────────────
     // Add new machines below. Copy the block above,
     // change the fields, and the page updates itself.
