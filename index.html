@@ -652,6 +652,13 @@ const machines = [
         tags: ["NoSQL injection", "XXE file read", "node-serialize deserialization RCE", "MongoDB plaintext creds", "sudo ALL"],
         path: "nodeblog/"
     },
+    {
+        name: "Luanne",
+        difficulty: "easy",
+        os: "linux",
+        tags: ["Supervisor default creds", "Lua os.execute injection", "bozohttpd -u SSH key leak", "netpgp decrypt", "doas privesc"],
+        path: "luanne/"
+    },
     // ──────────────────────────────────────────
     // Add new machines below. Copy the block above,
     // change the fields, and the page updates itself.
