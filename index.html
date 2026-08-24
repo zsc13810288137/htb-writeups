@@ -645,6 +645,13 @@ const machines = [
         tags: ["pdfminer.six pickle RCE", "Docker container escape", "path traversal", "torch.load checkpoint poisoning"],
         path: "bedside/"
     },
+    {
+        name: "NodeBlog",
+        difficulty: "easy",
+        os: "linux",
+        tags: ["NoSQL injection", "XXE file read", "node-serialize deserialization RCE", "MongoDB plaintext creds", "sudo ALL"],
+        path: "nodeblog/"
+    },
     // ──────────────────────────────────────────
     // Add new machines below. Copy the block above,
     // change the fields, and the page updates itself.
