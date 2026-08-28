@@ -722,6 +722,34 @@ const machines = [
         tags: ["WPScan user enum", ".jar decompile hardcoded creds", "password reuse", "sudo ALL"],
         path: "blocky/"
     },
+    {
+        name: "Writeup",
+        difficulty: "easy",
+        os: "linux",
+        tags: ["CMS Made Simple blind SQLi", "hashcat -m 20", "staff group PATH hijack", "MOTD run-parts"],
+        path: "writeup/"
+    },
+    {
+        name: "Shocker",
+        difficulty: "easy",
+        os: "linux",
+        tags: ["Shellshock CVE-2014-6271", "CGI bash env injection", "sudo perl"],
+        path: "shocker/"
+    },
+    {
+        name: "Headless",
+        difficulty: "easy",
+        os: "linux",
+        tags: ["User-Agent XSS bypass WAF", "cookie theft", "date cmd injection", "relative path initdb.sh hijack"],
+        path: "headless/"
+    },
+    {
+        name: "Forgotten",
+        difficulty: "easy",
+        os: "linux",
+        tags: ["LimeSurvey install wizard", "CVE-2021-44967 plugin RCE", "Docker env password leak", "shared volume SUID escape"],
+        path: "forgotten/"
+    },
     // ──────────────────────────────────────────
     // Add new machines below. Copy the block above,
     // change the fields, and the page updates itself.

