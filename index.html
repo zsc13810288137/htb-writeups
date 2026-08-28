@@ -680,6 +680,27 @@ const machines = [
         tags: ["Moodle CVE-2018-1133 Evil Teacher", "Burp single-char brute force", "MySQL MD5 backup user", "symlink cron hijack"],
         path: "teacher/"
     },
+    {
+        name: "Lame",
+        difficulty: "easy",
+        os: "linux",
+        tags: ["Samba 3.0.20 usermap_script CVE-2007-2447", "vsftpd 2.3.4 backdoor (blocked)", "direct root"],
+        path: "lame/"
+    },
+    {
+        name: "Cap",
+        difficulty: "easy",
+        os: "linux",
+        tags: ["IDOR", "PCAP FTP plaintext creds", "Python cap_setuid privesc"],
+        path: "cap/"
+    },
+    {
+        name: "Bashed",
+        difficulty: "easy",
+        os: "linux",
+        tags: ["phpbash webshell in /dev/", "sudo scriptmanager", "cron Python script hijack"],
+        path: "bashed/"
+    },
     // ──────────────────────────────────────────
     // Add new machines below. Copy the block above,
     // change the fields, and the page updates itself.
