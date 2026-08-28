@@ -701,6 +701,27 @@ const machines = [
         tags: ["phpbash webshell in /dev/", "sudo scriptmanager", "cron Python script hijack"],
         path: "bashed/"
     },
+    {
+        name: "Manage",
+        difficulty: "medium",
+        os: "linux",
+        tags: ["JMX unauth RCE", "BeanShooter TonkaBean", "Google Authenticator TOTP theft", "sudo adduser privesc"],
+        path: "manage/"
+    },
+    {
+        name: "Data",
+        difficulty: "easy",
+        os: "linux",
+        tags: ["Grafana CVE-2021-43798 path traversal", "PBKDF2 hashcat crack", "Docker privileged mount escape"],
+        path: "data/"
+    },
+    {
+        name: "Blocky",
+        difficulty: "easy",
+        os: "linux",
+        tags: ["WPScan user enum", ".jar decompile hardcoded creds", "password reuse", "sudo ALL"],
+        path: "blocky/"
+    },
     // ──────────────────────────────────────────
     // Add new machines below. Copy the block above,
     // change the fields, and the page updates itself.

