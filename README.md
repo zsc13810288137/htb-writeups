@@ -1,6 +1,6 @@
 # 🔐 HTB Writeups
 
-Hack The Box machine writeups by **Senchuan**.
+Hack The Box machine writeups by **Nauhcnes**.
 
 ## 🌐 Browse
 
