@@ -785,6 +785,20 @@ const machines = [
         tags: ["Rejetto HFS 2.3 CVE-2014-6287", "x86 to x64 migrate", "MS16-032 Secondary Logon"],
         path: "optimum/"
     },
+    {
+        name: "Driver",
+        difficulty: "easy",
+        os: "windows",
+        tags: ["SCF forced auth", "Responder NTLMv2", "hashcat -m 5600", "RICOH printer driver privesc"],
+        path: "driver/"
+    },
+    {
+        name: "Lock",
+        difficulty: "medium",
+        os: "windows",
+        tags: ["Gitea hardcoded token", "CI/CD ASPX webshell", ".git-credentials", "mRemoteNG decrypt", "PDF24 CVE-2023-49147 OpLock"],
+        path: "lock/"
+    },
     // ──────────────────────────────────────────
     // Add new machines below. Copy the block above,
     // change the fields, and the page updates itself.
