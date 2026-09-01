@@ -820,6 +820,27 @@ const machines = [
         tags: ["multi-layer encoding puzzle", "playSMS CVE-2017-9101 CSV RCE", "SUID ret2libc buffer overflow"],
         path: "frolic/"
     },
+    {
+        name: "Bastion",
+        difficulty: "easy",
+        os: "windows",
+        tags: ["SMB anonymous VHD backup", "guestmount SAM dump", "hashcat -m 1000", "mRemoteNG decrypt"],
+        path: "bastion/"
+    },
+    {
+        name: "Access",
+        difficulty: "easy",
+        os: "windows",
+        tags: ["FTP anonymous", "MDB database", "PST email extraction", "runas /savecred"],
+        path: "access/"
+    },
+    {
+        name: "EscapeTwo",
+        difficulty: "medium",
+        os: "windows",
+        tags: ["XLSX sharedStrings.xml", "MSSQL xp_cmdshell", "DACL WriteOwner hijack", "ADCS ESC1"],
+        path: "escapetwo/"
+    },
     // ──────────────────────────────────────────
     // Add new machines below. Copy the block above,
     // change the fields, and the page updates itself.
