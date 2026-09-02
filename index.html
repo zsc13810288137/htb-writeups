@@ -841,6 +841,13 @@ const machines = [
         tags: ["XLSX sharedStrings.xml", "MSSQL xp_cmdshell", "DACL WriteOwner hijack", "ADCS ESC1"],
         path: "escapetwo/"
     },
+    {
+        name: "Secret",
+        difficulty: "medium",
+        os: "linux",
+        tags: ["Git history JWT Secret leak", "JWT forgery", "API command injection", "SUID coredump SIGSEGV privesc"],
+        path: "secret/"
+    },
     // ──────────────────────────────────────────
     // Add new machines below. Copy the block above,
     // change the fields, and the page updates itself.
